@@ -70,18 +70,23 @@ class RootLayout extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () => context.go('/'),
-                    child: const Row(
-                      children: [
-                        FlutterLogo(size: 36),
-                        SizedBox(width: 10),
-                        Text(
-                          'Flex Printing',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
+                    child: InkWell(
+                      hoverColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      onTap: () => context.go('/'),
+                      child: Row(
+                        children: [
+                          FlutterLogo(size: 36),
+                          SizedBox(width: 10),
+                          Text(
+                            'Flex Printing',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   Row(
