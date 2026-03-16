@@ -48,9 +48,9 @@ class HomePage extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      _NavButton(label: 'About', pageTitle: 'About'),
-                      _NavButton(label: 'Services', pageTitle: 'Services'),
-                      _NavButton(label: 'Contact', pageTitle: 'Contact'),
+                      _NavButton(title: 'About'),
+                      _NavButton(title: 'Services'),
+                      _NavButton(title: 'Contact'),
                     ],
                   ),
                 ],
@@ -72,10 +72,9 @@ class HomePage extends StatelessWidget {
 }
 
 class _NavButton extends StatelessWidget {
-  const _NavButton({required this.label, required this.pageTitle});
+  const _NavButton({required this.title});
 
-  final String label;
-  final String pageTitle;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -85,11 +84,11 @@ class _NavButton extends StatelessWidget {
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute<void>(
-              builder: (_) => DummyPage(title: pageTitle),
+              builder: (_) => DummyPage(title: title),
             ),
           );
         },
-        child: Text(label),
+        child: Text(title),
       ),
     );
   }
