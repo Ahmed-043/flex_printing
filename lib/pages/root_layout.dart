@@ -10,6 +10,7 @@ class RootLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
+    bool isMobile = screenWidth < 1050;
 
     return Scaffold(
       body: SafeArea(
@@ -20,11 +21,12 @@ class RootLayout extends StatelessWidget {
             children: [
               // Fixed Navigation Bar
               Container(
-                color: Colors.red,
+                color: Theme.of(context).colorScheme.secondary,
                 height: screenHeight * 0.15,
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: .center,
                   children: [
                     GestureDetector(
                       onTap: () => context.go('/'),
@@ -33,10 +35,12 @@ class RootLayout extends StatelessWidget {
                         splashColor: Colors.transparent,
                         onTap: () => context.go('/'),
                         child: Row(
+                          crossAxisAlignment: .center,
                           children: [
                             Container(
-                              width: 78,
-                              height: 78,
+                              //margin: EdgeInsets.only(top: 10),
+                              width: isMobile ? 48 : 78,
+                              height: isMobile ? 48 : 78,
                               decoration: BoxDecoration(
                                 color: Colors.redAccent,
                                 shape: .circle
@@ -46,16 +50,22 @@ class RootLayout extends StatelessWidget {
                             Text(
                               'TEX PRINT',
                               style: TextStyle(
-                                fontSize: 36,
+                                fontSize: isMobile ? 22 : 36,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.white
+                                color: Theme.of(context).colorScheme.onPrimary
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    Row(
+                   isMobile ?
+                       IconButton(
+                           onPressed: (){},
+                           iconSize: 35,
+                           icon: Icon(Icons.menu_rounded)
+                       )
+                       : Row(
                       children: [
                         _NavButton(
                           title: 'Home',
