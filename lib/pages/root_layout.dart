@@ -13,95 +13,89 @@ class RootLayout extends StatelessWidget {
     bool isMobile = screenWidth < 1050;
 
     return Scaffold(
-      body: SafeArea(
-
-        child: SingleChildScrollView(
-
-          child: Column(
-            children: [
-              // Fixed Navigation Bar
-              Container(
-                color: Theme.of(context).colorScheme.secondary,
-                height: screenHeight * 0.15,
-                padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: .center,
-                  children: [
-                    GestureDetector(
-                      onTap: () => context.go('/'),
-                      child: InkWell(
-                        hoverColor: Colors.transparent,
-                        splashColor: Colors.transparent,
-                        onTap: () => context.go('/'),
-                        child: Row(
-                          crossAxisAlignment: .center,
-                          children: [
-                            Container(
-                              //margin: EdgeInsets.only(top: 10),
-                              width: isMobile ? 48 : 78,
-                              height: isMobile ? 48 : 78,
-                              decoration: BoxDecoration(
-                                color: Colors.redAccent,
-                                shape: .circle
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Text(
-                              'TEX PRINT',
-                              style: TextStyle(
-                                fontSize: isMobile ? 22 : 36,
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).colorScheme.onPrimary
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                   isMobile ?
-                       IconButton(
-                           onPressed: (){},
-                           iconSize: 35,
-                           icon: Icon(Icons.menu_rounded)
-                       )
-                       : Row(
+      body: Column(
+        children: [
+          // Fixed Navigation Bar
+          Container(
+            color: Theme.of(context).colorScheme.secondary,
+            height: 100,
+            padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: .center,
+              children: [
+                GestureDetector(
+                  onTap: () => context.go('/'),
+                  child: InkWell(
+                    hoverColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    onTap: () => context.go('/'),
+                    child: Row(
+                      crossAxisAlignment: .center,
                       children: [
-                        _NavButton(
-                          title: 'Home',
-                          route: '/',
-                          currentRoute: GoRouterState.of(context).uri.path,
+                        Container(
+                          //margin: EdgeInsets.only(top: 10),
+                          width: isMobile ? 48 : 78,
+                          height: isMobile ? 48 : 78,
+                          decoration: BoxDecoration(
+                            color: Colors.redAccent,
+                            shape: .circle
+                          ),
                         ),
-                        _NavButton(
-                          title: 'About',
-                          route: '/about',
-                          currentRoute: GoRouterState.of(context).uri.path,
-                        ),
-                        _NavButton(
-                          title: 'Products',
-                          route: '/products',
-                          currentRoute: GoRouterState.of(context).uri.path,
-                        ),
-                        _NavButton(
-                          title: 'Contact',
-                          route: '/contact',
-                          currentRoute: GoRouterState.of(context).uri.path,
-                        ),
-                        _NavButton(
-                          title: 'Events',
-                          route: '/events',
-                          currentRoute: GoRouterState.of(context).uri.path,
+                        SizedBox(width: 10),
+                        Text(
+                          'TEX PRINT',
+                          style: TextStyle(
+                            fontSize: isMobile ? 22 : 36,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onPrimary
+                          ),
                         ),
                       ],
                     ),
+                  ),
+                ),
+               isMobile ?
+                   IconButton(
+                       onPressed: (){},
+                       iconSize: 35,
+                       icon: Icon(Icons.menu_rounded)
+                   )
+                   : Row(
+                  children: [
+                    _NavButton(
+                      title: 'Home',
+                      route: '/',
+                      currentRoute: GoRouterState.of(context).uri.path,
+                    ),
+                    _NavButton(
+                      title: 'About',
+                      route: '/about',
+                      currentRoute: GoRouterState.of(context).uri.path,
+                    ),
+                    _NavButton(
+                      title: 'Products',
+                      route: '/products',
+                      currentRoute: GoRouterState.of(context).uri.path,
+                    ),
+                    _NavButton(
+                      title: 'Contact',
+                      route: '/contact',
+                      currentRoute: GoRouterState.of(context).uri.path,
+                    ),
+                    _NavButton(
+                      title: 'Events',
+                      route: '/events',
+                      currentRoute: GoRouterState.of(context).uri.path,
+                    ),
                   ],
                 ),
-              ),
-              // Content Area
-              child,
-            ],
+              ],
+            ),
           ),
-        ),
+          // Content Area
+          Expanded(child: child),
+        ],
       ),
     );
   }
