@@ -119,7 +119,7 @@ class _NavButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 16),
       child: InkWell(
-        onTap: () => context.go(route),
+        onTap: () => isSelected ? null : context.go(route),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Text(
