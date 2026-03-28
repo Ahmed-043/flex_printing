@@ -32,7 +32,7 @@ class _HomeContentState extends State<HomeContent> {
 
   Widget _banner() {
     return Container(
-      height: screenWidth < 1070 ? screenHeight*2 : screenHeight - 100,
+      height:  screenHeight - 100,
       color: Theme.of(context).colorScheme.secondary,
       child: Padding(
         padding: const EdgeInsets.only(left: 50.0, right: 50, top: 60),
