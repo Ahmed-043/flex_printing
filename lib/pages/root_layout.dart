@@ -10,7 +10,7 @@ class RootLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
-    bool isMobile = screenWidth < 1050;
+    bool isMobile = screenWidth < 1070;
 
     return Scaffold(
       body: Column(
