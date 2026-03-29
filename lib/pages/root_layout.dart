@@ -5,7 +5,6 @@ import '../models/system.dart';
 
 class RootLayout extends StatelessWidget {
   final Widget child;
-
   const RootLayout({required this.child, super.key});
 
   @override
@@ -17,7 +16,7 @@ class RootLayout extends StatelessWidget {
           // Fixed Navigation Bar
           Container(
             color: Theme.of(context).colorScheme.secondary,
-            height: System.isMobile ? 70 : 100,
+            height: System.isMobile ? 70 : 80,
             padding: System.isMobile
                 ? const EdgeInsets.symmetric(horizontal: 20,vertical: 8)
                 : const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
@@ -223,6 +222,8 @@ class _NavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     final isSelected = currentRoute == route;
 
     return Padding(
@@ -236,7 +237,7 @@ class _NavButton extends StatelessWidget {
             style: TextStyle(
               color: isSelected ? Colors.white60 : Colors.white,
               fontWeight: FontWeight.w200,
-              fontSize: 32,
+              fontSize: screenWidth< 1050 ? 25 : 32,
             ),
           ),
         ),

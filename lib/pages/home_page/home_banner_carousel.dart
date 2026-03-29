@@ -74,7 +74,7 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
 
   @override
   Widget build(BuildContext context) {
-
+print(MediaQuery.of(context).size);
     if(System.isMobile){
       return Expanded(
         flex: 2,
@@ -83,6 +83,105 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
             maxWidth: MediaQuery.of(context).size.width + 60,
             child: Container(
               padding: const EdgeInsets.only(top: 10, left: 40, right: 40),
+              decoration: BoxDecoration(
+                gradient: const RadialGradient(
+                  center: Alignment.center,
+                  radius: 0.8,
+                  colors: [Colors.white, Color(0xFFBDBDBD)],
+                  stops: [0.0, 1.0],
+                ),
+                border: Border(
+                  top: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 5,
+                  ),
+                  left: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 5,
+                  ),
+                  right: BorderSide(
+                    color: Theme.of(context).colorScheme.primary,
+                    width: 5,
+                  ),
+                  bottom: BorderSide.none,
+                ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(1000),
+                  topRight: Radius.circular(1000),
+                ),
+              ),
+              child: Column(
+                children: [
+                  _pages(),
+                  SizedBox(
+                    height: 50,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              scrollController.previousPage(
+                                duration: const Duration(seconds: 1),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            iconSize: 30,
+                            style: IconButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black,
+                              shape: const CircleBorder(),
+                            ),
+                            icon: const Icon(Icons.arrow_back_ios_rounded),
+                          ),
+                          Expanded(
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 15),
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              scrollController.nextPage(
+                                duration: const Duration(seconds: 1),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            iconSize: 30,
+                            style: IconButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black,
+                              shape: const CircleBorder(),
+                            ),
+                            icon: const Icon(Icons.arrow_forward_ios_rounded),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+    }
+    else{
+      return  Expanded(
+        child: Padding(
+          padding: const EdgeInsets.only(right: 10,top: 60),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(1000),
+              topRight: Radius.circular(1000),
+            ),
+            child: Container(
+              padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
               decoration: BoxDecoration(
                 gradient: const RadialGradient(
                   center: Alignment.center,
@@ -165,102 +264,6 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
                   const SizedBox(height: 30),
                 ],
               ),
-            ),
-          ),
-        ),
-      );
-
-    }
-    else{
-      return  Expanded(
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(1000),
-            topRight: Radius.circular(1000),
-          ),
-          child: Container(
-            padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
-            decoration: BoxDecoration(
-              gradient: const RadialGradient(
-                center: Alignment.center,
-                radius: 0.8,
-                colors: [Colors.white, Color(0xFFBDBDBD)],
-                stops: [0.0, 1.0],
-              ),
-              border: Border(
-                top: BorderSide(
-                  color: Theme.of(context).colorScheme.primary,
-                  width: 5,
-                ),
-                left: BorderSide(
-                  color: Theme.of(context).colorScheme.primary,
-                  width: 5,
-                ),
-                right: BorderSide(
-                  color: Theme.of(context).colorScheme.primary,
-                  width: 5,
-                ),
-                bottom: BorderSide.none,
-              ),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(1000),
-                topRight: Radius.circular(1000),
-              ),
-            ),
-            child: Column(
-              children: [
-                _pages(),
-                SizedBox(
-                  height: 55,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            scrollController.previousPage(
-                              duration: const Duration(seconds: 1),
-                              curve: Curves.easeInOut,
-                            );
-                          },
-                          iconSize: 30,
-                          style: IconButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
-                            shape: const CircleBorder(),
-                          ),
-                          icon: const Icon(Icons.arrow_back_ios_rounded),
-                        ),
-                        Expanded(
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 35),
-                            decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            scrollController.nextPage(
-                              duration: const Duration(seconds: 1),
-                              curve: Curves.easeInOut,
-                            );
-                          },
-                          iconSize: 30,
-                          style: IconButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
-                            shape: const CircleBorder(),
-                          ),
-                          icon: const Icon(Icons.arrow_forward_ios_rounded),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-              ],
             ),
           ),
         ),

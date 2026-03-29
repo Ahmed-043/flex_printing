@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flex_printing/models/system.dart';
 import 'package:flex_printing/pages/home_page/home_banner_carousel.dart';
+import 'package:flex_printing/pages/home_page/products_section.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -23,25 +24,30 @@ class _HomeContentState extends State<HomeContent> {
     screenWidth = MediaQuery.of(context).size.width;
 
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          _banner(),
-          Container(height: 1500, color: Theme.of(context).colorScheme.primary),
-          const Text(
-            'Welcome to Flex Printing Home Page',
-            style: TextStyle(fontSize: 22),
-          ),
-        ],
+      child: SizedBox(
+        width: 1500,
+        child: Column(
+          children: [
+            _banner(),
+            Container(height: 200, color: Theme.of(context).colorScheme.primary),
+            ProductsSection(),
+            const Text(
+              'Welcome to Flex Printing Home Page',
+              style: TextStyle(fontSize: 22),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _banner() {
-    double containerHeight = max(
-      500,
-      screenHeight - (System.isMobile ? 70 : 100),
-    );
-
+    double containerHeight = max(500, screenHeight - (System.isMobile ? 70 : 80));
+    if(!System.isMobile){
+      containerHeight = min(containerHeight,900);
+    }else{
+      containerHeight = min(containerHeight,1000);
+    }
     return Container(
       height: containerHeight,
       color: Theme.of(context).colorScheme.secondary,
@@ -52,7 +58,7 @@ class _HomeContentState extends State<HomeContent> {
             children: _mobileBanner()),
       )
           : Padding(
-        padding: const EdgeInsets.only(left: 50.0, right: 50, top: 60),
+        padding: const EdgeInsets.only(left: 50.0, right: 50),
         child: Row(
             children: _desktopBanner()),
       ),
@@ -64,32 +70,43 @@ class _HomeContentState extends State<HomeContent> {
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'DIGITAL\n',
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 1) DIGITAL (won’t overflow)
+                ClipRect(
+                  child: Text(
+                    'DIGITAL',
+                    maxLines: 1,
+                    overflow: TextOverflow.clip, // or TextOverflow.clip to hide without "..."
+                    softWrap: false,
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
                       fontFamily: 'PaytoneOne',
                       letterSpacing: 5,
-                      fontSize: 135,
-                      color: Theme.of(context).colorScheme.onSecondary,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  TextSpan(
-                    text: 'PRINTING MACHINERY SUPPLER.',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 43,
+                      height: 1.2,
+                      fontSize: screenWidth < 1210 ? 100 : 135,
                       color: Theme.of(context).colorScheme.onSecondary,
                     ),
                   ),
-                ],
-              ),
+                ),
+
+                // 2) subtitle (can wrap normally)
+                Text(
+                  'PRINTING MACHINERY SUPPLER.',
+                  maxLines: 3,
+                  overflow: TextOverflow.clip,
+                  style: TextStyle(
+                    height: 1,
+                    letterSpacing: 5,
+                    fontWeight: FontWeight.w600,
+                    fontSize: screenWidth < 1210 ? 35 : 43,
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
+                ),
+              ],
             ),
             UiHelper.button(
               callback: () {},
@@ -100,7 +117,7 @@ class _HomeContentState extends State<HomeContent> {
                 "Learn More",
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: 34,
+                  fontSize: screenWidth<1210 ? 27 : 34,
                 ),
               ),
             ),
@@ -109,7 +126,7 @@ class _HomeContentState extends State<HomeContent> {
               style: TextStyle(
                 fontWeight: FontWeight.w200,
                 fontFamily: 'RedHatDisplay',
-                fontSize: 43,
+                fontSize: screenWidth<1210 ? 35 : 43,
                 color: Theme.of(context).colorScheme.onSecondary,
               ),
             )

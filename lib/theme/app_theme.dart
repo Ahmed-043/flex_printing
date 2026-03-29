@@ -5,11 +5,13 @@ class AppTheme {
   static const _lightPrimary = Color(0xFFFFFFFF);
   static const _lightSecondary = Color(0xFFED2024);
   static const _lightText = Color(0xFFFFFFFF);
+  static const _lightDark = Color(0xFF000000);
 
   // Dummy dark colors (change later)
   static const _darkPrimary = Color(0xFFFFFFFF);
   static const _darkSecondary = Color(0xFFED2024);
   static const _darkText = Color(0xFFFFFFFF);
+  static const _darkDark = Color(0xFF000000);
 
   static ThemeData light() {
     final scheme = ColorScheme.fromSeed(
@@ -18,12 +20,14 @@ class AppTheme {
     ).copyWith(
       primary: _lightPrimary,
       secondary: _lightSecondary,
-
+      surface: _lightPrimary,
+      secondaryContainer: _lightDark,
       // "Text" colors in Material come from on* colors:
       onSurface: _lightText,
       onBackground: _lightText,
       onPrimary: _lightText,
       onSecondary: _lightText,
+
     );
 
     return ThemeData(
@@ -53,6 +57,8 @@ class AppTheme {
     ).copyWith(
       primary: _darkPrimary,
       secondary: _darkSecondary,
+      surface: _darkPrimary,
+      secondaryContainer: _darkDark,
 
       onSurface: _darkText,
       onBackground: _darkText,
