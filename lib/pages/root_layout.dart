@@ -126,7 +126,7 @@ Future<void> showTopMenu(
       // Menu position: directly under the button
       final top = buttonPos.dy + buttonSize.height + 8;
       final left = buttonPos.dx;
-      const width = 240.0;
+      const width = 200.0;
 
       return FadeTransition(
         opacity: CurvedAnimation(parent: anim, curve: Curves.easeOut),
@@ -150,8 +150,8 @@ Future<void> showTopMenu(
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.35),
-                        blurRadius: 22,
-                        spreadRadius: 0,
+                        blurRadius: 10,
+                        spreadRadius: 1,
                         offset: const Offset(0, 10),
                       ),
                     ],
