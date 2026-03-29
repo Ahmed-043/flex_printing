@@ -37519,14 +37519,12 @@ ap(){return new A.MT(A.aza())}}
 A.MT.prototype={
 O(a){var s,r=this,q=null,p=t.w
 r.d=A.bq(a,q,p).w.a.b
-p=A.bq(a,q,p).w.a.a
-r.e=p
-s=r.d
-p=p<1070?s*2:s-100
+r.e=A.bq(a,q,p).w.a.a
+p=r.d
 s=r.c
 s.toString
 s=A.a7(s)
-return new A.J7(A.kP(A.c([A.kQ(new A.dK(B.BS,r.e<1070?A.kP(r.IR(),B.am,B.aG,B.aM):A.Is(r.IR(),B.am,B.aG,B.aM),q),B.D,s.ax.y,q,p,q,q,q),A.kQ(q,B.D,A.a7(a).ax.b,q,1500,q,q,q),A.hR("Welcome to Flex Printing Home Page",q,q,A.fK(q,q,q,q,q,q,q,q,q,q,q,22,q,q,q,q,q,!0,q,q,q,q,q,q,q,q))],t.E),B.am,B.aG,B.aM),q)},
+return new A.J7(A.kP(A.c([A.kQ(new A.dK(B.BS,r.e<1070?A.kP(r.IR(),B.am,B.aG,B.aM):A.Is(r.IR(),B.am,B.aG,B.aM),q),B.D,s.ax.y,q,p-100,q,q,q),A.kQ(q,B.D,A.a7(a).ax.b,q,1500,q,q,q),A.hR("Welcome to Flex Printing Home Page",q,q,A.fK(q,q,q,q,q,q,q,q,q,q,q,22,q,q,q,q,q,!0,q,q,q,q,q,q,q,q))],t.E),B.am,B.aG,B.aM),q)},
 IR(){var s,r,q,p,o,n,m=this,l=null,k=1000,j=m.c
 j.toString
 j=A.cl(l,l,A.fK(l,l,A.a7(j).ax.z,l,l,l,l,l,l,l,l,135,l,l,B.j4,l,l,!0,l,l,l,l,l,l,l,l),"DIGITAL\n")
