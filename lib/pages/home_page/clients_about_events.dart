@@ -20,7 +20,7 @@ class ClientsAboutEvents extends StatelessWidget {
             color: Theme.of(context).colorScheme.secondaryContainer,
             padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
             child: Text(
-              "Material & Parts",
+              "Satisfied Clients",
               style: TextStyle(
                 fontSize: System.isMobile ? 26 : 36,
                 color: Theme.of(context).colorScheme.onPrimary,
