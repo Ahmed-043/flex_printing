@@ -59,15 +59,13 @@ class RootLayout extends StatelessWidget {
                 System.isMobile ?
                 Builder(
                   builder: (context) {
-                    return IconButton(
-                      iconSize: 50,
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      icon: const Icon(Icons.menu_rounded),
-                      onPressed: () async{
+                    return InkWell(
+                      onTap: () async{
                         final box = context.findRenderObject() as RenderBox;
                         final pos = box.localToGlobal(Offset.zero);
                         showTopMenu(context, buttonPos: pos, buttonSize: box.size);
-                      }
+                      },
+                      child:  const Icon(Icons.menu_rounded,size: 30,)
                     );
                   },
                 )
@@ -128,7 +126,7 @@ Future<void> showTopMenu(
 
       // Menu position: directly under the button
       final top = buttonPos.dy + buttonSize.height + 8;
-      final left = buttonPos.dx-20;
+      final left = buttonPos.dx-50;
       const width = 100.0;
 
       return FadeTransition(
