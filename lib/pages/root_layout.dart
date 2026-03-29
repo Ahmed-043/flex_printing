@@ -17,8 +17,10 @@ class RootLayout extends StatelessWidget {
           // Fixed Navigation Bar
           Container(
             color: Theme.of(context).colorScheme.secondary,
-            height: 100,
-            padding: const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
+            height: System.isMobile ? 70 : 100,
+            padding: System.isMobile
+                ? const EdgeInsets.symmetric(horizontal: 20,vertical: 8)
+                : const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: .center,
@@ -125,8 +127,8 @@ Future<void> showTopMenu(
 
       // Menu position: directly under the button
       final top = buttonPos.dy + buttonSize.height + 8;
-      final left = buttonPos.dx;
-      const width = 200.0;
+      final left = buttonPos.dx-50;
+      const width = 100.0;
 
       return FadeTransition(
         opacity: CurvedAnimation(parent: anim, curve: Curves.easeOut),
