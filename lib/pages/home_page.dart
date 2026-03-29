@@ -33,7 +33,7 @@ class _HomeContentState extends State<HomeContent> {
 
   Widget _banner() {
     return Container(
-      height:  screenHeight - 100,
+      height:  screenHeight - (System.isMobile ? 70 : 100),
       color: Theme.of(context).colorScheme.secondary,
       child: System.isMobile
           ? Padding(

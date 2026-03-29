@@ -127,7 +127,7 @@ Future<void> showTopMenu(
 
       // Menu position: directly under the button
       final top = buttonPos.dy + buttonSize.height + 8;
-      final left = buttonPos.dx-50;
+      final left = buttonPos.dx-20;
       const width = 100.0;
 
       return FadeTransition(
