@@ -8,19 +8,21 @@ class ProductsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 2200,
       width: double.infinity,
       color: Theme.of(context).colorScheme.primary,
       child: Column(
+        mainAxisAlignment: .start,
+        crossAxisAlignment: .center,
         children: [
           ...ourProducts(context),
-          SizedBox(height: 370,),
-          ...materials(context)
+          SizedBox(height: System.isMobile ? 150 : 370),
+          ...materials(context),
         ],
       ),
     );
   }
-  List<Widget> ourProducts(BuildContext context){
+
+  List<Widget> ourProducts(BuildContext context) {
     return [
       Container(
         color: Theme.of(context).colorScheme.secondaryContainer,
@@ -33,13 +35,13 @@ class ProductsSection extends StatelessWidget {
           ),
         ),
       ),
-      SizedBox(height: System.isMobile ? 40 : 130,),
+      SizedBox(height: System.isMobile ? 40 : 130),
       Container(
         height: System.isMobile ? 600 : 750,
-        margin: EdgeInsets.symmetric(horizontal: System.isMobile ? 35: 90),
+        margin: EdgeInsets.symmetric(horizontal: System.isMobile ? 35 : 90),
         color: Colors.grey.withAlpha(100),
       ),
-      SizedBox(height: System.isMobile ? 35 : 100,),
+      SizedBox(height: System.isMobile ? 35 : 100),
       UiHelper.button(
         callback: () {},
         color: Theme.of(context).colorScheme.secondaryContainer,
@@ -55,9 +57,10 @@ class ProductsSection extends StatelessWidget {
           ),
         ),
       ),
-    ] ;
+    ];
   }
-  List<Widget> materials(BuildContext context){
+
+  List<Widget> materials(BuildContext context) {
     return [
       Container(
         color: Theme.of(context).colorScheme.secondaryContainer,
@@ -70,30 +73,44 @@ class ProductsSection extends StatelessWidget {
           ),
         ),
       ),
-      SizedBox(height: System.isMobile ? 28 : 55,),
-      Text("All material and parts are available"),
-      SizedBox(height: System.isMobile ? 30 : 75,),
+      SizedBox(height: System.isMobile ? 20 : 50),
+      Text(
+        "All material and parts${System.isMobile ? "\n" : " "}are available",
+        textAlign: .center,
+        style: TextStyle(
+          fontSize: System.isMobile ? 26 : 36,
+          color: Theme.of(context).colorScheme.secondaryContainer,
+
+        ),
+      ),
+      SizedBox(height: System.isMobile ? 30 : 75),
       SizedBox(
-        height: 485,
+
         width: double.infinity,
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            children: List.generate(10, (index) => Container(
-              height: 485,
-              width: 410,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(500),
-
+            children: List.generate(
+              10,
+              (index) => Container(
+                height: System.isMobile ? 185 : 485,
+                width: System.isMobile ? 155 : 410,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(500),
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.image,
+                    color: Colors.grey,
+                    size: System.isMobile ? 30 : 80,
+                  ),
+                ),
               ),
-              child: Center(
-                child: Icon(Icons.image,color: Colors.grey,size: 100,),
-              ),
-            ))),
+            ),
+          ),
         ),
-      )
-
+      ),
     ];
   }
 }

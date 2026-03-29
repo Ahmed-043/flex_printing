@@ -1,11 +1,11 @@
 import 'dart:math';
 
 import 'package:flex_printing/models/system.dart';
+import 'package:flex_printing/pages/home_page/clients_about_events.dart';
 import 'package:flex_printing/pages/home_page/home_banner_carousel.dart';
 import 'package:flex_printing/pages/home_page/products_section.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
-
 
 class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
@@ -31,10 +31,9 @@ class _HomeContentState extends State<HomeContent> {
             _banner(),
             Container(height: 200, color: Theme.of(context).colorScheme.primary),
             ProductsSection(),
-            const Text(
-              'Welcome to Flex Printing Home Page',
-              style: TextStyle(fontSize: 22),
-            ),
+            Container(height: System.isMobile ? 125 : 450, color: Theme.of(context).colorScheme.primary),
+            ClientsAboutEvents(),
+
           ],
         ),
       ),
