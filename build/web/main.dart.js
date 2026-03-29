@@ -37680,15 +37680,17 @@ return A.fs(A.ff(this.c+" Page",s,s,B.NZ),s,s)}}
 A.wh.prototype={
 aq(){return new A.N1(A.azF())}}
 A.N1.prototype={
-O(a){var s,r,q=this,p=null,o=t.w
-q.d=A.bs(a,p,o).w.a.b
-A.bs(a,p,o).toString
-o=q.d
-s=q.c
-s.toString
-s=A.a5(s)
-r=$.amH()?new A.d1(B.BN,A.hx(q.a5E(),B.a8,B.aq,B.au),p):new A.d1(B.C_,A.yg(q.a06(),B.a8,B.aq,B.au),p)
-return new A.Jf(A.hx(A.c([A.ic(r,B.B,s.ax.y,p,o-100,p,p,p),A.ic(p,B.B,A.a5(a).ax.b,p,1500,p,p,p),A.ff("Welcome to Flex Printing Home Page",p,p,A.eb(p,p,p,p,p,p,p,p,p,p,p,22,p,p,p,p,p,!0,p,p,p,p,p,p,p,p))],t.E),B.a8,B.aq,B.au),p)},
+O(a){var s,r,q,p=this,o=null,n=t.w
+p.d=A.bs(a,o,n).w.a.b
+A.bs(a,o,n).toString
+n=p.d
+s=$.amH()
+r=s?70:100
+q=p.c
+q.toString
+q=A.a5(q)
+s=s?new A.d1(B.BN,A.hx(p.a5E(),B.a8,B.aq,B.au),o):new A.d1(B.C_,A.yg(p.a06(),B.a8,B.aq,B.au),o)
+return new A.Jf(A.hx(A.c([A.ic(s,B.B,q.ax.y,o,n-r,o,o,o),A.ic(o,B.B,A.a5(a).ax.b,o,1500,o,o,o),A.ff("Welcome to Flex Printing Home Page",o,o,A.eb(o,o,o,o,o,o,o,o,o,o,o,22,o,o,o,o,o,!0,o,o,o,o,o,o,o,o))],t.E),B.a8,B.aq,B.au),o)},
 a06(){var s,r,q,p,o,n,m=this,l=null,k=1000,j=m.c
 j.toString
 j=A.c9(l,l,A.eb(l,l,A.a5(j).ax.z,l,l,l,l,l,"PaytoneOne",l,l,135,l,l,B.fh,l,l,!0,l,5,l,B.b2,l,l,l,l),"DIGITAL\n")
@@ -37797,7 +37799,7 @@ $3(a,b,c){return B.av},
 $S:284}
 A.ajl.prototype={
 $4(a,b,c,d){var s=null,r=A.a5(a),q=this.a,p=A.dN(B.eY,b,s),o=A.apz(0,A.l5(s,s,B.ac,!1,s,s,s,s,s,s,s,s,s,s,s,s,s,new A.ajj(a),s,s,s)),n=A.i8(14),m=A.c([new A.de(1,B.dh,A.aQ(89,B.l.D()>>>16&255,B.l.D()>>>8&255,B.l.D()&255),B.GL,10)],t.sq),l=t.E
-return A.il(!1,A.Jy(B.hQ,A.c([o,A.a3V(s,A.nV(!1,B.a9,!0,s,A.vl(A.UM(A.i8(14),A.hx(A.c([new A.mh("Home","/",s),new A.mh("About","/about",s),new A.mh("Products","/products",s),new A.mh("Contact","/contact",s),new A.mh("Events","/events",s)],l),B.a8,B.aq,B.fA)),new A.dK(r.ax.y,s,s,n,m,s,B.b7),B.ca),B.B,B.C,0,s,s,s,s,s,B.cm),s,s,q.a-50,s,q.b+this.b.b+8,100)],l),B.a3,B.hf),p)},
+return A.il(!1,A.Jy(B.hQ,A.c([o,A.a3V(s,A.nV(!1,B.a9,!0,s,A.vl(A.UM(A.i8(14),A.hx(A.c([new A.mh("Home","/",s),new A.mh("About","/about",s),new A.mh("Products","/products",s),new A.mh("Contact","/contact",s),new A.mh("Events","/events",s)],l),B.a8,B.aq,B.fA)),new A.dK(r.ax.y,s,s,n,m,s,B.b7),B.ca),B.B,B.C,0,s,s,s,s,s,B.cm),s,s,q.a-20,s,q.b+this.b.b+8,100)],l),B.a3,B.hf),p)},
 $S:316}
 A.ajj.prototype={
 $0(){A.xk(this.a,!1).EG(null)

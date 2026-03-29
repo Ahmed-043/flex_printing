@@ -61,6 +61,7 @@ class RootLayout extends StatelessWidget {
                   builder: (context) {
                     return IconButton(
                       iconSize: 50,
+                      color: Theme.of(context).colorScheme.onPrimary,
                       icon: const Icon(Icons.menu_rounded),
                       onPressed: () async{
                         final box = context.findRenderObject() as RenderBox;
