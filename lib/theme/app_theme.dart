@@ -41,7 +41,7 @@ class AppTheme {
         displayColor: _lightText,
       ),
 
-      scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+      scaffoldBackgroundColor: _lightPrimary,
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,
         foregroundColor: _lightText,
@@ -55,6 +55,7 @@ class AppTheme {
       seedColor: _darkPrimary,
       brightness: Brightness.dark,
     ).copyWith(
+
       primary: _darkPrimary,
       secondary: _darkSecondary,
       surface: _darkPrimary,
@@ -76,7 +77,7 @@ class AppTheme {
         displayColor: _darkText,
       ),
 
-      scaffoldBackgroundColor: const Color(0xFF0B1220),
+      scaffoldBackgroundColor: _darkPrimary,
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,
         foregroundColor: _darkText,
