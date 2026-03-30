@@ -284,10 +284,10 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
         itemBuilder: (context, index) {
           final banner = bannerImages[index];
           return Padding(
-            padding: EdgeInsets.all(System.isMobile ? 50 : 100.0),
+            padding: EdgeInsets.symmetric(vertical: System.isMobile ? 50 : 80.0,horizontal: System.isMobile ? 40 : 20.0 ),
             child: Image.asset(
               banner.path,
-              fit: BoxFit.fitWidth,
+              fit: BoxFit.contain,
             ),
           );
         },

@@ -56,7 +56,7 @@ class _RootLayoutState extends State<RootLayout> {
                     style: TextStyle(
                       fontSize: System.isMobile ? 22 : 36,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: Theme.of(context).colorScheme.onSecondary,
                     ),
                   ),
                 ],

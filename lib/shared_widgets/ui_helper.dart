@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../models/System/system.dart';
+
 class UiHelper {
   static Widget button({
     String? title,
@@ -42,5 +44,17 @@ class UiHelper {
       ),
     );
   }
-
+  static Widget title({required BuildContext context, required String title}){
+    return Container(
+      color: Theme.of(context).colorScheme.secondaryContainer,
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: System.isMobile ? 26 : 36,
+          color: Theme.of(context).colorScheme.onSecondary,
+        ),
+      ),
+    );
+  }
 }

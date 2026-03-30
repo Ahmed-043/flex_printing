@@ -23,17 +23,7 @@ class ProductsSection extends StatelessWidget {
 
   List<Widget> ourProducts(BuildContext context) {
     return [
-      Container(
-        color: Theme.of(context).colorScheme.secondaryContainer,
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-        child: Text(
-          "Our Products",
-          style: TextStyle(
-            fontSize: System.isMobile ? 26 : 36,
-            color: Theme.of(context).colorScheme.onPrimary,
-          ),
-        ),
-      ),
+      UiHelper.title(context: context, title: "Our Products"),
       SizedBox(height: System.isMobile ? 40 : 130),
       Container(
         height: System.isMobile ? 600 : 750,
@@ -51,7 +41,7 @@ class ProductsSection extends StatelessWidget {
           "Load More",
           style: TextStyle(
             fontSize: System.isMobile ? 12 : 28,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Theme.of(context).colorScheme.onSecondary,
             fontWeight: FontWeight.w200,
           ),
         ),
@@ -61,17 +51,7 @@ class ProductsSection extends StatelessWidget {
 
   List<Widget> materials(BuildContext context) {
     return [
-      Container(
-        color: Theme.of(context).colorScheme.secondaryContainer,
-        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-        child: Text(
-          "Material & Parts",
-          style: TextStyle(
-            fontSize: System.isMobile ? 26 : 36,
-            color: Theme.of(context).colorScheme.onPrimary,
-          ),
-        ),
-      ),
+      UiHelper.title(context: context, title: "Material & Parts"),
       SizedBox(height: System.isMobile ? 20 : 50),
       Text(
         "All material and parts${System.isMobile ? "\n" : " "}are available",

@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:flex_printing/models/System/system.dart';
-import 'package:flex_printing/pages/home_page/clients_about_events.dart';
+import 'package:flex_printing/pages/home_page/about_events.dart';
+import 'package:flex_printing/pages/home_page/clients.dart';
 import 'package:flex_printing/pages/home_page/home_banner_carousel.dart';
 import 'package:flex_printing/pages/home_page/products_section.dart';
+import 'package:flex_printing/pages/home_page/upcoming_events.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -30,11 +32,17 @@ class _HomeContentState extends State<HomeContent> {
         child: Column(
           children: [
             _banner(),
-            Container(height: 200),
+            Container(height: System.isMobile ? 80 : 200),
             ProductsSection(),
             Container(height: System.isMobile ? 125 : 450),
-            ClientsAboutEvents(),
-
+            ClientsEvents(),
+            Container(height: System.isMobile ? 125 : 450),
+            AboutEvents(),
+            Container(height: System.isMobile ? 125 : 450),
+            ClientsEvents(isEvents: true),
+            Container(height: System.isMobile ? 164 : 290),
+            UpcomingEvents(),
+            Container(height: System.isMobile ? 164 : 290),
           ],
         ),
       ),

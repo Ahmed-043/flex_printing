@@ -2,9 +2,12 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flex_printing/models/System/system.dart';
 import 'package:flutter/material.dart';
 
+import '../../shared_widgets/ui_helper.dart';
 
-class ClientsAboutEvents extends StatelessWidget {
-  const ClientsAboutEvents({super.key});
+
+class ClientsEvents extends StatelessWidget {
+  final bool isEvents;
+  const ClientsEvents({super.key, this.isEvents = false});
 
   @override
   Widget build(BuildContext context) {
@@ -23,17 +26,7 @@ class ClientsAboutEvents extends StatelessWidget {
       width: double.infinity,
       child: Column(
         children: [
-          Container(
-            color: Theme.of(context).colorScheme.secondaryContainer,
-            padding: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-            child: Text(
-              "Satisfied Clients",
-              style: TextStyle(
-                fontSize: System.isMobile ? 26 : 36,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-            ),
-          ),
+          UiHelper.title(context: context, title: isEvents ? "Satisfied Clients" : "Events"),
           SizedBox(height: System.isMobile ? 58 : 115),
           Center(
             child: CarouselSlider.builder(
@@ -75,8 +68,6 @@ class ClientsAboutEvents extends StatelessWidget {
               },
             ),
           ),
-          SizedBox(height: System.isMobile ? 140 : 430),
-
         ],
       ),
     );
