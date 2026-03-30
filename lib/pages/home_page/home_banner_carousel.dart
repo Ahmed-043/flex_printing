@@ -1,28 +1,25 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flex_printing/models/System/system.dart';
+import 'package:flex_printing/models/banner_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../methods/images/fetch_images.dart';
 
-
 class HomeBannerCarousel extends StatefulWidget {
-  const HomeBannerCarousel({
-    super.key,
-  });
+  const HomeBannerCarousel({super.key});
 
   @override
   State<HomeBannerCarousel> createState() => _HomeBannerCarouselState();
 }
 
 class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
-
   final PageController scrollController = PageController();
 
-  late List<String> bannerImages = [];
-  late int _bannerCount = 0;
+  List<BannerImage> bannerImages = const [];
+  int _bannerCount = 0;
+
+  int _currentIndex = 0;
 
   Timer? _autoTimer;
   bool _autoAnimating = false;
@@ -31,19 +28,37 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
   void initState() {
     super.initState();
     _loadBannerImages();
-    // start after first frame (safe)
+
+    // Update name when user scrolls manually (settled page changes)
+    scrollController.addListener(_handleScroll);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startAutoPlay();
     });
   }
 
+  void _handleScroll() {
+    if (!scrollController.hasClients) return;
+    final page = scrollController.page;
+    if (page == null) return;
+
+    // only update when close to a full page (reduces flicker)
+    final int idx = page.round();
+    if (idx != _currentIndex && idx >= 0 && idx < _bannerCount) {
+      setState(() => _currentIndex = idx);
+    }
+  }
+
   Future<void> _loadBannerImages() async {
-    bannerImages = await getBannerImagesPaths();
+    final images = await getBannerImages();
+    if (!mounted) return;
+
     setState(() {
-      _bannerCount = bannerImages.length;
+      bannerImages = images;
+      _bannerCount = images.length;
+      _currentIndex = 0;
     });
 
-    // start after first frame (safe)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startAutoPlay();
     });
@@ -51,6 +66,7 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
 
   void _startAutoPlay() {
     _autoTimer?.cancel();
+    if (_bannerCount == 0) return;
 
     _autoTimer = Timer.periodic(const Duration(seconds: 3), (_) async {
       if (!mounted || !scrollController.hasClients || _autoAnimating) return;
@@ -58,7 +74,6 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
       final page = scrollController.page;
       if (page == null) return;
 
-      // Only run when settled (prevents fighting with user drag)
       final settled = (page - page.round()).abs() < 0.001;
       if (!settled) return;
 
@@ -68,14 +83,15 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
       _autoAnimating = true;
       try {
         if (next == 0 && current != 0) {
-          // last -> first
           scrollController.jumpToPage(0);
+          if (mounted) setState(() => _currentIndex = 0);
         } else {
           await scrollController.animateToPage(
             next,
             duration: const Duration(seconds: 1),
             curve: Curves.easeInOut,
           );
+          if (mounted) setState(() => _currentIndex = next);
         }
       } finally {
         _autoAnimating = false;
@@ -86,21 +102,20 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
   @override
   void dispose() {
     _autoTimer?.cancel();
+    scrollController.removeListener(_handleScroll);
     scrollController.dispose();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
     if (_bannerCount == 0) {
       return const Expanded(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: Center(child: CircularProgressIndicator()),
       );
     }
-    if(System.isMobile){
+
+    if (System.isMobile) {
       return Expanded(
         flex: 2,
         child: OverflowBox(
@@ -111,34 +126,8 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
               topRight: Radius.circular(1000),
             ),
             child: Container(
-              padding: const EdgeInsets.only(top: 10,),
-              decoration: BoxDecoration(
-                gradient: const RadialGradient(
-                  center: Alignment.center,
-                  radius: 0.8,
-                  colors: [Colors.white, Color(0xFFBDBDBD)],
-                  stops: [0.0, 1.0],
-                ),
-                border: Border(
-                  top: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 5,
-                  ),
-                  left: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 5,
-                  ),
-                  right: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 5,
-                  ),
-                  bottom: BorderSide.none,
-                ),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(1000),
-                  topRight: Radius.circular(1000),
-                ),
-              ),
+              padding: const EdgeInsets.only(top: 10),
+              decoration: _decoration(context),
               child: Column(
                 children: [
                   _pages(),
@@ -146,13 +135,7 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
                     height: 50,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 15),
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                      ),
+                      child: _nameBar(),
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -162,127 +145,152 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
           ),
         ),
       );
-
     }
-    else{
-      return  Expanded(
-        child: Padding(
-          padding: const EdgeInsets.only(right: 10,top: 60),
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(1000),
-              topRight: Radius.circular(1000),
-            ),
-            child: Container(
-              padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
-              decoration: BoxDecoration(
-                gradient: const RadialGradient(
-                  center: Alignment.center,
-                  radius: 0.8,
-                  colors: [Colors.white, Color(0xFFBDBDBD)],
-                  stops: [0.0, 1.0],
-                ),
-                border: Border(
-                  top: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 5,
-                  ),
-                  left: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 5,
-                  ),
-                  right: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 5,
-                  ),
-                  bottom: BorderSide.none,
-                ),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(1000),
-                  topRight: Radius.circular(1000),
-                ),
-              ),
-              child: Column(
-                children: [
-                  _pages(),
-                  SizedBox(
-                    height: 55,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              scrollController.previousPage(
-                                duration: const Duration(seconds: 1),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            iconSize: 30,
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                              shape: const CircleBorder(),
-                            ),
-                            icon: const Icon(Icons.arrow_back_ios_rounded),
+
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.only(right: 10, top: 60),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(1000),
+            topRight: Radius.circular(1000),
+          ),
+          child: Container(
+            padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+            decoration: _decoration(context),
+            child: Column(
+              children: [
+                _pages(),
+                SizedBox(
+                  height: 55,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            scrollController.previousPage(
+                              duration: const Duration(seconds: 1),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          iconSize: 30,
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            shape: const CircleBorder(),
                           ),
-                          Expanded(
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 35),
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                            ),
+                          icon: const Icon(Icons.arrow_back_ios_rounded),
+                        ),
+                        Expanded(child: _nameBar()),
+                        IconButton(
+                          onPressed: () {
+                            scrollController.nextPage(
+                              duration: const Duration(seconds: 1),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          iconSize: 30,
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            shape: const CircleBorder(),
                           ),
-                          IconButton(
-                            onPressed: () {
-                              scrollController.nextPage(
-                                duration: const Duration(seconds: 1),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            iconSize: 30,
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                              shape: const CircleBorder(),
-                            ),
-                            icon: const Icon(Icons.arrow_forward_ios_rounded),
-                          ),
-                        ],
-                      ),
+                          icon: const Icon(Icons.arrow_forward_ios_rounded),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 30),
-                ],
-              ),
+                ),
+                const SizedBox(height: 30),
+              ],
             ),
           ),
         ),
-      );
-
+      ),
+    );
   }
+
+  Widget _nameBar() {
+    final String name =
+    (_currentIndex >= 0 && _currentIndex < bannerImages.length)
+        ? bannerImages[_currentIndex].name
+        : '';
+
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: System.isMobile ? 15 : 30),
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Text(
+            name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: .center,
+            style: TextStyle(
+              fontSize: System.isMobile ? 20 : 28,
+              fontWeight: FontWeight.normal,
+              fontFamily: 'PaytoneOne',
+              wordSpacing: 5,
+              letterSpacing: 1,
+
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  BoxDecoration _decoration(BuildContext context) {
+    return BoxDecoration(
+      gradient: const RadialGradient(
+        center: Alignment.center,
+        radius: 0.8,
+        colors: [Colors.white, Color(0xFFBDBDBD)],
+        stops: [0.0, 1.0],
+      ),
+      border: Border(
+        top: BorderSide(
+          color: Theme.of(context).colorScheme.primary,
+          width: 5,
+        ),
+        left: BorderSide(
+          color: Theme.of(context).colorScheme.primary,
+          width: 5,
+        ),
+        right: BorderSide(
+          color: Theme.of(context).colorScheme.primary,
+          width: 5,
+        ),
+        bottom: BorderSide.none,
+      ),
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(1000),
+        topRight: Radius.circular(1000),
+      ),
+    );
   }
 
   Widget _pages() {
     return Expanded(
-      child: Center(
-        child: PageView.builder(
-          controller: scrollController,
-          itemCount: _bannerCount,
-          itemBuilder: (context, index) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(50.0),
-                child: Image.asset(
-                  bannerImages[index],
-                  fit: BoxFit.cover,
-                ),
-              ),
-            );
-          },
-        ),
+      child: PageView.builder(
+        controller: scrollController,
+        itemCount: _bannerCount,
+        itemBuilder: (context, index) {
+          final banner = bannerImages[index];
+          return Padding(
+            padding: EdgeInsets.all(System.isMobile ? 50 : 100.0),
+            child: Image.asset(
+              banner.path,
+              fit: BoxFit.fitWidth,
+            ),
+          );
+        },
       ),
     );
   }

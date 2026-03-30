@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import '../models/System/system.dart';
 
-class RootLayout extends StatelessWidget {
+class RootLayout extends StatefulWidget {
   final Widget child;
   const RootLayout({required this.child, super.key});
 
+  @override
+  State<RootLayout> createState() => _RootLayoutState();
+}
+
+class _RootLayoutState extends State<RootLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +24,6 @@ class RootLayout extends StatelessWidget {
                 bottomRight: Radius.circular(30),
               ),
             ),
-
             backgroundColor: Theme.of(context).colorScheme.secondary,
             pinned: false,
             floating: true,
@@ -82,7 +85,7 @@ class RootLayout extends StatelessWidget {
             ],
 
           ),
-          SliverToBoxAdapter(child: child),
+          SliverToBoxAdapter(child: widget.child),
         ],
       ),
     );
@@ -106,8 +109,8 @@ Future<void> showTopMenu(
       final bg = theme.colorScheme.secondary;
 
       // Menu position: directly under the button
-      final top = buttonPos.dy + buttonSize.height + 8;
-      final left = buttonPos.dx - 50;
+      final top = buttonPos.dy + buttonSize.height + 25;
+      final left = buttonPos.dx - 60;
       const width = 100.0;
 
       return FadeTransition(
@@ -132,9 +135,9 @@ Future<void> showTopMenu(
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.35),
-                        blurRadius: 10,
+                        blurRadius: 5,
                         spreadRadius: 1,
-                        offset: const Offset(0, 10),
+                        offset: const Offset(-1, 2),
                       ),
                     ],
                   ),
