@@ -7,9 +7,8 @@ class ProductsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
-      color: Theme.of(context).colorScheme.primary,
       child: Column(
         mainAxisAlignment: .start,
         crossAxisAlignment: .center,

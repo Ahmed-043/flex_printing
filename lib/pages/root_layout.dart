@@ -9,109 +9,91 @@ class RootLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      body: Column(
-        children: [
-          // Fixed Navigation Bar
-          Container(
-            color: Theme.of(context).colorScheme.secondary,
-            height: System.isMobile ? 70 : 80,
-            padding: System.isMobile
-                ? const EdgeInsets.symmetric(horizontal: 20,vertical: 8)
-                : const EdgeInsets.symmetric(horizontal: 50,vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: .center,
-              children: [
-                GestureDetector(
-                  onTap: () => context.go('/'),
-                  child: InkWell(
-                    hoverColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    onTap: () => context.go('/'),
-                    child: Row(
-                      crossAxisAlignment: .center,
-                      children: [
-                        Container(
-                          //margin: EdgeInsets.only(top: 10),
-                          width: System.isMobile ? 48 : 78,
-                          height: System.isMobile ? 48 : 78,
-                          decoration: BoxDecoration(
-                            color: Colors.redAccent,
-                            shape: .circle
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          'TEX PRINT',
-                          style: TextStyle(
-                            fontSize: System.isMobile ? 22 : 36,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.onPrimary
-                          ),
-                        ),
-                      ],
+      backgroundColor: Theme.of(context).colorScheme.secondary,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
+            ),
+
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            pinned: false,
+            floating: true,
+            snap: true,
+            titleSpacing: 0,
+            title: const SizedBox.shrink(),
+            toolbarHeight: System.isMobile ? 70 : 80,
+            leadingWidth: System.isMobile ? 180 : 300,
+            actionsPadding: EdgeInsets.symmetric(horizontal:System.isMobile ? 20 : 40),
+            leading: InkWell(
+              hoverColor: Colors.transparent,
+              splashColor: Colors.transparent,
+              onTap: () => context.go('/'),
+              child: Row(
+                crossAxisAlignment: .center,
+                mainAxisAlignment: .end,
+                children: [
+                  Container(
+                    //margin: EdgeInsets.only(top: 10),
+                    width: System.isMobile ? 48 : 65,
+                    height: System.isMobile ? 48 : 65,
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      shape: .circle,
                     ),
                   ),
-                ),
-                System.isMobile ?
-                Builder(
-                  builder: (context) {
-                    return InkWell(
-                      onTap: () async{
-                        final box = context.findRenderObject() as RenderBox;
-                        final pos = box.localToGlobal(Offset.zero);
-                        showTopMenu(context, buttonPos: pos, buttonSize: box.size);
-                      },
-                      child:  const Icon(Icons.menu_rounded,size: 30,)
-                    );
-                  },
-                )
-                    : Row(
-                  children: [
-                    _NavButton(
-                      title: 'Home',
-                      route: '/',
-                      currentRoute: GoRouterState.of(context).uri.path,
+                  SizedBox(width: 10),
+                  Text(
+                    'TEX PRINT',
+                    style: TextStyle(
+                      fontSize: System.isMobile ? 22 : 36,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onPrimary,
                     ),
-                    _NavButton(
-                      title: 'About',
-                      route: '/about',
-                      currentRoute: GoRouterState.of(context).uri.path,
-                    ),
-                    _NavButton(
-                      title: 'Products',
-                      route: '/products',
-                      currentRoute: GoRouterState.of(context).uri.path,
-                    ),
-                    _NavButton(
-                      title: 'Contact',
-                      route: '/contact',
-                      currentRoute: GoRouterState.of(context).uri.path,
-                    ),
-                    _NavButton(
-                      title: 'Events',
-                      route: '/events',
-                      currentRoute: GoRouterState.of(context).uri.path,
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
+            actions: [
+              System.isMobile
+                  ? Builder(
+                builder: (context) {
+                  return InkWell(
+                    onTap: () async {
+                      final box =
+                      context.findRenderObject() as RenderBox;
+                      final pos = box.localToGlobal(Offset.zero);
+                      showTopMenu(
+                        context,
+                        buttonPos: pos,
+                        buttonSize: box.size,
+                      );
+                    },
+                    child: const Icon(Icons.menu_rounded, size: 30),
+                  );
+                },
+              )
+                  : Navbar(),
+            ],
+
           ),
-          // Content Area
-          Expanded(child: child),
+          SliverToBoxAdapter(child: child),
         ],
       ),
     );
   }
 }
+
 Future<void> showTopMenu(
-    BuildContext context, {
-      required Offset buttonPos,
-      required Size buttonSize,
-    }) async {
+  BuildContext context, {
+  required Offset buttonPos,
+  required Size buttonSize,
+}) async {
   final route = await showGeneralDialog<String>(
     context: context,
     barrierDismissible: true,
@@ -125,7 +107,7 @@ Future<void> showTopMenu(
 
       // Menu position: directly under the button
       final top = buttonPos.dy + buttonSize.height + 8;
-      final left = buttonPos.dx-50;
+      final left = buttonPos.dx - 50;
       const width = 100.0;
 
       return FadeTransition(
@@ -209,6 +191,46 @@ class _MenuItem extends StatelessWidget {
   }
 }
 
+class Navbar extends StatelessWidget {
+  const Navbar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: .horizontal,
+      child: Row(
+        children: [
+          _NavButton(
+            title: 'Home',
+            route: '/',
+            currentRoute: GoRouterState.of(context).uri.path,
+          ),
+          _NavButton(
+            title: 'About',
+            route: '/about',
+            currentRoute: GoRouterState.of(context).uri.path,
+          ),
+          _NavButton(
+            title: 'Products',
+            route: '/products',
+            currentRoute: GoRouterState.of(context).uri.path,
+          ),
+          _NavButton(
+            title: 'Contact',
+            route: '/contact',
+            currentRoute: GoRouterState.of(context).uri.path,
+          ),
+          _NavButton(
+            title: 'Events',
+            route: '/events',
+            currentRoute: GoRouterState.of(context).uri.path,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _NavButton extends StatelessWidget {
   final String title;
   final String route;
@@ -237,7 +259,7 @@ class _NavButton extends StatelessWidget {
             style: TextStyle(
               color: isSelected ? Colors.white60 : Colors.white,
               fontWeight: FontWeight.w200,
-              fontSize: screenWidth< 1050 ? 25 : 32,
+              fontSize: screenWidth < 1050 ? 25 : 32,
             ),
           ),
         ),

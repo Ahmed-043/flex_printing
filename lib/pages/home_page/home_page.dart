@@ -24,14 +24,15 @@ class _HomeContentState extends State<HomeContent> {
     screenWidth = MediaQuery.of(context).size.width;
 
     return SingleChildScrollView(
-      child: SizedBox(
+      child: Container(
         width: 1500,
+        color: Theme.of(context).colorScheme.primary,
         child: Column(
           children: [
             _banner(),
-            Container(height: 200, color: Theme.of(context).colorScheme.primary),
+            Container(height: 200),
             ProductsSection(),
-            Container(height: System.isMobile ? 125 : 450, color: Theme.of(context).colorScheme.primary),
+            Container(height: System.isMobile ? 125 : 450),
             ClientsAboutEvents(),
 
           ],
@@ -43,7 +44,7 @@ class _HomeContentState extends State<HomeContent> {
   Widget _banner() {
     double containerHeight = max(500, screenHeight - (System.isMobile ? 70 : 80));
     if(!System.isMobile){
-      containerHeight = min(containerHeight,900);
+      containerHeight = min(containerHeight,1000);
     }else{
       containerHeight = min(containerHeight,1000);
     }

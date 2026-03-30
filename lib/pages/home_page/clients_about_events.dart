@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flex_printing/models/system.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +13,16 @@ class ClientsAboutEvents extends StatelessWidget {
     final double cardWidth = System.isMobile ? 270 : 550;
     final double cardHeight = System.isMobile ? 270 : 650;
 
-    return Container(
+    final screenWidth = MediaQuery.of(context).size.width;
+    const double desiredGap = 24; // keep card-to-card spacing almost constant
+
+    final double viewportFraction = ((cardWidth + desiredGap) / screenWidth).clamp(
+      System.isMobile ? 0.55 : 0.20, // min
+      System.isMobile ? 0.60 : 0.75, // max
+    );
+
+    return SizedBox(
       width: double.infinity,
-      color: Theme.of(context).colorScheme.primary,
       child: Column(
         children: [
           Container(
@@ -33,7 +42,7 @@ class ClientsAboutEvents extends StatelessWidget {
               itemCount: 10,
               options: CarouselOptions(
                 height: cardHeight,
-                viewportFraction: System.isMobile ? 0.6 : 0.35,
+                viewportFraction: viewportFraction,
 
                 enlargeCenterPage: true,     // ⭐ center zoom
                 enlargeFactor: 0.18,         // ≈ your minScale 0.85

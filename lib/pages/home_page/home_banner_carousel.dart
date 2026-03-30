@@ -1,7 +1,40 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flex_printing/models/system.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+Future<List<String>> getBannerImagesPaths() async {
+  try {
+    // Try to load from manifest (works on native platforms)
+    final manifestJson = await rootBundle.loadString('AssetManifest.json');
+    final manifest = json.decode(manifestJson) as Map<String, dynamic>;
+
+    final bannerImages = manifest.keys
+        .where((key) => key.startsWith('assets/images/banner_images/'))
+        .toList()
+      ..sort();
+
+    if (bannerImages.isNotEmpty) {
+      return bannerImages;
+    }
+  } catch (e) {
+    print('AssetManifest not available, using fallback: $e');
+  }
+
+  // Fallback: hardcode paths for web and cases where manifest fails
+  // This still allows easy future additions—just add more lines here
+  return [
+    'assets/images/banner_images/banner1.png',
+    'assets/images/banner_images/banner2.png',
+    'assets/images/banner_images/banner3.png',
+    'assets/images/banner_images/banner4.png',
+    'assets/images/banner_images/banner5.png',
+    'assets/images/banner_images/banner6.png',
+  ];
+}
+
 class HomeBannerCarousel extends StatefulWidget {
   const HomeBannerCarousel({
     super.key,
@@ -15,7 +48,8 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
 
   final PageController scrollController = PageController();
 
-  static const int _bannerCount = 10;
+  late List<String> bannerImages = [];
+  late int _bannerCount = 0;
 
   Timer? _autoTimer;
   bool _autoAnimating = false;
@@ -23,6 +57,18 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
   @override
   void initState() {
     super.initState();
+    _loadBannerImages();
+    // start after first frame (safe)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startAutoPlay();
+    });
+  }
+
+  Future<void> _loadBannerImages() async {
+    bannerImages = await getBannerImagesPaths();
+    setState(() {
+      _bannerCount = bannerImages.length;
+    });
 
     // start after first frame (safe)
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -74,7 +120,13 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
 
   @override
   Widget build(BuildContext context) {
-print(MediaQuery.of(context).size);
+    if (_bannerCount == 0) {
+      return const Expanded(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     if(System.isMobile){
       return Expanded(
         flex: 2,
@@ -272,17 +324,17 @@ print(MediaQuery.of(context).size);
   }
   }
 
-  Widget _pages(){
-    return  Expanded(
+  Widget _pages() {
+    return Expanded(
       child: Center(
         child: PageView.builder(
           controller: scrollController,
           itemCount: _bannerCount,
           itemBuilder: (context, index) {
             return Center(
-              child: Text(
-                'Item ${index + 1}',
-                style: const TextStyle(color: Colors.black, fontSize: 50),
+              child: Image.asset(
+                bannerImages[index],
+                fit: BoxFit.cover,
               ),
             );
           },
