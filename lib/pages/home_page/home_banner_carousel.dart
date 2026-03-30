@@ -216,9 +216,12 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
     (_currentIndex >= 0 && _currentIndex < bannerImages.length)
         ? bannerImages[_currentIndex].name
         : '';
-
+    bool small = false;
+    if(MediaQuery.of(context).size.width < 1210){
+      small = true;
+    }
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: System.isMobile ? 15 : 30),
+      margin: EdgeInsets.symmetric(horizontal: System.isMobile || small ? 15 : 30),
       decoration: BoxDecoration(
         color: Colors.black,
         borderRadius: BorderRadius.circular(100),
@@ -232,7 +235,7 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
             overflow: TextOverflow.ellipsis,
             textAlign: .center,
             style: TextStyle(
-              fontSize: System.isMobile ? 20 : 28,
+              fontSize: System.isMobile || small ? 20 : 28,
               fontWeight: FontWeight.normal,
               fontFamily: 'PaytoneOne',
               wordSpacing: 5,

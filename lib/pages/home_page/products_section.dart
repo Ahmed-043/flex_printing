@@ -23,7 +23,7 @@ class ProductsSection extends StatelessWidget {
 
   List<Widget> ourProducts(BuildContext context) {
     return [
-      UiHelper.title(context: context, title: "Our Products"),
+      UiHelper.title(context: context, title: "OUR PRODUCTS"),
       SizedBox(height: System.isMobile ? 40 : 130),
       Container(
         height: System.isMobile ? 600 : 750,
@@ -40,7 +40,7 @@ class ProductsSection extends StatelessWidget {
         child: Text(
           "Load More",
           style: TextStyle(
-            fontSize: System.isMobile ? 12 : 28,
+            fontSize: System.isMobile ? 16 : 32,
             color: Theme.of(context).colorScheme.onSecondary,
             fontWeight: FontWeight.w200,
           ),
@@ -57,7 +57,7 @@ class ProductsSection extends StatelessWidget {
         "All material and parts${System.isMobile ? "\n" : " "}are available",
         textAlign: .center,
         style: TextStyle(
-          fontSize: System.isMobile ? 26 : 36,
+          fontSize: System.isMobile ? 20 : 58,
           color: Theme.of(context).colorScheme.secondaryContainer,
 
         ),

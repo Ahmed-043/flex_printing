@@ -26,7 +26,7 @@ class ClientsEvents extends StatelessWidget {
       width: double.infinity,
       child: Column(
         children: [
-          UiHelper.title(context: context, title: isEvents ? "Satisfied Clients" : "Events"),
+          UiHelper.title(context: context, title: !isEvents ? "Satisfied Clients" : "Events"),
           SizedBox(height: System.isMobile ? 58 : 115),
           Center(
             child: CarouselSlider.builder(
@@ -34,7 +34,6 @@ class ClientsEvents extends StatelessWidget {
               options: CarouselOptions(
                 height: cardHeight,
                 viewportFraction: viewportFraction,
-
                 enlargeCenterPage: true,     // ⭐ center zoom
                 enlargeFactor: 0.18,         // ≈ your minScale 0.85
                 clipBehavior: Clip.none,

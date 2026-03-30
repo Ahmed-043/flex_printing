@@ -37,6 +37,7 @@ dependencies:
   go_router: ^17.1.0
   web: ^1.1.1
   carousel_slider: ^5.1.2
+  flutter_svg: ^2.2.4
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/banner_images/
+    - assets/images/icons/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

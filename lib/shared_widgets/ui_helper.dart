@@ -51,7 +51,10 @@ class UiHelper {
       child: Text(
         title,
         style: TextStyle(
-          fontSize: System.isMobile ? 26 : 36,
+          fontSize: System.isMobile ? 26 : 55,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 2,
+          fontFamily: "RedHatDisplay",
           color: Theme.of(context).colorScheme.onSecondary,
         ),
       ),

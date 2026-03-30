@@ -9,6 +9,8 @@ import 'package:flex_printing/pages/home_page/upcoming_events.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
 
+import 'other_info.dart';
+
 class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
 
@@ -43,6 +45,7 @@ class _HomeContentState extends State<HomeContent> {
             Container(height: System.isMobile ? 164 : 290),
             UpcomingEvents(),
             Container(height: System.isMobile ? 164 : 290),
+            OtherInfo(),
           ],
         ),
       ),
