@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../models/system.dart';
+import '../models/System/system.dart';
 
 class RootLayout extends StatelessWidget {
   final Widget child;

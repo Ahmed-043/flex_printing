@@ -1,39 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flex_printing/models/system.dart';
+import 'package:flex_printing/models/System/system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-Future<List<String>> getBannerImagesPaths() async {
-  try {
-    // Try to load from manifest (works on native platforms)
-    final manifestJson = await rootBundle.loadString('AssetManifest.json');
-    final manifest = json.decode(manifestJson) as Map<String, dynamic>;
+import '../../methods/images/fetch_images.dart';
 
-    final bannerImages = manifest.keys
-        .where((key) => key.startsWith('assets/images/banner_images/'))
-        .toList()
-      ..sort();
-
-    if (bannerImages.isNotEmpty) {
-      return bannerImages;
-    }
-  } catch (e) {
-    print('AssetManifest not available, using fallback: $e');
-  }
-
-  // Fallback: hardcode paths for web and cases where manifest fails
-  // This still allows easy future additions—just add more lines here
-  return [
-    'assets/images/banner_images/banner1.png',
-    'assets/images/banner_images/banner2.png',
-    'assets/images/banner_images/banner3.png',
-    'assets/images/banner_images/banner4.png',
-    'assets/images/banner_images/banner5.png',
-    'assets/images/banner_images/banner6.png',
-  ];
-}
 
 class HomeBannerCarousel extends StatefulWidget {
   const HomeBannerCarousel({

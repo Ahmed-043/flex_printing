@@ -1,5 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flex_printing/models/system.dart';
+import 'package:flex_printing/models/System/system.dart';
 import 'package:flutter/material.dart';
 
 

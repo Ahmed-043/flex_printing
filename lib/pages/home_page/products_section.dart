@@ -1,4 +1,4 @@
-import 'package:flex_printing/models/system.dart';
+import 'package:flex_printing/models/System/system.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
 

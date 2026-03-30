@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flex_printing/models/system.dart';
+import 'package:flex_printing/models/System/system.dart';
 import 'package:flex_printing/pages/home_page/clients_about_events.dart';
 import 'package:flex_printing/pages/home_page/home_banner_carousel.dart';
 import 'package:flex_printing/pages/home_page/products_section.dart';
