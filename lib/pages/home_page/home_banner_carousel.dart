@@ -130,11 +130,15 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
     if(System.isMobile){
       return Expanded(
         flex: 2,
-        child: ClipRRect(
-          child: OverflowBox(
-            maxWidth: MediaQuery.of(context).size.width + 60,
+        child: OverflowBox(
+          maxWidth: MediaQuery.of(context).size.width + 60,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(1000),
+              topRight: Radius.circular(1000),
+            ),
             child: Container(
-              padding: const EdgeInsets.only(top: 10, left: 40, right: 40),
+              padding: const EdgeInsets.only(top: 10,),
               decoration: BoxDecoration(
                 gradient: const RadialGradient(
                   center: Alignment.center,
@@ -169,48 +173,12 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
                     height: 50,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              scrollController.previousPage(
-                                duration: const Duration(seconds: 1),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            iconSize: 30,
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                              shape: const CircleBorder(),
-                            ),
-                            icon: const Icon(Icons.arrow_back_ios_rounded),
-                          ),
-                          Expanded(
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 15),
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              scrollController.nextPage(
-                                duration: const Duration(seconds: 1),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            iconSize: 30,
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                              shape: const CircleBorder(),
-                            ),
-                            icon: const Icon(Icons.arrow_forward_ios_rounded),
-                          ),
-                        ],
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 15),
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
                       ),
                     ),
                   ),
@@ -332,9 +300,12 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
           itemCount: _bannerCount,
           itemBuilder: (context, index) {
             return Center(
-              child: Image.asset(
-                bannerImages[index],
-                fit: BoxFit.cover,
+              child: Padding(
+                padding: const EdgeInsets.all(50.0),
+                child: Image.asset(
+                  bannerImages[index],
+                  fit: BoxFit.cover,
+                ),
               ),
             );
           },
