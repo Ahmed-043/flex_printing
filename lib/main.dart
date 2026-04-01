@@ -1,3 +1,4 @@
+import 'package:flex_printing/pages/contactus_page/contactus_page.dart';
 import 'package:flex_printing/pages/home_page/home_page.dart';
 import 'package:flex_printing/pages/root_layout.dart';
 import 'package:flex_printing/theme/app_theme.dart';
@@ -13,14 +14,12 @@ final GoRouter _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const RootLayout(child: HomeContent()),
-      routes: [
-        GoRoute(
-          path: 'about',
-          builder: (context, state) => const RootLayout(
-            child: DummyPage(title: 'About'),
-          ),
+      builder: (context, state) => RootLayout(
+        child: HomeContent(
+          initialSection: state.uri.queryParameters['section'],
         ),
+      ),
+      routes: [
         GoRoute(
           path: 'products',
           builder: (context, state) => const RootLayout(
@@ -30,13 +29,7 @@ final GoRouter _router = GoRouter(
         GoRoute(
           path: 'contact',
           builder: (context, state) => const RootLayout(
-            child: DummyPage(title: 'Contact'),
-          ),
-        ),
-        GoRoute(
-          path: 'events',
-          builder: (context, state) => const RootLayout(
-            child: DummyPage(title: 'Events'),
+            child: ContactusPage(),
           ),
         ),
       ],

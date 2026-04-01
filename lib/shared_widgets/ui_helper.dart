@@ -60,4 +60,55 @@ class UiHelper {
       ),
     );
   }
+  static Widget inputField({
+    required BuildContext context,
+    required String label,
+    String? hint,
+    bool requiredField = false,
+    int maxLines = 1,
+    TextInputType? keyboardType,
+    TextEditingController? controller,
+  }) {
+    final labelText = requiredField ? '$label *' : label;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          labelText,
+          style: TextStyle(
+            fontSize: System.isMobile ? 14 : 16,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(height: 10),
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          maxLines: maxLines,
+          decoration: InputDecoration(
+            hintText: hint,
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surface,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

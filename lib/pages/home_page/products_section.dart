@@ -36,7 +36,7 @@ class ProductsSection extends StatelessWidget {
         color: Theme.of(context).colorScheme.secondaryContainer,
         filled: true,
         borderRadius: 75,
-        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+        //padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
         child: Text(
           "Load More",
           style: TextStyle(

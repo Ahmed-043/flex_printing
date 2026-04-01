@@ -27,7 +27,6 @@ class AppTheme {
       surfaceContainer: _lightGrey,
       // "Text" colors in Material come from on* colors:
       onSurface: _lightText,
-      onBackground: _lightText,
       onPrimary: _lightText,
       onSecondary: _lightDark,
 
@@ -66,7 +65,6 @@ class AppTheme {
       surfaceContainer: _darkGrey,
 
       onSurface: _darkText,
-      onBackground: _darkText,
       onPrimary: _darkDark,
       onSecondary: _darkText,
     );

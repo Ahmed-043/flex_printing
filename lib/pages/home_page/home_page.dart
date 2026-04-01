@@ -12,7 +12,12 @@ import 'package:flutter/material.dart';
 import 'other_info.dart';
 
 class HomeContent extends StatefulWidget {
-  const HomeContent({super.key});
+  const HomeContent({super.key, this.initialSection});
+
+  final String? initialSection;
+
+  static const String sectionAbout = 'about';
+  static const String sectionEvents = 'events';
 
   @override
   State<HomeContent> createState() => _HomeContentState();
@@ -20,7 +25,58 @@ class HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<HomeContent> {
   late double screenHeight, screenWidth;
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _aboutKey = GlobalKey();
+  final GlobalKey _eventsKey = GlobalKey();
 
+  @override
+  void initState() {
+    super.initState();
+    _scheduleInitialScroll(widget.initialSection);
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialSection != oldWidget.initialSection) {
+      _scheduleInitialScroll(widget.initialSection);
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scheduleInitialScroll(String? section) {
+    if (section == null || section.isEmpty) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      _scrollToSection(section);
+    });
+  }
+
+  void _scrollToSection(String section) {
+    final targetContext = switch (section) {
+      HomeContent.sectionAbout => _aboutKey.currentContext,
+      HomeContent.sectionEvents => _eventsKey.currentContext,
+      _ => null,
+    };
+    if (targetContext == null) {
+      return;
+    }
+    Scrollable.ensureVisible(
+      targetContext,
+      duration: const Duration(milliseconds: 450),
+      curve: Curves.easeInOut,
+      alignment: 0.05,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +84,7 @@ class _HomeContentState extends State<HomeContent> {
     screenWidth = MediaQuery.of(context).size.width;
 
     return SingleChildScrollView(
+      controller: _scrollController,
       child: Container(
         width: 1500,
         color: Theme.of(context).colorScheme.primary,
@@ -39,9 +96,15 @@ class _HomeContentState extends State<HomeContent> {
             Container(height: System.isMobile ? 125 : 450),
             ClientsEvents(),
             Container(height: System.isMobile ? 125 : 450),
-            AboutEvents(),
+            Container(
+              key: _aboutKey,
+              child: AboutEvents(),
+            ),
             Container(height: System.isMobile ? 125 : 450),
-            ClientsEvents(isEvents: true),
+            Container(
+              key: _eventsKey,
+              child: ClientsEvents(isEvents: true),
+            ),
             Container(height: System.isMobile ? 164 : 290),
             UpcomingEvents(),
             Container(height: System.isMobile ? 164 : 290),

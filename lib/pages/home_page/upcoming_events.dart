@@ -39,16 +39,18 @@ class UpcomingEvents extends StatelessWidget {
         );
       }
       return Padding(
-        padding: EdgeInsets.symmetric(vertical: System.isMobile ? 30 : 65 ),
+        padding: EdgeInsets.only(bottom: System.isMobile ? 35 : 65,top: System.isMobile ? 60 : 120 ),
         child: Column(
           mainAxisAlignment: .spaceBetween,
           crossAxisAlignment: .center,
           children: [
-            Row(
-              mainAxisAlignment: .center,
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: System.isMobile ? 12 : 24,
+              runSpacing: System.isMobile ? 12 : 24,
               children: [
                 eventPoster(),
-                eventPoster()
+                eventPoster(),
               ],
             ),
             Text("Expo Center",
@@ -59,6 +61,7 @@ class UpcomingEvents extends StatelessWidget {
               ),),
             Row(
               mainAxisAlignment: .center,
+              crossAxisAlignment: .center,
               children: [
                 location("Lahore"),
                 location("Karachi"),
@@ -71,7 +74,7 @@ class UpcomingEvents extends StatelessWidget {
     }
 
     return SizedBox(
-      height: System.isMobile ? 320 : 725,
+      height: System.isMobile ? 320 : 790,
       width: double.infinity,
       child: Stack(
         children: [
@@ -80,7 +83,7 @@ class UpcomingEvents extends StatelessWidget {
             left: 0,
             right: 0,
             child: Container(
-              height: System.isMobile ? 320 : 700,
+              height: System.isMobile ? 320 : 745,
               width: double.infinity,
               color: Theme
                   .of(context)

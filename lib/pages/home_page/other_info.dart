@@ -236,13 +236,15 @@ class OtherInfo extends StatelessWidget {
                   children: [
                     Icon(Icons.location_on_outlined,color: Theme.of(context).colorScheme.onSecondary,size: System.isMobile ? 18 : 24,),
                     SizedBox(width: 8,),
-                    Text(
-                      "123 Print Street, Design City,\nDC 12345",
-                      style: TextStyle(
-                        fontSize:System.isMobile ? 12 : 17,
-                        letterSpacing: 0.2,
-                        height: 1.25,
-                        fontWeight: FontWeight.w300,
+                    Flexible(
+                      child: Text(
+                        "123 Print Street, Design City,\nDC 12345",
+                        style: TextStyle(
+                          fontSize:System.isMobile ? 12 : 17,
+                          letterSpacing: 0.2,
+                          height: 1.25,
+                          fontWeight: FontWeight.w300,
+                        ),
                       ),
                     ),
                   ],
@@ -252,13 +254,15 @@ class OtherInfo extends StatelessWidget {
                   children: [
                     Icon(Icons.phone_outlined,color: Theme.of(context).colorScheme.onSecondary,size: System.isMobile ? 18 : 24,),
                     SizedBox(width: 8,),
-                    Text(
-                      "+1 (555) 123-4567",
-                      style: TextStyle(
-                        fontSize: System.isMobile ? 12 : 17,
-                        letterSpacing: 0.2,
-                        height: 1.25,
-                        fontWeight: FontWeight.w300,
+                    Flexible(
+                      child: Text(
+                        "+1 (555) 123-4567",
+                        style: TextStyle(
+                          fontSize: System.isMobile ? 12 : 17,
+                          letterSpacing: 0.2,
+                          height: 1.25,
+                          fontWeight: FontWeight.w300,
+                        ),
                       ),
                     ),
                   ],
@@ -268,13 +272,15 @@ class OtherInfo extends StatelessWidget {
                   children: [
                     Icon(Icons.mail_outline_rounded,color: Theme.of(context).colorScheme.onSecondary,size: System.isMobile ? 18 : 24,),
                     SizedBox(width: 8,),
-                    Text(
-                      "info@texprint.com",
-                      style: TextStyle(
-                        fontSize: System.isMobile ? 12 : 17,
-                        letterSpacing: 0.2,
-                        height: 1.25,
-                        fontWeight: FontWeight.w300,
+                    Flexible(
+                      child: Text(
+                        "info@texprint.com",
+                        style: TextStyle(
+                          fontSize: System.isMobile ? 12 : 17,
+                          letterSpacing: 0.2,
+                          height: 1.25,
+                          fontWeight: FontWeight.w300,
+                        ),
                       ),
                     ),
                   ],

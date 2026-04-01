@@ -13,77 +13,98 @@ class RootLayout extends StatefulWidget {
 class _RootLayoutState extends State<RootLayout> {
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final useCompactNav = System.isMobile || screenWidth < 1050;
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(30),
-                bottomRight: Radius.circular(30),
-              ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-            pinned: false,
-            floating: true,
-            snap: true,
-            titleSpacing: 0,
-            title: const SizedBox.shrink(),
-            toolbarHeight: System.isMobile ? 70 : 80,
-            leadingWidth: System.isMobile ? 180 : 300,
-            actionsPadding: EdgeInsets.symmetric(horizontal:System.isMobile ? 20 : 40),
-            leading: InkWell(
-              hoverColor: Colors.transparent,
-              splashColor: Colors.transparent,
-              onTap: () => context.go('/'),
-              child: Row(
-                crossAxisAlignment: .center,
-                mainAxisAlignment: .end,
-                children: [
-                  Container(
-                    //margin: EdgeInsets.only(top: 10),
-                    width: System.isMobile ? 48 : 65,
-                    height: System.isMobile ? 48 : 65,
-                    decoration: BoxDecoration(
-                      color: Colors.redAccent,
-                      shape: .circle,
-                    ),
+          SliverLayoutBuilder(
+            builder: (context, constraints) {
+              final isHome = GoRouterState.of(context).uri.path == '/';
+              final isAtTop = constraints.scrollOffset <= 100;
+              final shouldRound = !isHome || !isAtTop;
+              return SliverAppBar(
+                shape: shouldRound
+                    ? const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(30),
+                          bottomRight: Radius.circular(30),
+                        ),
+                      )
+                    : null,
+                clipBehavior: Clip.antiAlias,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                pinned: false,
+                floating: true,
+                snap: true,
+                titleSpacing: 0,
+                title: const SizedBox.shrink(),
+                toolbarHeight: useCompactNav ? 70 : 80,
+                leadingWidth: useCompactNav ? 180 : 300,
+                actionsPadding: EdgeInsets.symmetric(
+                  horizontal: useCompactNav ? 20 : 40,
+                ),
+                leading: InkWell(
+                  hoverColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onTap: () => context.go('/'),
+                  child: Row(
+                    crossAxisAlignment: .center,
+                    mainAxisAlignment: .end,
+                    children: [
+                      Container(
+                        //margin: EdgeInsets.only(top: 10),
+                        width: System.isMobile ? 48 : 65,
+                        height: System.isMobile ? 48 : 65,
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent,
+                          shape: .circle,
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Flexible(
+                        child: FittedBox(
+                          alignment: Alignment.centerLeft,
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            'TEX PRINT',
+                            style: TextStyle(
+                              fontSize: useCompactNav ? 22 : 36,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.onSecondary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 10),
-                  Text(
-                    'TEX PRINT',
-                    style: TextStyle(
-                      fontSize: System.isMobile ? 22 : 36,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              System.isMobile
-                  ? Builder(
-                builder: (context) {
-                  return InkWell(
-                    onTap: () async {
-                      final box =
-                      context.findRenderObject() as RenderBox;
-                      final pos = box.localToGlobal(Offset.zero);
-                      showTopMenu(
-                        context,
-                        buttonPos: pos,
-                        buttonSize: box.size,
+                ),
+                actions: [
+                  useCompactNav
+                      ? Builder(
+                    builder: (context) {
+                      return InkWell(
+                        onTap: () async {
+                          final box =
+                          context.findRenderObject() as RenderBox;
+                          final pos = box.localToGlobal(Offset.zero);
+                          showTopMenu(
+                            context,
+                            buttonPos: pos,
+                            buttonSize: box.size,
+                          );
+                        },
+                        child: const Icon(Icons.menu_rounded, size: 30),
                       );
                     },
-                    child: const Icon(Icons.menu_rounded, size: 30),
-                  );
-                },
-              )
-                  : Navbar(),
-            ],
+                  )
+                      : Navbar(),
+                ],
 
+              );
+            },
           ),
           SliverToBoxAdapter(child: widget.child),
         ],
@@ -102,9 +123,9 @@ Future<void> showTopMenu(
     barrierDismissible: true,
     barrierLabel: 'menu',
     barrierColor: Colors.transparent, // no dim, only shadow
-    pageBuilder: (_, __, ___) => const SizedBox.shrink(),
+    pageBuilder: (_, _, _) => const SizedBox.shrink(),
     transitionDuration: const Duration(milliseconds: 140),
-    transitionBuilder: (ctx, anim, __, child) {
+    transitionBuilder: (ctx, anim, _, child) {
       final theme = Theme.of(ctx);
       final bg = theme.colorScheme.secondary;
 
@@ -134,7 +155,7 @@ Future<void> showTopMenu(
                     borderRadius: BorderRadius.circular(14),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.35),
+                        color: Colors.black.withAlpha(90),
                         blurRadius: 5,
                         spreadRadius: 1,
                         offset: const Offset(-1, 2),
@@ -147,10 +168,10 @@ Future<void> showTopMenu(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         _MenuItem(title: 'Home', route: '/'),
-                        _MenuItem(title: 'About', route: '/about'),
+                        _MenuItem(title: 'About', route: '/?section=about'),
                         _MenuItem(title: 'Products', route: '/products'),
                         _MenuItem(title: 'Contact', route: '/contact'),
-                        _MenuItem(title: 'Events', route: '/events'),
+                        _MenuItem(title: 'Events', route: '/?section=events'),
                       ],
                     ),
                   ),
@@ -176,7 +197,9 @@ class _MenuItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.pop(context, route),
+      onTap: () {
+        Navigator.pop(context, route);
+      },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Align(
@@ -210,8 +233,9 @@ class Navbar extends StatelessWidget {
           ),
           _NavButton(
             title: 'About',
-            route: '/about',
+            route: '/',
             currentRoute: GoRouterState.of(context).uri.path,
+            section: 'about',
           ),
           _NavButton(
             title: 'Products',
@@ -225,8 +249,9 @@ class Navbar extends StatelessWidget {
           ),
           _NavButton(
             title: 'Events',
-            route: '/events',
+            route: '/',
             currentRoute: GoRouterState.of(context).uri.path,
+            section: 'events',
           ),
         ],
       ),
@@ -238,23 +263,33 @@ class _NavButton extends StatelessWidget {
   final String title;
   final String route;
   final String currentRoute;
+  final String? section;
 
   const _NavButton({
     required this.title,
     required this.route,
     required this.currentRoute,
+    this.section,
   });
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
-    final isSelected = currentRoute == route;
+    final isSelected = section == null && currentRoute == route;
 
     return Padding(
       padding: const EdgeInsets.only(left: 16),
       child: InkWell(
-        onTap: () => isSelected ? null : context.go(route),
+        onTap: () {
+          if (section != null) {
+            context.go('/?section=$section');
+            return;
+          }
+          if (!isSelected) {
+            context.go(route);
+          }
+        },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Text(
