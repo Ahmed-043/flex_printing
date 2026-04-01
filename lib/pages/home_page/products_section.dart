@@ -31,18 +31,22 @@ class ProductsSection extends StatelessWidget {
         color: Colors.grey.withAlpha(100),
       ),
       SizedBox(height: System.isMobile ? 35 : 100),
-      UiHelper.button(
-        callback: () {},
-        color: Theme.of(context).colorScheme.secondaryContainer,
-        filled: true,
-        borderRadius: 75,
-        //padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-        child: Text(
-          "Load More",
-          style: TextStyle(
-            fontSize: System.isMobile ? 16 : 32,
-            color: Theme.of(context).colorScheme.onSecondary,
-            fontWeight: FontWeight.w200,
+      SizedBox(
+        height: System.isMobile ? 32 : 70,
+        width: System.isMobile ? 115 : 235,
+        child: UiHelper.button(
+          callback: () {},
+          color: Theme.of(context).colorScheme.secondaryContainer,
+          filled: true,
+          borderRadius: 75,
+          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+          child: Text(
+            "Load More",
+            style: TextStyle(
+              fontSize: System.isMobile ? 16 : 28,
+              color: Theme.of(context).colorScheme.onSecondary,
+              fontWeight: FontWeight.w200,
+            ),
           ),
         ),
       ),

@@ -56,8 +56,8 @@ class _RootLayoutState extends State<RootLayout> {
                     children: [
                       Container(
                         //margin: EdgeInsets.only(top: 10),
-                        width: System.isMobile ? 48 : 65,
-                        height: System.isMobile ? 48 : 65,
+                        width: useCompactNav ? 48 : 65,
+                        height: useCompactNav ? 48 : 65,
                         decoration: BoxDecoration(
                           color: Colors.redAccent,
                           shape: .circle,
@@ -281,6 +281,8 @@ class _NavButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 16),
       child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+
         onTap: () {
           if (section != null) {
             context.go('/?section=$section');

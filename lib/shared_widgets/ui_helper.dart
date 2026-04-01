@@ -17,30 +17,25 @@ class UiHelper {
   }) {
     return Material(
       color: Colors.transparent,
-      child: GestureDetector(
-        onSecondaryTap: rightClick,
-        behavior: HitTestBehavior.opaque,
+      child: ElevatedButton(
+        onPressed: callback,
+        style: ElevatedButton.styleFrom(
+          padding: padding, // removes internal padding
 
-        child: ElevatedButton(
-          onPressed: callback,
-          style: ElevatedButton.styleFrom(
-            padding: padding, // removes internal padding
+          backgroundColor: filled
+              ? color ?? Colors.transparent
+              : Colors.transparent,
+          overlayColor:  Colors.white, // splash color
+          elevation: elevation,
+          //white splash
 
-            backgroundColor: filled
-                ? color ?? Colors.transparent
-                : Colors.transparent,
-            overlayColor: filled
-                ? Colors.transparent
-                : color ?? Colors.transparent, // splash color
-            elevation: elevation,
-            enableFeedback: true,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(borderRadius),
-              side: BorderSide(color: color ?? Colors.transparent),
-            ),
+          enableFeedback: true,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadius),
+            side: BorderSide(color: color ?? Colors.transparent),
           ),
-          child: child
         ),
+        child: child
       ),
     );
   }
@@ -76,20 +71,27 @@ class UiHelper {
         Text(
           labelText,
           style: TextStyle(
-            fontSize: System.isMobile ? 14 : 16,
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0,
+            color: Color(0xFF364153),
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         TextField(
           controller: controller,
           keyboardType: keyboardType,
           maxLines: maxLines,
+          cursorColor: Theme.of(context).colorScheme.onPrimary,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary,
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+          ),
           decoration: InputDecoration(
             hintText: hint,
             filled: true,
-            fillColor: Theme.of(context).colorScheme.surface,
+            fillColor:Colors.transparent,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 14,
@@ -97,13 +99,19 @@ class UiHelper {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.outlineVariant,
+                color: Color(0xFFD1D5DC),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Color(0xFF909398),
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.outlineVariant,
+                color: Color(0xFFD1D5DC),
               ),
             ),
           ),
