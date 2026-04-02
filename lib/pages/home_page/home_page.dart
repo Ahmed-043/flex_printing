@@ -100,7 +100,7 @@ class _HomeContentState extends State<HomeContent> {
               key: _aboutKey,
               child: AboutEvents(),
             ),
-            Container(height: System.isMobile ? 125 : 450),
+            Container(height: System.isMobile ? 85 : 450),
             Container(
               key: _eventsKey,
               child: ClientsEvents(isEvents: true),
@@ -118,9 +118,9 @@ class _HomeContentState extends State<HomeContent> {
   Widget _banner() {
     double containerHeight = max(500, screenHeight - (System.isMobile ? 70 : 80));
     if(!System.isMobile){
-      containerHeight = min(containerHeight,1000);
+      containerHeight = min(containerHeight,1200);
     }else{
-      containerHeight = min(containerHeight,1000);
+      containerHeight = min(containerHeight,1200);
     }
     return Container(
       height: containerHeight,

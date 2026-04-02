@@ -14,7 +14,7 @@ class UpcomingEvents extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: System.isMobile ? 10 : 20),
           child: Row(
             children: [
-              Icon(Icons.location_on, color: Theme
+              Icon(Icons.circle, size: 10,color: Theme
                   .of(context)
                   .colorScheme
                   .secondary,),

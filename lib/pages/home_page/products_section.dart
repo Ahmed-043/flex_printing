@@ -33,13 +33,12 @@ class ProductsSection extends StatelessWidget {
       SizedBox(height: System.isMobile ? 35 : 100),
       SizedBox(
         height: System.isMobile ? 32 : 70,
-        width: System.isMobile ? 115 : 235,
+        width: System.isMobile ? 130 : 235,
         child: UiHelper.button(
           callback: () {},
           color: Theme.of(context).colorScheme.secondaryContainer,
           filled: true,
           borderRadius: 75,
-          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
           child: Text(
             "Load More",
             style: TextStyle(

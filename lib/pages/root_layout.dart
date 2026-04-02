@@ -86,6 +86,7 @@ class _RootLayoutState extends State<RootLayout> {
                       ? Builder(
                     builder: (context) {
                       return InkWell(
+                        borderRadius: BorderRadius.circular(14),
                         onTap: () async {
                           final box =
                           context.findRenderObject() as RenderBox;
@@ -96,7 +97,10 @@ class _RootLayoutState extends State<RootLayout> {
                             buttonSize: box.size,
                           );
                         },
-                        child: const Icon(Icons.menu_rounded, size: 30),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: const Icon(Icons.menu_rounded, size: 30),
+                        ),
                       );
                     },
                   )

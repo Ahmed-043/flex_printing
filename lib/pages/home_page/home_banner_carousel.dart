@@ -156,7 +156,7 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
             topRight: Radius.circular(1000),
           ),
           child: Container(
-            padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+            padding: const EdgeInsets.only(top: 10,),
             decoration: _decoration(context),
             child: Column(
               children: [
@@ -164,8 +164,9 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
                 SizedBox(
                   height: 55,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Row(
+                      mainAxisAlignment: .center,
                       children: [
                         IconButton(
                           onPressed: () {
@@ -182,7 +183,8 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
                           ),
                           icon: const Icon(Icons.arrow_back_ios_rounded),
                         ),
-                        Expanded(child: _nameBar()),
+                        Expanded(
+                            child: _nameBar()),
                         IconButton(
                           onPressed: () {
                             scrollController.nextPage(
@@ -221,7 +223,7 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
       small = true;
     }
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: System.isMobile || small ? 15 : 30),
+      margin: EdgeInsets.symmetric(horizontal: System.isMobile || small ? 15 : 20),
       decoration: BoxDecoration(
         color: Colors.black,
         borderRadius: BorderRadius.circular(100),

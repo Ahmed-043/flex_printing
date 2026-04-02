@@ -14,8 +14,33 @@ class _ContactusPageState extends State<ContactusPage> {
   bool compact = false;
   @override
   Widget build(BuildContext context) {
-    compact = MediaQuery.of(context).size.width < 1200 ;
+    compact = MediaQuery.of(context).size.width < 1150 ;
 
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 28),
+      child: Center(
+        child: compact
+            ? _form(context)
+            : Container(
+          width: 1150,
+          padding: EdgeInsets.symmetric(horizontal: System.isMobile ? 20 : 50, vertical: 28),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha(20),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+              ),
+            ],
+          ),
+          child: _form(context),
+        ),
+      ),
+    );
+  }
+  Widget _form(BuildContext context){
     Widget leftColumn() {
       return SizedBox(
         width: 500,
@@ -103,54 +128,37 @@ class _ContactusPageState extends State<ContactusPage> {
       );
     }
 
-    return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 28),
-      child: Center(
-        child: Container(
-          width: compact ? 600 : 1150,
-          padding: EdgeInsets.symmetric(horizontal: System.isMobile ? 20 : 50, vertical: 28),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withAlpha(20),
-                blurRadius: 24,
-                offset: const Offset(0, 12),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: .start,
-            mainAxisAlignment: .center,
-            children: [
-              Text(
-                'Send us a Message',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-              ),
-              const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: Wrap(
-                    spacing: 50,
-                    runSpacing: 35,
-                    crossAxisAlignment: .center,
-                    runAlignment: .center,
-                    alignment: .center,
-                    children: [
-                      leftColumn(),
-                      rightColumn(),
-                    ],
-                  ),
-                )
-            ],
+    return Column(
+      crossAxisAlignment: .center,
+      mainAxisAlignment: .center,
+      children: [
+        SizedBox(
+          width: compact ? 500 : 1050,
+          child: Text(
+            'Send us a Message',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
           ),
         ),
-      ),
+        const SizedBox(height: 24),
+        SizedBox(
+          width: double.infinity,
+          child: Wrap(
+            spacing: 50,
+            runSpacing: 35,
+            crossAxisAlignment: .center,
+            runAlignment: .center,
+            alignment: .center,
+            children: [
+              leftColumn(),
+              rightColumn(),
+            ],
+          ),
+        )
+      ],
     );
   }
 }
