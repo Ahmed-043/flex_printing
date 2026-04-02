@@ -1,6 +1,7 @@
 import 'package:flex_printing/models/System/system.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ProductsSection extends StatelessWidget {
   const ProductsSection({super.key});
@@ -35,7 +36,9 @@ class ProductsSection extends StatelessWidget {
         height: System.isMobile ? 32 : 70,
         width: System.isMobile ? 130 : 235,
         child: UiHelper.button(
-          callback: () {},
+          callback: () {
+            context.go('/products');
+          },
           color: Theme.of(context).colorScheme.secondaryContainer,
           filled: true,
           borderRadius: 75,

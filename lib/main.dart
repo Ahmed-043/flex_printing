@@ -1,6 +1,6 @@
 import 'package:flex_printing/pages/contactus_page/contactus_page.dart';
 import 'package:flex_printing/pages/home_page/home_page.dart';
-import 'package:flex_printing/pages/products_page.dart';
+import 'package:flex_printing/pages/products_page/products_page.dart';
 import 'package:flex_printing/pages/root_layout.dart';
 import 'package:flex_printing/theme/app_theme.dart';
 import 'package:flutter/material.dart';

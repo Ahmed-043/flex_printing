@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import '../models/System/system.dart';
 
@@ -42,7 +43,7 @@ class _RootLayoutState extends State<RootLayout> {
                 titleSpacing: 0,
                 title: const SizedBox.shrink(),
                 toolbarHeight: useCompactNav ? 70 : 80,
-                leadingWidth: useCompactNav ? 180 : 300,
+                leadingWidth: useCompactNav ? 190 : 300,
                 actionsPadding: EdgeInsets.symmetric(
                   horizontal: useCompactNav ? 20 : 40,
                 ),
@@ -59,22 +60,41 @@ class _RootLayoutState extends State<RootLayout> {
                         width: useCompactNav ? 48 : 65,
                         height: useCompactNav ? 48 : 65,
                         decoration: BoxDecoration(
-                          color: Colors.redAccent,
+                          color: Colors.transparent,
                           shape: .circle,
                         ),
+                        // logo.svg
+                        child: SvgPicture.asset(
+                          'assets/images/logo.svg',
+                          width: System.isMobile ? 48 : 65,
+                          height: System.isMobile ? 48 : 65,
+                        )
                       ),
                       SizedBox(width: 10),
                       Flexible(
                         child: FittedBox(
                           alignment: Alignment.centerLeft,
                           fit: BoxFit.scaleDown,
-                          child: Text(
-                            'TEX PRINT',
-                            style: TextStyle(
-                              fontSize: useCompactNav ? 22 : 36,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.onSecondary,
-                            ),
+                          child: Row(
+                            crossAxisAlignment: .start,
+                            children: [
+                              Text(
+                                'TEX PRINT',
+                                style: TextStyle(
+                                  fontSize: useCompactNav ? 22 : 36,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).colorScheme.onSecondary,
+                                ),
+                              ),
+                              Padding(
+                                padding:  EdgeInsets.only(top: useCompactNav ? 4 :8,left: useCompactNav ? 2 : 4),
+                                child: SvgPicture.asset(
+                                  'assets/images/icons/registered.svg',
+                                  width: useCompactNav ? 8 : 12,
+                                  height: useCompactNav ? 8 : 12,
+                                ),
+                              )
+                            ],
                           ),
                         ),
                       ),
