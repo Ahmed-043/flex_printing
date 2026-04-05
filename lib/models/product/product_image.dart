@@ -21,6 +21,27 @@ class ProductImage {
   /// Returns compressed bytes when available, otherwise original bytes.
   Uint8List get displayBytes => compressedBytes ?? originalBytes;
 
+  /// Lower-cased file extension without the dot.
+  String get extension {
+    final dot = fileName.lastIndexOf('.');
+    if (dot == -1 || dot == fileName.length - 1) return '';
+    return fileName.substring(dot + 1).toLowerCase();
+  }
+
+  /// True when the file name suggests an image format.
+  bool get isImage {
+    const imageExts = {
+      'png',
+      'jpg',
+      'jpeg',
+      'webp',
+      'gif',
+      'bmp',
+      'heic',
+    };
+    return imageExts.contains(extension);
+  }
+
   /// Size of the display bytes in kilobytes (rounded).
   int get displaySizeKB => (displayBytes.lengthInBytes / 1024).round();
 

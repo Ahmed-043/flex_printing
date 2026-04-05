@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:cross_file/cross_file.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -25,17 +27,50 @@ class _ProductImageUploadBoxState extends State<ProductImageUploadBox> {
   bool _isDragging = false;
   bool _isLoading = false;
   bool _isCompressing = false;
+  bool _isCompressionToastVisible = false;
+
+  bool _isImageFileName(String fileName) {
+    final lower = fileName.toLowerCase();
+    return lower.endsWith('.png') ||
+        lower.endsWith('.jpg') ||
+        lower.endsWith('.jpeg') ||
+        lower.endsWith('.webp') ||
+        lower.endsWith('.gif') ||
+        lower.endsWith('.bmp') ||
+        lower.endsWith('.heic');
+  }
+
+  void _showCompressionToast() {
+    if (_isCompressionToastVisible) return;
+    _isCompressionToastVisible = true;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Compressing image...'),
+        duration: Duration(days: 1),
+      ),
+    );
+  }
+
+  void _hideCompressionToast() {
+    if (!_isCompressionToastVisible) return;
+    _isCompressionToastVisible = false;
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  }
 
   // ── shared processing ──────────────────────────────────────────────────────
 
   Future<void> _process(String fileName, Uint8List bytes) async {
     if (!mounted) return;
+    final shouldCompress = _isImageFileName(fileName);
     setState(() {
       _isLoading = true;
-      _isCompressing = true;
+      _isCompressing = shouldCompress;
     });
+    if (shouldCompress) {
+      _showCompressionToast();
+    }
     try {
-      final compressed = await compressImageBytes(bytes);
+      final compressed = shouldCompress ? await compressImageBytes(bytes) : null;
       if (!mounted) return;
       widget.onImageAdded(
         ProductImage(
@@ -47,6 +82,7 @@ class _ProductImageUploadBoxState extends State<ProductImageUploadBox> {
     } catch (e) {
       debugPrint('ProductImageUploadBox._process error: $e');
     } finally {
+      _hideCompressionToast();
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -148,7 +184,7 @@ class _ProductImageUploadBoxState extends State<ProductImageUploadBox> {
                     const SizedBox(height: 8),
                     if (_isCompressing)
                       Text(
-                        'Compressing…',
+                        'Compressing...',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 13,
@@ -158,7 +194,7 @@ class _ProductImageUploadBoxState extends State<ProductImageUploadBox> {
                       )
                     else ...[
                       Text(
-                        'Drag & Drop Image Here',
+                        'Drag & Drop File Here',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 13,

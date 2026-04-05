@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
@@ -11,7 +13,7 @@ typedef PickedFile = ({String fileName, Uint8List bytes});
 Future<PickedFile?> pickImageFile() async {
   try {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
+      type: FileType.any,
       withData: true,
     );
     if (result == null) return null;
@@ -32,22 +34,11 @@ Future<PickedFile?> pickImageFile() async {
 /// - > 500 KB    → quality 70
 /// - ≤ 500 KB    → returned as-is
 ///
-/// Heavy decoding runs in a separate isolate via [compute].
+/// Heavy decode/encode runs in a separate isolate via [compute].
 /// Returns null only on an unrecoverable error.
 Future<Uint8List?> compressImageBytes(Uint8List imageBytes) async {
   try {
-    if (imageBytes.lengthInBytes > 1200 * 1024) {
-      final decoded = await compute(_decodeImageBytes, imageBytes);
-      if (decoded != null) {
-        return Uint8List.fromList(img.encodeJpg(decoded, quality: 40));
-      }
-    } else if (imageBytes.lengthInBytes > 500 * 1024) {
-      final decoded = await compute(_decodeImageBytes, imageBytes);
-      if (decoded != null) {
-        return Uint8List.fromList(img.encodeJpg(decoded, quality: 70));
-      }
-    }
-    return imageBytes;
+    return await compute(_compressOnIsolate, imageBytes);
   } catch (e) {
     debugPrint('compressImageBytes error: $e');
     return null;
@@ -55,4 +46,11 @@ Future<Uint8List?> compressImageBytes(Uint8List imageBytes) async {
 }
 
 // Top-level function required by compute().
-img.Image? _decodeImageBytes(Uint8List bytes) => img.decodeImage(bytes);
+Uint8List? _compressOnIsolate(Uint8List bytes) {
+  final length = bytes.lengthInBytes;
+  if (length <= 500 * 1024) return bytes;
+  final decoded = img.decodeImage(bytes);
+  if (decoded == null) return null;
+  final quality = length > 1200 * 1024 ? 40 : 70;
+  return Uint8List.fromList(img.encodeJpg(decoded, quality: quality));
+}

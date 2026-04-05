@@ -354,7 +354,7 @@ class _AdminPageState extends State<AdminPage> {
         _sectionHeader(context, 'Product Images'),
         const SizedBox(height: 8),
         Text(
-          'Add images one at a time. Drag & drop or click to upload.',
+          'Add files one at a time. Drag & drop or click to upload.',
           style: TextStyle(
             fontSize: 14,
             color: Colors.grey.shade600,
@@ -409,6 +409,41 @@ class _AdminPageState extends State<AdminPage> {
     double size,
   ) {
     final theme = Theme.of(context);
+    final preview = img.isImage
+        ? Image.memory(
+            img.displayBytes,
+            width: size,
+            height: size,
+            fit: BoxFit.cover,
+          )
+        : Container(
+            width: size,
+            height: size,
+            color: Colors.grey.shade200,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.insert_drive_file,
+                    size: 28,
+                    color: Colors.grey.shade600,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    img.extension.isEmpty
+                        ? 'FILE'
+                        : img.extension.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey.shade700,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
     return SizedBox(
       width: size,
       height: size,
@@ -418,12 +453,7 @@ class _AdminPageState extends State<AdminPage> {
           // Preview image
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.memory(
-              img.displayBytes,
-              width: size,
-              height: size,
-              fit: BoxFit.cover,
-            ),
+            child: preview,
           ),
 
           // Compressed-size badge
