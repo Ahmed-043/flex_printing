@@ -1,5 +1,6 @@
 import 'package:flex_printing/pages/contactus_page/contactus_page.dart';
 import 'package:flex_printing/config/supabase_config.dart';
+import 'package:flex_printing/pages/admin_page/admin_page.dart';
 import 'package:flex_printing/pages/home_page/home_page.dart';
 import 'package:flex_printing/pages/products_page/products_page.dart';
 import 'package:flex_printing/pages/root_layout.dart';
@@ -54,6 +55,12 @@ final GoRouter _router = GoRouter(
           path: 'contact',
           builder: (context, state) => const RootLayout(
             child: ContactusPage(),
+          ),
+        ),
+        GoRoute(
+          path: 'admin',
+          builder: (context, state) => const RootLayout(
+            child: AdminPage(),
           ),
         ),
       ],
