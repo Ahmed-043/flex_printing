@@ -19,6 +19,7 @@ final GoRouter _router = GoRouter(
           initialSection: state.uri.queryParameters['section'],
         ),
       ),
+
       routes: [
         GoRoute(
           path: 'products',
