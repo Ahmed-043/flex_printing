@@ -14,7 +14,7 @@ class _ContactusPageState extends State<ContactusPage> {
   bool compact = false;
   @override
   Widget build(BuildContext context) {
-    compact = MediaQuery.of(context).size.width < 1150 ;
+    compact = MediaQuery.of(context).size.width < 1200 ;
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 28),
@@ -47,6 +47,18 @@ class _ContactusPageState extends State<ContactusPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(
+              width: compact ? 500 : 1050,
+              child: Text(
+                'Send us a Message',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
             UiHelper.inputField(
               context: context,
               label: 'Full Name',
@@ -87,6 +99,7 @@ class _ContactusPageState extends State<ContactusPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 35),
             UiHelper.inputField(
               context: context,
               label: 'Message',
@@ -128,37 +141,18 @@ class _ContactusPageState extends State<ContactusPage> {
       );
     }
 
-    return Column(
-      crossAxisAlignment: .center,
-      mainAxisAlignment: .center,
-      children: [
-        SizedBox(
-          width: compact ? 500 : 1050,
-          child: Text(
-            'Send us a Message',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-              color: Theme.of(context).colorScheme.onPrimary,
-            ),
-          ),
-        ),
-        const SizedBox(height: 24),
-        SizedBox(
-          width: double.infinity,
-          child: Wrap(
-            spacing: 50,
-            runSpacing: 35,
-            crossAxisAlignment: .center,
-            runAlignment: .center,
-            alignment: .center,
-            children: [
-              leftColumn(),
-              rightColumn(),
-            ],
-          ),
-        )
-      ],
+    return SizedBox(
+      width: double.infinity,
+      child: Wrap(
+        spacing: 50,
+        crossAxisAlignment: .center,
+        runAlignment: .center,
+        alignment: .center,
+        children: [
+          leftColumn(),
+          rightColumn(),
+        ],
+      ),
     );
   }
 }
