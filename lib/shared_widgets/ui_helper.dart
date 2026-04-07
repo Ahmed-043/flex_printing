@@ -5,7 +5,7 @@ import '../models/System/system.dart';
 class UiHelper {
   static Widget button({
     String? title,
-    required VoidCallback callback,
+    required VoidCallback? callback,
     VoidCallback? rightClick,
     double textSize = 20,
     bool filled = false,

@@ -1,0 +1,169 @@
+import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../models/product/category.dart';
+import '../models/product/product.dart';
+
+/// Service that wraps all Supabase operations related to products.
+///
+/// Bucket name: "flec-printing"
+/// Tables used: categories, products, product_images, product_specs
+class ProductService {
+  ProductService._();
+
+  static SupabaseClient get _client => Supabase.instance.client;
+
+  static const String _bucket = 'flec-printing';
+
+  // ── Categories ─────────────────────────────────────────────────────────────
+
+  /// Loads all categories ordered by name.
+  static Future<List<Category>> fetchCategories() async {
+    final response = await _client
+        .from('categories')
+        .select('id, name, created_at')
+        .order('name', ascending: true);
+    return (response as List)
+        .map((e) => Category.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Returns the id of an existing category with [name] (case-insensitive),
+  /// or inserts a new row and returns the new id.
+  static Future<int> upsertCategory(String name) async {
+    final trimmed = name.trim();
+
+    // Look for an existing match (case-insensitive)
+    final existing = await _client
+        .from('categories')
+        .select('id')
+        .ilike('name', trimmed)
+        .maybeSingle();
+
+    if (existing != null) {
+      return existing['id'] as int;
+    }
+
+    // Insert and return the new id
+    final result = await _client
+        .from('categories')
+        .insert({'name': trimmed})
+        .select('id')
+        .single();
+
+    return result['id'] as int;
+  }
+
+  // ── Product creation ────────────────────────────────────────────────────────
+
+  /// Creates a full product (row + images + specs) in Supabase.
+  ///
+  /// Steps:
+  /// 1. Upsert category → obtain category id.
+  /// 2. Insert `products` row → obtain product_id.
+  /// 3. For each image: upload file to Storage then insert `product_images` row.
+  /// 4. For each spec: insert `product_specs` row.
+  ///
+  /// If step 3 or 4 fails the product row (and any already-uploaded storage
+  /// objects) are deleted before re-throwing the error.
+  ///
+  /// Returns the new product id on success.
+  static Future<int> createProduct(Product product) async {
+    // 1. Category
+    int? categoryId;
+    if (product.category.trim().isNotEmpty) {
+      categoryId = await upsertCategory(product.category.trim());
+    }
+
+    // 2. Insert product row
+    final productResult = await _client
+        .from('products')
+        .insert({
+          'name': product.name,
+          'description': product.description,
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+          if (categoryId != null) 'category': categoryId,
+        })
+        .select('id')
+        .single();
+
+    final productId = productResult['id'] as int;
+
+    // 3. Upload images + insert rows  (with compensating cleanup on failure)
+    final uploadedPaths = <String>[];
+    try {
+      for (int i = 0; i < product.images.length; i++) {
+        final img = product.images[i];
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        // Sanitise file name for storage path
+        final safeName =
+            img.fileName.replaceAll(RegExp(r'[^\w.\-]'), '_');
+        final path = 'products/$productId/${timestamp}_$safeName';
+
+        await _client.storage.from(_bucket).uploadBinary(
+              path,
+              img.displayBytes,
+            );
+
+        uploadedPaths.add(path);
+
+        await _client.from('product_images').insert({
+          'product_id': productId,
+          'path': path,
+          'alt': img.fileName,
+          'sort_order': i,
+        });
+      }
+
+      // 4. Insert specs
+      for (int i = 0; i < product.specs.length; i++) {
+        final spec = product.specs[i];
+        await _client.from('product_specs').insert({
+          'product_id': productId,
+          'key': spec.key,
+          'value': spec.value,
+          'unit': spec.unit,
+          'sort_order': i,
+        });
+      }
+    } catch (e) {
+      debugPrint('ProductService.createProduct: error – attempting cleanup. $e');
+      await _cleanup(productId, uploadedPaths);
+      rethrow;
+    }
+
+    return productId;
+  }
+
+  // ── Helpers ─────────────────────────────────────────────────────────────────
+
+  /// Best-effort compensating cleanup: removes storage files and product row.
+  static Future<void> _cleanup(
+      int productId, List<String> uploadedPaths) async {
+    try {
+      if (uploadedPaths.isNotEmpty) {
+        await _client.storage.from(_bucket).remove(uploadedPaths);
+      }
+    } catch (e) {
+      debugPrint('ProductService._cleanup storage error: $e');
+    }
+    try {
+      // Also remove any product_images and product_specs rows that were
+      // inserted before the failure. These explicit deletes are intentional:
+      // the schema does not configure ON DELETE CASCADE between products and
+      // its child tables, so we handle cleanup manually.
+      await _client
+          .from('product_images')
+          .delete()
+          .eq('product_id', productId);
+      await _client
+          .from('product_specs')
+          .delete()
+          .eq('product_id', productId);
+      await _client.from('products').delete().eq('id', productId);
+    } catch (e) {
+      debugPrint('ProductService._cleanup DB error: $e');
+    }
+  }
+}
+
