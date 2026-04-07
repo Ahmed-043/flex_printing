@@ -5,12 +5,13 @@ import '../../models/System/system.dart';
 import '../../models/product/product.dart';
 import '../../models/product/product_image.dart';
 import '../../models/product/product_spec.dart';
+import '../../services/product_service.dart';
 import '../../shared_widgets/product_image_upload_box.dart';
 import '../../shared_widgets/ui_helper.dart';
 
 /// Admin page for creating a new [Product].
 ///
-/// All data is held in memory only (no Supabase persistence).
+/// Persists data to Supabase via [ProductService].
 /// Layout is responsive: two-column on desktop/tablet, single-column on
 /// mobile (controlled by [System.isMobile] and screen-width breakpoint).
 class AdminPage extends StatefulWidget {
@@ -21,10 +22,11 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
-  // ── in-memory state ───────────────────────────────────────────────────────
+  // ── form state ────────────────────────────────────────────────────────────
 
   final _nameController = TextEditingController();
   final _descController = TextEditingController();
+  final _categoryController = TextEditingController();
 
   /// Spec rows – each entry holds three controllers: key, value, unit.
   final List<_SpecRow> _specRows = [];
@@ -32,10 +34,36 @@ class _AdminPageState extends State<AdminPage> {
   /// Accumulated product images (original + compressed bytes).
   final List<ProductImage> _images = [];
 
+  /// Category names loaded from Supabase (for autocomplete).
+  List<String> _categoryNames = [];
+
+  /// True while [_onSave] is running (prevents double-submit).
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      final cats = await ProductService.fetchCategories();
+      if (mounted) {
+        setState(() {
+          _categoryNames = cats.map((c) => c.name).toList();
+        });
+      }
+    } catch (e) {
+      debugPrint('AdminPage: failed to load categories: $e');
+    }
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
     _descController.dispose();
+    _categoryController.dispose();
     for (final row in _specRows) {
       row.dispose();
     }
@@ -79,38 +107,99 @@ class _AdminPageState extends State<AdminPage> {
     return Product(
       name: _nameController.text.trim(),
       description: _descController.text.trim(),
+      category: _categoryController.text.trim(),
       specs: _specRows
           .map(
-            (r) =>
-            ProductSpec(
+            (r) => ProductSpec(
               key: r.keyCtrl.text.trim(),
               value: r.valueCtrl.text.trim(),
               unit: r.unitCtrl.text.trim(),
             ),
-      )
+          )
           .toList(),
       images: List.unmodifiable(_images),
     );
   }
 
-  void _onSave() {
+  Future<void> _onSave() async {
+    if (_isSaving) return;
+
+    final name = _nameController.text.trim();
+    if (name.isEmpty) {
+      _showError('Product name is required.');
+      return;
+    }
+
+    setState(() => _isSaving = true);
+
     final product = _collectProduct();
-    debugPrint('Admin – product saved in memory: ${product.name}');
-    debugPrint('  specs : ${product.specs.length}');
-    debugPrint('  images: ${product.images.length}');
+
+    try {
+      final productId = await ProductService.createProduct(product);
+      if (!mounted) return;
+      _clearForm();
+      _showSuccess(
+        'Product "${product.name}" saved '
+        '(id $productId, ${product.images.length} image(s), '
+        '${product.specs.length} spec(s))',
+      );
+      // Refresh category list so a newly added category shows up next time
+      await _loadCategories();
+    } catch (e) {
+      if (!mounted) return;
+      _showError('Failed to save product.\n\n${e.toString()}');
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  void _clearForm() {
+    _nameController.clear();
+    _descController.clear();
+    _categoryController.clear();
+    setState(() {
+      for (final row in _specRows) {
+        row.dispose();
+      }
+      _specRows.clear();
+      _images.clear();
+    });
+  }
+
+  void _showSuccess(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          'Product "${product.name}" saved in memory '
-              '(${product.images.length} image(s), '
-              '${product.specs.length} spec(s))',
-        ),
-        backgroundColor: Theme
-            .of(context)
-            .colorScheme
-            .secondary,
+        content: Text(message),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: const Duration(seconds: 5),
+      ),
+    );
+  }
+
+  void _showError(String message) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.error_outline,
+                color: Theme.of(ctx).colorScheme.error),
+            const SizedBox(width: 8),
+            const Text('Error'),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Text(message),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('OK'),
+          ),
+        ],
       ),
     );
   }
@@ -153,7 +242,7 @@ class _AdminPageState extends State<AdminPage> {
                 width: double.infinity,
                 height: 56,
                 child: UiHelper.button(
-                  callback: _onSave,
+                  callback: _isSaving ? null : _onSave,
                   filled: true,
                   color: Theme
                       .of(context)
@@ -165,14 +254,23 @@ class _AdminPageState extends State<AdminPage> {
                     vertical: 12,
                   ),
                   elevation: 2,
-                  child: const Text(
-                    'Save Product',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  child: _isSaving
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text(
+                          'Save Product',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
 
@@ -364,8 +462,14 @@ class _AdminPageState extends State<AdminPage> {
       children: [
         _sectionHeader(context, 'Category'),
         const SizedBox(height: 12),
-        CategoryDropdownTextField(controller: TextEditingController(),
-            categories: ['Hello', 'Meow', 'World']),
+        CategoryDropdownTextField(
+          controller: _categoryController,
+          categories: _categoryNames,
+          // CategoryDropdownTextField mutates the passed list in-place when a
+          // new category is typed; the empty setState triggers a rebuild so the
+          // autocomplete options reflect the addition immediately.
+          onCategoriesChanged: () => setState(() {}),
+        ),
         const SizedBox(height: 32),
         _sectionHeader(context, 'Product Images'),
         const SizedBox(height: 8),
