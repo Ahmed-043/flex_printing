@@ -17,6 +17,11 @@ Future<void> main() async {
       anonKey: SupabaseConfig.anonKey,
     );
 
+    await Supabase.instance.client.auth.signInWithPassword(
+      email: 'ahmadmughal32111@gmail.com',
+      password: 'mughal13579',
+    );
+
     // Confirms initialize() completed successfully.
     debugPrint('Supabase init OK: ${SupabaseConfig.url}');
 
@@ -28,7 +33,7 @@ Future<void> main() async {
     debugPrintStack(stackTrace: st);
     startupError = _friendlyStartupError(e);
   }
-
+  printCategories();
   runApp(MyApp(startupError: startupError));
 }
 
