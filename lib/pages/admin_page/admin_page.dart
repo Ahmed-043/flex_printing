@@ -1,3 +1,4 @@
+import 'package:flex_printing/shared_widgets/category_drowdown.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/System/system.dart';
@@ -80,12 +81,13 @@ class _AdminPageState extends State<AdminPage> {
       description: _descController.text.trim(),
       specs: _specRows
           .map(
-            (r) => ProductSpec(
+            (r) =>
+            ProductSpec(
               key: r.keyCtrl.text.trim(),
               value: r.valueCtrl.text.trim(),
               unit: r.unitCtrl.text.trim(),
             ),
-          )
+      )
           .toList(),
       images: List.unmodifiable(_images),
     );
@@ -100,10 +102,13 @@ class _AdminPageState extends State<AdminPage> {
       SnackBar(
         content: Text(
           'Product "${product.name}" saved in memory '
-          '(${product.images.length} image(s), '
-          '${product.specs.length} spec(s))',
+              '(${product.images.length} image(s), '
+              '${product.specs.length} spec(s))',
         ),
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        backgroundColor: Theme
+            .of(context)
+            .colorScheme
+            .secondary,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
@@ -114,7 +119,10 @@ class _AdminPageState extends State<AdminPage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     final isCompact = System.isMobile || screenWidth < 900;
 
     return SingleChildScrollView(
@@ -129,7 +137,8 @@ class _AdminPageState extends State<AdminPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── page title ──────────────────────────────────────────────
-              Center(child: UiHelper.title(context: context, title: 'Create Product')),
+              Center(child: UiHelper.title(
+                  context: context, title: 'Create Product')),
               SizedBox(height: isCompact ? 32 : 48),
 
               // ── main body ───────────────────────────────────────────────
@@ -146,27 +155,23 @@ class _AdminPageState extends State<AdminPage> {
                 child: UiHelper.button(
                   callback: _onSave,
                   filled: true,
-                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .secondaryContainer,
                   borderRadius: 14,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
                     vertical: 12,
                   ),
                   elevation: 2,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.save_outlined, color: Colors.white),
-                      const SizedBox(width: 10),
-                      const Text(
-                        'Save Product',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                  child: const Text(
+                    'Save Product',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -266,8 +271,11 @@ class _AdminPageState extends State<AdminPage> {
           ),
 
         // Spec rows
-        ..._specRows.asMap().entries.map(
-          (entry) => _specRowWidget(context, entry.key, entry.value),
+        ..._specRows
+            .asMap()
+            .entries
+            .map(
+              (entry) => _specRowWidget(context, entry.key, entry.value),
         ),
 
         const SizedBox(height: 12),
@@ -303,7 +311,7 @@ class _AdminPageState extends State<AdminPage> {
           // Key
           Expanded(
             flex: 3,
-            child: _compactTextField(
+            child: UiHelper.compactTextField(
               controller: row.keyCtrl,
               hint: 'Spec Name',
               context: context,
@@ -313,7 +321,7 @@ class _AdminPageState extends State<AdminPage> {
           // Value
           Expanded(
             flex: 3,
-            child: _compactTextField(
+            child: UiHelper.compactTextField(
               controller: row.valueCtrl,
               hint: 'Value',
               context: context,
@@ -323,7 +331,7 @@ class _AdminPageState extends State<AdminPage> {
           // Unit (optional)
           Expanded(
             flex: 2,
-            child: _compactTextField(
+            child: UiHelper.compactTextField(
               controller: row.unitCtrl,
               hint: 'Unit (opt.)',
               context: context,
@@ -346,11 +354,19 @@ class _AdminPageState extends State<AdminPage> {
 
   Widget _imagesSection(BuildContext context) {
     final isCompact = System.isMobile ||
-        MediaQuery.of(context).size.width < 900;
+        MediaQuery
+            .of(context)
+            .size
+            .width < 900;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _sectionHeader(context, 'Category'),
+        const SizedBox(height: 12),
+        CategoryDropdownTextField(controller: TextEditingController(),
+            categories: ['Hello', 'Meow', 'World']),
+        const SizedBox(height: 32),
         _sectionHeader(context, 'Product Images'),
         const SizedBox(height: 8),
         Text(
@@ -402,48 +418,46 @@ class _AdminPageState extends State<AdminPage> {
     );
   }
 
-  Widget _imageThumbnail(
-    BuildContext context,
-    int index,
-    ProductImage img,
-    double size,
-  ) {
+  Widget _imageThumbnail(BuildContext context,
+      int index,
+      ProductImage img,
+      double size,) {
     final theme = Theme.of(context);
     final preview = img.isImage
         ? Image.memory(
-            img.displayBytes,
-            width: size,
-            height: size,
-            fit: BoxFit.cover,
-          )
+      img.displayBytes,
+      width: size,
+      height: size,
+      fit: BoxFit.cover,
+    )
         : Container(
-            width: size,
-            height: size,
-            color: Colors.grey.shade200,
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.insert_drive_file,
-                    size: 28,
-                    color: Colors.grey.shade600,
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    img.extension.isEmpty
-                        ? 'FILE'
-                        : img.extension.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+      width: size,
+      height: size,
+      color: Colors.grey.shade200,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.insert_drive_file,
+              size: 28,
+              color: Colors.grey.shade600,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              img.extension.isEmpty
+                  ? 'FILE'
+                  : img.extension.toUpperCase(),
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.grey.shade700,
+                fontWeight: FontWeight.w600,
               ),
             ),
-          );
+          ],
+        ),
+      ),
+    );
     return SizedBox(
       width: size,
       height: size,
@@ -543,45 +557,8 @@ class _AdminPageState extends State<AdminPage> {
     );
   }
 
-  Widget _compactTextField({
-    required TextEditingController controller,
-    required String hint,
-    required BuildContext context,
-  }) {
-    final theme = Theme.of(context);
-    return TextField(
-      controller: controller,
-      style: TextStyle(
-        fontSize: 14,
-        color: theme.colorScheme.onPrimary,
-      ),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
-        isDense: true,
-        filled: true,
-        fillColor: Colors.transparent,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFD1D5DC)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFF909398)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFD1D5DC)),
-        ),
-      ),
-    );
-  }
-}
-
 // ── internal helper class for spec row controllers ────────────────────────────
-
+}
 class _SpecRow {
   final keyCtrl = TextEditingController();
   final valueCtrl = TextEditingController();

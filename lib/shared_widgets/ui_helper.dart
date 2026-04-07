@@ -119,4 +119,40 @@ class UiHelper {
       ],
     );
   }
+  static Widget compactTextField({
+    required TextEditingController controller,
+    required String hint,
+    required BuildContext context,
+  }) {
+    final theme = Theme.of(context);
+    return TextField(
+      controller: controller,
+      style: TextStyle(
+        fontSize: 14,
+        color: theme.colorScheme.onPrimary,
+      ),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
+        isDense: true,
+        filled: true,
+        fillColor: Colors.transparent,
+        contentPadding:
+        const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Color(0xFFD1D5DC)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Color(0xFF909398)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Color(0xFFD1D5DC)),
+        ),
+      ),
+    );
+  }
 }
+
