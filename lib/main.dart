@@ -8,10 +8,9 @@ import 'package:flex_printing/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  String? startupError;
   try {
     await Supabase.initialize(
       url: SupabaseConfig.url,
@@ -27,11 +26,22 @@ Future<void> main() async {
   } catch (e, st) {
     debugPrint('Supabase init FAILED: $e');
     debugPrintStack(stackTrace: st);
-    rethrow; // keeps failure visible during startup
+    startupError = _friendlyStartupError(e);
   }
 
+  runApp(MyApp(startupError: startupError));
+}
 
-  runApp(const MyApp());
+String _friendlyStartupError(Object error) {
+  final message = error.toString();
+  if (message.contains('Failed host lookup') ||
+      message.contains('No such host is known')) {
+    return 'Could not reach Supabase host. Check the project URL in Supabase settings and your DNS/network connection.';
+  }
+  if (message.contains('timed out') || message.contains('TimeoutException')) {
+    return 'Supabase startup timed out. Check your internet connection and try again.';
+  }
+  return 'Supabase failed to initialize. Please verify your Supabase URL and anon key.';
 }
 
 final GoRouter _router = GoRouter(
@@ -69,10 +79,21 @@ final GoRouter _router = GoRouter(
 );
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, this.startupError});
+
+  final String? startupError;
 
   @override
   Widget build(BuildContext context) {
+    if (startupError != null) {
+      return MaterialApp(
+        title: 'Flex Printing',
+        theme: AppTheme.light(),
+        darkTheme: AppTheme.dark(),
+        themeMode: ThemeMode.system,
+        home: _StartupErrorScreen(message: startupError!),
+      );
+    }
 
     return MaterialApp.router(
       title: 'Flex Printing',
@@ -80,6 +101,56 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system, // uses device setting for now
       routerConfig: _router,
+    );
+  }
+}
+
+class _StartupErrorScreen extends StatelessWidget {
+  const _StartupErrorScreen({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Scaffold(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 620),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Card(
+              elevation: 1,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.cloud_off, color: theme.colorScheme.secondary),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'Startup Error',
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(message),
+                    const SizedBox(height: 16),
+                    Text(
+                      'After fixing config/network, restart the app.',
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

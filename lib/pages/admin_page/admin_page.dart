@@ -1,7 +1,9 @@
 import 'package:flex_printing/shared_widgets/category_drowdown.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../models/System/system.dart';
+import '../../models/product/category.dart' as product_model;
 import '../../models/product/product.dart';
 import '../../models/product/product_image.dart';
 import '../../models/product/product_spec.dart';
@@ -37,25 +39,59 @@ class _AdminPageState extends State<AdminPage> {
   /// Category names loaded from Supabase (for autocomplete).
   List<String> _categoryNames = [];
 
+  bool _isLoadingCategories = false;
+  String? _categoriesLoadError;
+
   /// True while [_onSave] is running (prevents double-submit).
   bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
+
     _loadCategories();
   }
 
   Future<void> _loadCategories() async {
+    if (mounted) {
+      setState(() {
+        _isLoadingCategories = true;
+        _categoriesLoadError = null;
+      });
+    }
     try {
-      final cats = await ProductService.fetchCategories();
+      try {
+        final res = await Supabase.instance.client
+            .from('categories')
+            .select('id')
+            .limit(1);
+        debugPrint('ok: $res');
+      } catch (e, st) {
+        debugPrint('categories select error: $e');
+        debugPrint('$st');
+      }
+      final List<product_model.Category> cats =
+          await ProductService.fetchCategories();
       if (mounted) {
         setState(() {
           _categoryNames = cats.map((c) => c.name).toList();
+          _categoriesLoadError = null;
         });
       }
     } catch (e) {
       debugPrint('AdminPage: failed to load categories: $e');
+      if (mounted) {
+        setState(() {
+          _categoriesLoadError =
+              'Could not load categories from Supabase. You can still type a new category and save.';
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingCategories = false;
+        });
+      }
     }
   }
 
@@ -147,7 +183,10 @@ class _AdminPageState extends State<AdminPage> {
       await _loadCategories();
     } catch (e) {
       if (!mounted) return;
-      _showError('Failed to save product.\n\n${e.toString()}');
+      _showError(
+        ProductService.toUserMessage(e, action: 'save product') +
+            '\n\nDetails: ${e.toString()}',
+      );
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -470,6 +509,33 @@ class _AdminPageState extends State<AdminPage> {
           // autocomplete options reflect the addition immediately.
           onCategoriesChanged: () => setState(() {}),
         ),
+        if (_isLoadingCategories)
+          const Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+        if (_categoriesLoadError != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _categoriesLoadError!,
+                    style: const TextStyle(color: Colors.redAccent, fontSize: 12),
+                  ),
+                ),
+                TextButton(
+                  onPressed: _isLoadingCategories ? null : _loadCategories,
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
         const SizedBox(height: 32),
         _sectionHeader(context, 'Product Images'),
         const SizedBox(height: 8),

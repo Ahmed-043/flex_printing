@@ -1,31 +1,42 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../models/product/category.dart';
+import '../models/product/category.dart' as product_model;
 import '../models/product/product.dart';
 
 /// Service that wraps all Supabase operations related to products.
 ///
-/// Bucket name: "flec-printing"
+/// Bucket name: "flex-printing"
 /// Tables used: categories, products, product_images, product_specs
 class ProductService {
   ProductService._();
 
   static SupabaseClient get _client => Supabase.instance.client;
 
-  static const String _bucket = 'flec-printing';
+  static const String _bucket = 'flex-printing';
+  static const int _maxCreateAttempts = 2;
 
   // ── Categories ─────────────────────────────────────────────────────────────
 
   /// Loads all categories ordered by name.
-  static Future<List<Category>> fetchCategories() async {
-    final response = await _client
-        .from('categories')
-        .select('id, name, created_at')
-        .order('name', ascending: true);
-    return (response as List)
-        .map((e) => Category.fromJson(e as Map<String, dynamic>))
-        .toList();
+  static Future<List<product_model.Category>> fetchCategories() async {
+    try {
+      final response = await _client
+          .from('categories')
+          .select('id, name, created_at')
+          .order('name', ascending: true)
+          .timeout(const Duration(seconds: 12));
+      return (response as List)
+          .map((e) => product_model.Category.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on TimeoutException {
+      throw Exception('Categories request timed out.');
+    } catch (e) {
+      debugPrint('ProductService.fetchCategories failed: $e');
+      rethrow;
+    }
   }
 
   /// Returns the id of an existing category with [name] (case-insensitive),
@@ -69,6 +80,24 @@ class ProductService {
   ///
   /// Returns the new product id on success.
   static Future<int> createProduct(Product product) async {
+    Object? lastError;
+    for (var attempt = 1; attempt <= _maxCreateAttempts; attempt++) {
+      try {
+        return await _createProductOnce(product);
+      } catch (e) {
+        lastError = e;
+        final canRetry = attempt < _maxCreateAttempts && _isTransientNetworkError(e);
+        if (!canRetry) {
+          rethrow;
+        }
+        debugPrint('ProductService.createProduct retrying after transient error: $e');
+        await Future<void>.delayed(const Duration(milliseconds: 600));
+      }
+    }
+    throw lastError ?? Exception('Unknown product save error');
+  }
+
+  static Future<int> _createProductOnce(Product product) async {
     // 1. Category
     int? categoryId;
     if (product.category.trim().isNotEmpty) {
@@ -133,6 +162,30 @@ class ProductService {
     }
 
     return productId;
+  }
+
+  static bool _isTransientNetworkError(Object error) {
+    final msg = error.toString().toLowerCase();
+    return msg.contains('failed host lookup') ||
+        msg.contains('no such host is known') ||
+        msg.contains('socketexception') ||
+        msg.contains('failed to fetch') ||
+        msg.contains('timed out') ||
+        msg.contains('timeoutexception');
+  }
+
+  static String toUserMessage(Object error, {String action = 'complete request'}) {
+    final msg = error.toString().toLowerCase();
+    if (msg.contains('failed host lookup') || msg.contains('no such host is known')) {
+      return 'Could not reach Supabase host while trying to $action. Check internet/DNS and confirm the project URL.';
+    }
+    if (msg.contains('failed to fetch') || msg.contains('socketexception')) {
+      return 'Network error while trying to $action. Please check connection and retry.';
+    }
+    if (msg.contains('timed out') || msg.contains('timeoutexception')) {
+      return 'Request timed out while trying to $action. Please retry.';
+    }
+    return 'Unable to $action right now. Please retry.';
   }
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
