@@ -313,7 +313,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
                     height: 24,
                     child: CircularProgressIndicator(
                       strokeWidth: 2.5,
-                      color: Theme.of(context).colorScheme.secondary,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   )
                       :  Text(
