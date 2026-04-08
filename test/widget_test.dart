@@ -61,7 +61,7 @@ void main() {
     expect(find.text('Create Product'), findsNothing);
 
     await tester.tap(find.text('New Product'));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('Create Product'), findsOneWidget);
     expect(find.text('Save Product'), findsOneWidget);

@@ -1,3 +1,4 @@
+import 'package:flex_printing/pages/admin_page/create_product_page.dart';
 import 'package:flex_printing/pages/contactus_page/contactus_page.dart';
 import 'package:flex_printing/config/supabase_config.dart';
 import 'package:flex_printing/pages/admin_page/admin_page.dart';
@@ -64,6 +65,12 @@ final GoRouter _router = GoRouter(
           path: 'admin',
           builder: (context, state) => const RootLayout(
             child: AdminPage(),
+          ),
+        ),
+        GoRoute(
+          path: 'admin/create-product',
+          builder: (context, state) => const RootLayout(
+            child: CreateProductPage(),
           ),
         ),
       ],
