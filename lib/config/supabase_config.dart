@@ -27,6 +27,6 @@ Future<void> printCategories({int limit = 100}) async {
 class SupabaseConfig {
   static const String url = 'https://apadmbgopvunfhelqnyv.supabase.co';
   static const String anonKey =
-      'sb_publishable_vMpRtPP560rjA3_TPjxN6Q_XghQlnBY';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFwYWRtYmdvcHZ1bmZoZWxxbnl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTE4MzgsImV4cCI6MjA5MDk2NzgzOH0.FmlEf0zKpuIw_RhV3ZSk3LPtpOeP-0w9AfOm1jvZbfM';
 }
 

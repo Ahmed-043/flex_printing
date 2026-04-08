@@ -53,6 +53,13 @@ class _AdminPageState extends State<AdminPage> {
   }
 
   Future<void> _loadCategories() async {
+    //await Supabase.instance.client.auth.signOut();
+
+    final session = Supabase.instance.client.auth.currentSession;
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user != null) {
+     print('Supabase session user: ${user.email}, id: ${user.id}');
+    }
     if (mounted) {
       setState(() {
         _isLoadingCategories = true;

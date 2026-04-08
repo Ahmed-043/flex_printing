@@ -17,10 +17,16 @@ Future<void> main() async {
       anonKey: SupabaseConfig.anonKey,
     );
 
-    await Supabase.instance.client.auth.signInWithPassword(
+    final response = await Supabase.instance.client.auth.signInWithPassword(
       email: 'ahmadmughal32111@gmail.com',
       password: 'mughal13579',
     );
+
+    if (response.user != null && response.session != null) {
+      debugPrint('Login successful for user: ${response.user!.email}');
+    } else {
+      debugPrint('Login failed: ${response.user}');
+    }
 
     // Confirms initialize() completed successfully.
     debugPrint('Supabase init OK: ${SupabaseConfig.url}');
