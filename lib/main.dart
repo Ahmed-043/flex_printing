@@ -16,24 +16,6 @@ Future<void> main() async {
       url: SupabaseConfig.url,
       anonKey: SupabaseConfig.anonKey,
     );
-
-    final response = await Supabase.instance.client.auth.signInWithPassword(
-      email: 'ahmadmughal32111@gmail.com',
-      password: 'mughal13579',
-    );
-
-    if (response.user != null && response.session != null) {
-      debugPrint('Login successful for user: ${response.user!.email}');
-    } else {
-      debugPrint('Login failed: ${response.user}');
-    }
-
-    // Confirms initialize() completed successfully.
-    debugPrint('Supabase init OK: ${SupabaseConfig.url}');
-
-    // Optional lightweight runtime check:
-    final session = Supabase.instance.client.auth.currentSession;
-    debugPrint('Current session present: ${session != null}');
   } catch (e, st) {
     debugPrint('Supabase init FAILED: $e');
     debugPrintStack(stackTrace: st);
