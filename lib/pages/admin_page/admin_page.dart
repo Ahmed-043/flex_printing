@@ -21,13 +21,8 @@ class _AdminPageState extends State<AdminPage> {
   }
 
   void _openCreateProductPage() {
-    context.go('admin/create-product');
+    context.go('/admin/create-product');
   }
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
