@@ -158,7 +158,7 @@ class _CategoryDropdownTextFieldState extends State<CategoryDropdownTextField> {
                 padding: const EdgeInsets.symmetric(vertical: 6),
                 shrinkWrap: true,
                 itemCount: matches.length,
-                separatorBuilder: (_, __) =>  Divider(height: 1,color: Theme.of(context).colorScheme.surfaceContainer,),
+                separatorBuilder: (_, _) =>  Divider(height: 1,color: Theme.of(context).colorScheme.surfaceContainer,),
                 itemBuilder: (context, index) {
                   final option = matches[index];
                   return ListTile(

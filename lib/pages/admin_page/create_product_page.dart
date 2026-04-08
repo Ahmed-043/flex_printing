@@ -58,7 +58,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
   }
 
   Future<void> _loadCategories() async {
-    print('Loading categories from Supabase...');
+    debugPrint('Loading categories from Supabase...');
     if (mounted) {
       setState(() {
         _isLoadingCategories = true;
@@ -77,7 +77,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
         _categoryNames = cats.map((c) => c.name).toList();
 
         setState(() {
-          print('Loaded categories: ${_categoryNames.join(', ')}');
+          debugPrint('Loaded categories: ${_categoryNames.join(', ')}');
           _categoriesLoadError = null;
         });
       }

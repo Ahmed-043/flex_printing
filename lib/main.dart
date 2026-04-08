@@ -87,7 +87,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     if (startupError != null) {
       return MaterialApp(
-        title: 'Flex Printing',
+        title: 'TEX PRINT',
         theme: AppTheme.light(),
         darkTheme: AppTheme.dark(),
         themeMode: ThemeMode.system,
@@ -96,7 +96,7 @@ class MyApp extends StatelessWidget {
     }
 
     return MaterialApp.router(
-      title: 'Flex Printing',
+      title: 'TEX PRINT',
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system, // uses device setting for now
