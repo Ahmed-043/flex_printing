@@ -1,5 +1,6 @@
 import 'package:flex_printing/shared_widgets/category_drowdown.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../models/System/system.dart';
@@ -49,13 +50,15 @@ class _CreateProductPageState extends State<CreateProductPage> {
   @override
   void initState() {
     super.initState();
+    _loadCategories();
   }
 
   void _showAdminLandingPage() {
-    Navigator.pop(context);
+    context.go('/admin');
   }
 
   Future<void> _loadCategories() async {
+    print('Loading categories from Supabase...');
     if (mounted) {
       setState(() {
         _isLoadingCategories = true;
@@ -69,22 +72,12 @@ class _CreateProductPageState extends State<CreateProductPage> {
         debugPrint('Supabase session user: ${user.email}, id: ${user.id}');
       }
       debugPrint('Supabase current session present: ${session != null}');
-
-      try {
-        final res = await Supabase.instance.client
-            .from('categories')
-            .select('id')
-            .limit(1);
-        debugPrint('ok: $res');
-      } catch (e, st) {
-        debugPrint('categories select error: $e');
-        debugPrint('$st');
-      }
-      final List<product_model.Category> cats =
-      await ProductService.fetchCategories();
+      final List<product_model.Category> cats = await ProductService.fetchCategories();
       if (mounted) {
+        _categoryNames = cats.map((c) => c.name).toList();
+
         setState(() {
-          _categoryNames = cats.map((c) => c.name).toList();
+          print('Loaded categories: ${_categoryNames.join(', ')}');
           _categoriesLoadError = null;
         });
       }
@@ -217,7 +210,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
   void _showSuccess(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(message,style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),),
         backgroundColor: Theme.of(context).colorScheme.secondary,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -280,8 +273,8 @@ class _CreateProductPageState extends State<CreateProductPage> {
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
                   onPressed: _showAdminLandingPage,
-                  icon: const Icon(Icons.arrow_back),
-                  label: const Text('Back to Admin',style: TextStyle(color: Colors.black),),
+                  icon:  Icon(Icons.arrow_back,color: Theme.of(context).colorScheme.onPrimary),
+                  label: Text('Back to Admin',style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),),
                 ),
               ),
               const SizedBox(height: 8),
@@ -315,20 +308,20 @@ class _CreateProductPageState extends State<CreateProductPage> {
                   ),
                   elevation: 2,
                   child: _isSaving
-                      ? const SizedBox(
+                      ? SizedBox(
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(
                       strokeWidth: 2.5,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   )
-                      : const Text(
+                      :  Text(
                     'Save Product',
                     style: TextStyle(
                       fontSize: 18,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
@@ -522,23 +515,22 @@ class _CreateProductPageState extends State<CreateProductPage> {
       children: [
         _sectionHeader(context, 'Category'),
         const SizedBox(height: 12),
+        if(!_isLoadingCategories)
         CategoryDropdownTextField(
           controller: _categoryController,
           categories: _categoryNames,
-          // CategoryDropdownTextField mutates the passed list in-place when a
-          // new category is typed; the empty setState triggers a rebuild so the
-          // autocomplete options reflect the addition immediately.
-          onCategoriesChanged: () => setState(() {}),
         ),
         if (_isLoadingCategories)
-          const Padding(
-            padding: EdgeInsets.only(top: 8),
-            child: SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          ),
+           Center(
+             child: Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2,color: Theme.of(context).colorScheme.secondary,),
+              ),
+                       ),
+           ),
         if (_categoriesLoadError != null)
           Padding(
             padding: const EdgeInsets.only(top: 8),

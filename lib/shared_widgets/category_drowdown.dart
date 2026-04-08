@@ -136,13 +136,8 @@ class _CategoryDropdownTextFieldState extends State<CategoryDropdownTextField> {
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(color: Color(0xFFD1D5DC)),
                 ),
-                suffixIcon: IconButton(
-                  tooltip: 'Add typed category',
-                  onPressed: _commitTypedValue,
-                  icon: const Icon(Icons.add),
-                ),
+
               ),
-              onSubmitted: (value) => _commitTypedValue(value),
             ),
           ],
         );
@@ -163,12 +158,12 @@ class _CategoryDropdownTextFieldState extends State<CategoryDropdownTextField> {
                 padding: const EdgeInsets.symmetric(vertical: 6),
                 shrinkWrap: true,
                 itemCount: matches.length,
-                separatorBuilder: (_, __) => const Divider(height: 1),
+                separatorBuilder: (_, __) =>  Divider(height: 1,color: Theme.of(context).colorScheme.surfaceContainer,),
                 itemBuilder: (context, index) {
                   final option = matches[index];
                   return ListTile(
                     dense: true,
-                    title: Text(option, style: TextStyle(color: Theme.of(context).colorScheme.onPrimary), overflow: TextOverflow.ellipsis),
+                    title: Text(option, style: TextStyle(fontSize: 14 ,color: Theme.of(context).colorScheme.onPrimary), overflow: TextOverflow.ellipsis),
                     onTap: () => onSelected(option),
                   );
                 },

@@ -44,6 +44,7 @@ dependencies:
   dotted_border: ^3.1.0
   desktop_drop: ^0.6.1
   cross_file: ^0.3.4+2
+  dropdown_textfield: ^1.2.0
 
 dev_dependencies:
   flutter_test:

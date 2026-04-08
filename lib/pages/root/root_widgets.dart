@@ -42,6 +42,7 @@ class NavButton extends StatelessWidget {
   final VoidCallback? onTapOverride;
 
   const NavButton({
+    super.key,
     required this.title,
     required this.route,
     required this.currentRoute,
@@ -53,7 +54,9 @@ class NavButton extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
-    final isSelected = section == null && currentRoute == route;
+    // Match exact route or route prefix (e.g., /admin/create-product matches /admin)
+    final isSelected = section == null &&
+        (currentRoute == route || currentRoute.startsWith('$route/'));
 
     return Padding(
       padding: const EdgeInsets.only(left: 16),
@@ -61,7 +64,7 @@ class NavButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
 
         onTap: () {
-          if (onTapOverride != null) {
+          if (onTapOverride != null && !isSelected) {
             onTapOverride!();
             return;
           }
@@ -197,13 +200,14 @@ class _AdminAuthDialogState extends State<_AdminAuthDialog> {
     final signedIn = _isSignedIn;
 
     return AlertDialog(
+      backgroundColor: theme.colorScheme.onPrimary.withAlpha(150),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Row(
         children: [
           Icon(Icons.admin_panel_settings,
               color: theme.colorScheme.secondary),
           const SizedBox(width: 8),
-          Text(signedIn ? 'Admin' : 'Admin Sign In'),
+          Text(signedIn ? 'Admin' : 'Admin Sign In',style: TextStyle(color: theme.colorScheme.onSecondary),),
         ],
       ),
       content: SizedBox(
@@ -243,11 +247,12 @@ class _AdminAuthDialogState extends State<_AdminAuthDialog> {
                 _labeledField(
                   label: 'Email',
                   child: TextField(
+                    cursorColor:  theme.colorScheme.onSecondary,
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     style: TextStyle(
                         fontSize: 15,
-                        color: theme.colorScheme.onPrimary),
+                        color: theme.colorScheme.onSecondary),
                     decoration: _fieldDecoration(),
                   ),
                 ),
@@ -255,12 +260,13 @@ class _AdminAuthDialogState extends State<_AdminAuthDialog> {
                 _labeledField(
                   label: 'Password',
                   child: TextField(
+                    cursorColor:  theme.colorScheme.onSecondary,
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     onSubmitted: (_) => _signIn(),
                     style: TextStyle(
                         fontSize: 15,
-                        color: theme.colorScheme.onPrimary),
+                        color: theme.colorScheme.onSecondary),
                     decoration: _fieldDecoration().copyWith(
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -278,12 +284,12 @@ class _AdminAuthDialogState extends State<_AdminAuthDialog> {
               ] else ...[
                 Text('Signed in as:',
                     style: TextStyle(
-                        fontSize: 14, color: Colors.grey.shade600)),
+                        fontSize: 14, color: theme.colorScheme.surfaceContainer)),
                 const SizedBox(height: 4),
                 Text(
                   Supabase.instance.client.auth.currentUser!.email ?? '',
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600),
+                      fontSize: 16, fontWeight: FontWeight.w400,letterSpacing: 0.5),
                 ),
                 const SizedBox(height: 8),
               ],
@@ -293,22 +299,26 @@ class _AdminAuthDialogState extends State<_AdminAuthDialog> {
       ),
       actions: _isLoading
           ? [
-        const Padding(
+         Padding(
           padding: EdgeInsets.all(12),
           child: SizedBox(
             width: 24,
             height: 24,
-            child: CircularProgressIndicator(strokeWidth: 2.5),
+            child: CircularProgressIndicator(strokeWidth: 2.5,color: theme.colorScheme.secondary.withAlpha(200)),
           ),
         ),
       ]
           : signedIn
           ? [
         TextButton(
+          style: TextButton.styleFrom(
+            foregroundColor: theme.colorScheme.error,
+            backgroundColor: theme.colorScheme.errorContainer.withAlpha(20),
+          ),
           onPressed: _signOut,
           child: Text('Sign Out',
               style:
-              TextStyle(color: theme.colorScheme.error)),
+              TextStyle(color: theme.colorScheme.secondary)),
         ),
         ElevatedButton(
           onPressed: () {
@@ -348,7 +358,8 @@ class _AdminAuthDialogState extends State<_AdminAuthDialog> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: const TextStyle(
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.onSecondary,
                 fontSize: 15, fontWeight: FontWeight.w500)),
         const SizedBox(height: 8),
         child,
@@ -364,6 +375,7 @@ class _AdminAuthDialogState extends State<_AdminAuthDialog> {
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: const BorderSide(color: Color(0xFFD1D5DC)),
+
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
@@ -373,6 +385,7 @@ class _AdminAuthDialogState extends State<_AdminAuthDialog> {
         borderRadius: BorderRadius.circular(10),
         borderSide: const BorderSide(color: Color(0xFFD1D5DC)),
       ),
+
     );
   }
 }
