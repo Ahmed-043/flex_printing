@@ -384,7 +384,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
         UiHelper.inputField(
           context: context,
           label: 'Description',
-          requiredField: true,
+          requiredField: false,
           hint: 'Describe the product…',
           maxLines: 5,
           keyboardType: TextInputType.multiline,

@@ -98,20 +98,13 @@ class _AdminPageState extends State<AdminPage> {
                           vertical: 14,
                         ),
                         elevation: 2,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.add_box_outlined, color: Colors.white),
-                            SizedBox(width: 12),
-                            Text(
-                              'New Product',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          'New Product',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
