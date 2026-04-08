@@ -1,6 +1,5 @@
 import 'package:flex_printing/shared_widgets/category_drowdown.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../models/System/system.dart';
 import '../../models/product/category.dart' as product_model;
@@ -45,6 +44,9 @@ class _AdminPageState extends State<AdminPage> {
   /// True while [_onSave] is running (prevents double-submit).
   bool _isSaving = false;
 
+  /// When true, the create-product form is shown; otherwise the landing.
+  bool _showForm = false;
+
   @override
   void initState() {
     super.initState();
@@ -53,13 +55,6 @@ class _AdminPageState extends State<AdminPage> {
   }
 
   Future<void> _loadCategories() async {
-    //await Supabase.instance.client.auth.signOut();
-
-    final session = Supabase.instance.client.auth.currentSession;
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user != null) {
-     print('Supabase session user: ${user.email}, id: ${user.id}');
-    }
     if (mounted) {
       setState(() {
         _isLoadingCategories = true;
@@ -67,16 +62,6 @@ class _AdminPageState extends State<AdminPage> {
       });
     }
     try {
-      try {
-        final res = await Supabase.instance.client
-            .from('categories')
-            .select('id')
-            .limit(1);
-        debugPrint('ok: $res');
-      } catch (e, st) {
-        debugPrint('categories select error: $e');
-        debugPrint('$st');
-      }
       final List<product_model.Category> cats =
           await ProductService.fetchCategories();
       if (mounted) {
@@ -86,7 +71,6 @@ class _AdminPageState extends State<AdminPage> {
         });
       }
     } catch (e) {
-      debugPrint('AdminPage: failed to load categories: $e');
       if (mounted) {
         setState(() {
           _categoriesLoadError =
@@ -213,6 +197,7 @@ class _AdminPageState extends State<AdminPage> {
   }
 
   void _showSuccess(String message) {
+    setState(() => _showForm = false);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -254,10 +239,60 @@ class _AdminPageState extends State<AdminPage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    if (!_showForm) {
+      return _buildLanding(context);
+    }
+    return _buildForm(context);
+  }
+
+  Widget _buildLanding(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(height: 80),
+          Center(
+            child: UiHelper.title(context: context, title: 'Admin'),
+          ),
+          const SizedBox(height: 48),
+          SizedBox(
+            height: 64,
+            width: 280,
+            child: UiHelper.button(
+              filled: true,
+              color: theme.colorScheme.secondary,
+              borderRadius: 14,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              elevation: 2,
+              callback: () => setState(() => _showForm = true),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add, color: Colors.white, size: 24),
+                  SizedBox(width: 12),
+                  Text(
+                    'Create Product',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 80),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildForm(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     final isCompact = System.isMobile || screenWidth < 900;
 
     return SingleChildScrollView(
@@ -271,6 +306,16 @@ class _AdminPageState extends State<AdminPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // ── back button ─────────────────────────────────────────────
+              TextButton.icon(
+                onPressed: () => setState(() {
+                  _clearForm();
+                  _showForm = false;
+                }),
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('Back to Admin'),
+              ),
+              SizedBox(height: isCompact ? 8 : 16),
               // ── page title ──────────────────────────────────────────────
               Center(child: UiHelper.title(
                   context: context, title: 'Create Product')),
