@@ -1,23 +1,11 @@
-import 'package:flex_printing/pages/admin_page/create_product_page.dart';
-import 'package:flex_printing/shared_widgets/category_drowdown.dart';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../models/System/system.dart';
-import '../../models/product/category.dart' as product_model;
-import '../../models/product/product.dart';
-import '../../models/product/product_image.dart';
-import '../../models/product/product_spec.dart';
-import '../../services/product_service.dart';
-import '../../shared_widgets/product_image_upload_box.dart';
+
 import '../../shared_widgets/ui_helper.dart';
 
-/// Admin page for creating a new [Product].
-///
-/// Persists data to Supabase via [ProductService].
-/// Layout is responsive: two-column on desktop/tablet, single-column on
-/// mobile (controlled by [System.isMobile] and screen-width breakpoint).
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
 
