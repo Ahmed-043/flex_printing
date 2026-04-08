@@ -1,5 +1,6 @@
 import 'package:flex_printing/shared_widgets/category_drowdown.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../models/System/system.dart';
 import '../../models/product/category.dart' as product_model;
@@ -23,6 +24,8 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
+  bool _showCreateProductPage = false;
+
   // ── form state ────────────────────────────────────────────────────────────
 
   final _nameController = TextEditingController();
@@ -44,14 +47,30 @@ class _AdminPageState extends State<AdminPage> {
   /// True while [_onSave] is running (prevents double-submit).
   bool _isSaving = false;
 
-  /// When true, the create-product form is shown; otherwise the landing.
-  bool _showForm = false;
-
   @override
   void initState() {
     super.initState();
+  }
 
+  void _openCreateProductPage() {
+    if (_showCreateProductPage) {
+      return;
+    }
+
+    setState(() {
+      _showCreateProductPage = true;
+    });
     _loadCategories();
+  }
+
+  void _showAdminLandingPage() {
+    if (!_showCreateProductPage) {
+      return;
+    }
+
+    setState(() {
+      _showCreateProductPage = false;
+    });
   }
 
   Future<void> _loadCategories() async {
@@ -62,6 +81,23 @@ class _AdminPageState extends State<AdminPage> {
       });
     }
     try {
+      final session = Supabase.instance.client.auth.currentSession;
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user != null) {
+        debugPrint('Supabase session user: ${user.email}, id: ${user.id}');
+      }
+      debugPrint('Supabase current session present: ${session != null}');
+
+      try {
+        final res = await Supabase.instance.client
+            .from('categories')
+            .select('id')
+            .limit(1);
+        debugPrint('ok: $res');
+      } catch (e, st) {
+        debugPrint('categories select error: $e');
+        debugPrint('$st');
+      }
       final List<product_model.Category> cats =
           await ProductService.fetchCategories();
       if (mounted) {
@@ -71,6 +107,7 @@ class _AdminPageState extends State<AdminPage> {
         });
       }
     } catch (e) {
+      debugPrint('AdminPage: failed to load categories: $e');
       if (mounted) {
         setState(() {
           _categoriesLoadError =
@@ -175,8 +212,7 @@ class _AdminPageState extends State<AdminPage> {
     } catch (e) {
       if (!mounted) return;
       _showError(
-        ProductService.toUserMessage(e, action: 'save product') +
-            '\n\nDetails: ${e.toString()}',
+        '${ProductService.toUserMessage(e, action: 'save product')}\n\nDetails: ${e.toString()}',
       );
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -197,7 +233,6 @@ class _AdminPageState extends State<AdminPage> {
   }
 
   void _showSuccess(String message) {
-    setState(() => _showForm = false);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -239,59 +274,103 @@ class _AdminPageState extends State<AdminPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_showForm) {
-      return _buildLanding(context);
+    if (!_showCreateProductPage) {
+      return _landingView(context);
     }
-    return _buildForm(context);
+
+    return _createProductView(context);
   }
 
-  Widget _buildLanding(BuildContext context) {
-    final theme = Theme.of(context);
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 80),
-          Center(
-            child: UiHelper.title(context: context, title: 'Admin'),
-          ),
-          const SizedBox(height: 48),
-          SizedBox(
-            height: 64,
-            width: 280,
-            child: UiHelper.button(
-              filled: true,
-              color: theme.colorScheme.secondary,
-              borderRadius: 14,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              elevation: 2,
-              callback: () => setState(() => _showForm = true),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.add, color: Colors.white, size: 24),
-                  SizedBox(width: 12),
-                  Text(
-                    'Create Product',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
+  Widget _landingView(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isCompact = System.isMobile || screenWidth < 900;
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(
+        horizontal: isCompact ? 20 : 60,
+        vertical: 40,
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 820),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(isCompact ? 24 : 36),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(20),
+                      blurRadius: 24,
+                      offset: const Offset(0, 12),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: UiHelper.title(
+                        context: context,
+                        title: 'Admin',
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Start creating a new product from here.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey.shade700,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 64,
+                      child: UiHelper.button(
+                        callback: _openCreateProductPage,
+                        filled: true,
+                        color: Colors.black,
+                        borderRadius: 16,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 14,
+                        ),
+                        elevation: 2,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.add_box_outlined, color: Colors.white),
+                            SizedBox(width: 12),
+                            Text(
+                              'New Product',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
-          const SizedBox(height: 80),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildForm(BuildContext context) {
+  Widget _createProductView(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isCompact = System.isMobile || screenWidth < 900;
 
@@ -306,25 +385,27 @@ class _AdminPageState extends State<AdminPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── back button ─────────────────────────────────────────────
-              TextButton.icon(
-                onPressed: () => setState(() {
-                  _clearForm();
-                  _showForm = false;
-                }),
-                icon: const Icon(Icons.arrow_back),
-                label: const Text('Back to Admin'),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: _showAdminLandingPage,
+                  icon: const Icon(Icons.arrow_back),
+                  label: const Text('Back to Admin'),
+                ),
               ),
-              SizedBox(height: isCompact ? 8 : 16),
+              const SizedBox(height: 8),
+
               // ── page title ──────────────────────────────────────────────
-              Center(child: UiHelper.title(
-                  context: context, title: 'Create Product')),
+              Center(
+                child: UiHelper.title(
+                  context: context,
+                  title: 'Create Product',
+                ),
+              ),
               SizedBox(height: isCompact ? 32 : 48),
 
               // ── main body ───────────────────────────────────────────────
-              isCompact
-                  ? _singleColumn(context)
-                  : _twoColumns(context),
+              isCompact ? _singleColumn(context) : _twoColumns(context),
 
               SizedBox(height: isCompact ? 32 : 48),
 
@@ -335,10 +416,7 @@ class _AdminPageState extends State<AdminPage> {
                 child: UiHelper.button(
                   callback: _isSaving ? null : _onSave,
                   filled: true,
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .secondaryContainer,
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   borderRadius: 14,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,

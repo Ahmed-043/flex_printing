@@ -3,7 +3,7 @@ import 'package:flex_printing/config/supabase_config.dart';
 import 'package:flex_printing/pages/admin_page/admin_page.dart';
 import 'package:flex_printing/pages/home_page/home_page.dart';
 import 'package:flex_printing/pages/products_page/products_page.dart';
-import 'package:flex_printing/pages/root_layout.dart';
+import 'package:flex_printing/pages/root/root_layout.dart';
 import 'package:flex_printing/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

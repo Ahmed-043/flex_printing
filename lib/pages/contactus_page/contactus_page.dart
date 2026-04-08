@@ -16,26 +16,31 @@ class _ContactusPageState extends State<ContactusPage> {
   Widget build(BuildContext context) {
     compact = MediaQuery.of(context).size.width < 1200 ;
 
-    return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 28),
+    return SizedBox(
+      height: MediaQuery.of(context).size.height - 100,
       child: Center(
-        child: compact
-            ? _form(context)
-            : Container(
-          width: 1150,
-          padding: EdgeInsets.symmetric(horizontal: System.isMobile ? 20 : 50, vertical: 28),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withAlpha(20),
-                blurRadius: 24,
-                offset: const Offset(0, 12),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 28),
+          child: Center(
+            child: compact
+                ? _form(context)
+                : Container(
+              width: 1150,
+              padding: EdgeInsets.symmetric(horizontal: System.isMobile ? 20 : 50, vertical: 28),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(20),
+                    blurRadius: 24,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
               ),
-            ],
+              child: _form(context),
+            ),
           ),
-          child: _form(context),
         ),
       ),
     );
