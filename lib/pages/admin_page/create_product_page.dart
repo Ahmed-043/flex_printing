@@ -298,7 +298,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
                 width: double.infinity,
                 height: 56,
                 child: UiHelper.button(
-                  callback: _isSaving ? null : _onSave,
+                  callback: _isSaving ? (){} : _onSave,
                   filled: true,
                   color: Theme.of(context).colorScheme.secondaryContainer,
                   borderRadius: 14,
@@ -313,7 +313,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
                     height: 24,
                     child: CircularProgressIndicator(
                       strokeWidth: 2.5,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                   )
                       :  Text(
