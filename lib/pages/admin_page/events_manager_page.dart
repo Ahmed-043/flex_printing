@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../methods/admin/media_utils.dart';
 import '../../models/System/system.dart';
 import '../../models/product/product_image.dart';
+import '../../shared_widgets/admin_manager_widgets.dart';
 import '../../shared_widgets/product_image_upload_box.dart';
 import '../../shared_widgets/ui_helper.dart';
 
@@ -407,7 +408,7 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
               SizedBox(height: isCompact ? 32 : 48),
 
               // ── Media section ────────────────────────────────────────────
-              _sectionHeader(context, 'Event Images'),
+                const AdminSectionHeader(title: 'Event Images'),
               const SizedBox(height: 8),
               Text(
                 'Add files one at a time. Drag & drop or click to upload.',
@@ -421,7 +422,7 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
               if (_loadingMedia)
                 const Center(child: CircularProgressIndicator())
               else if (_mediaLoadError != null)
-                _ErrorBanner(message: _mediaLoadError!, onRetry: _loadMedia)
+                AdminErrorBanner(message: _mediaLoadError!, onRetry: _loadMedia)
               else ...[
                 if (_items.isNotEmpty) ...[
                   _imagePreviewsSection(context, isCompact),
@@ -438,7 +439,7 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
               const SizedBox(height: 24),
 
               // ── Locations section ────────────────────────────────────────
-              _sectionHeader(context, 'Event Locations'),
+              const AdminSectionHeader(title: 'Event Locations'),
               const SizedBox(height: 8),
               const Text(
                 'Drag to reorder. Tap ✕ to remove. Tap text to edit.',
@@ -449,7 +450,7 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
               if (_loadingLocations)
                 const Center(child: CircularProgressIndicator())
               else if (_locationsLoadError != null)
-                _ErrorBanner(
+                AdminErrorBanner(
                     message: _locationsLoadError!, onRetry: _loadLocations)
               else ...[
                 _buildLocationsSection(),
@@ -525,7 +526,6 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
 
   Widget _imageThumbnail(
       BuildContext context, int index, _MediaItem item, double size) {
-    final theme = Theme.of(context);
     final isDeleted = item.markedForDelete;
 
     Widget imageWidget;
@@ -551,131 +551,12 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
       );
     }
 
-    return SizedBox(
-      width: size,
-      height: size,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: isDeleted
-                ? ColorFiltered(
-                    colorFilter: const ColorFilter.mode(
-                        Colors.grey, BlendMode.saturation),
-                    child: imageWidget,
-                  )
-                : imageWidget,
-          ),
-
-          // "NEW" badge for pending items
-          if (item.isPending)
-            Positioned(
-              bottom: 4,
-              left: 4,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade700,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: const Text(
-                  'NEW',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-
-          // Delete overlay
-          if (isDeleted)
-            Positioned.fill(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Container(
-                  color: Colors.red.withAlpha(60),
-                  child: const Center(
-                    child: Text(
-                      'Will be\ndeleted',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-          // Remove / restore button (top-right)
-          Positioned(
-            top: -6,
-            right: -6,
-            child: GestureDetector(
-              onTap: () => _toggleDeleteMedia(index),
-              child: Container(
-                width: 22,
-                height: 22,
-                decoration: BoxDecoration(
-                  color: isDeleted
-                      ? Colors.green.shade700
-                      : theme.colorScheme.secondary,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isDeleted ? Icons.restore : Icons.close,
-                  size: 14,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-
-          // Drag handle (bottom-right)
-          const Positioned(
-            bottom: 4,
-            right: 4,
-            child: Icon(
-              Icons.drag_handle,
-              size: 16,
-              color: Colors.white70,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _sectionHeader(BuildContext context, String title) {
-    final theme = Theme.of(context);
-    return Row(
-      children: [
-        Container(
-          width: 4,
-          height: 22,
-          decoration: BoxDecoration(
-            color: theme.colorScheme.secondary,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: theme.colorScheme.onPrimary,
-            fontFamily: 'RedHatDisplay',
-            letterSpacing: 0.5,
-          ),
-        ),
-      ],
+    return AdminImageThumbnail(
+      size: size,
+      isPending: item.isPending,
+      isDeleted: isDeleted,
+      image: imageWidget,
+      onToggleDelete: () => _toggleDeleteMedia(index),
     );
   }
 
@@ -713,21 +594,16 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
 
   Widget _buildAddLocationRow() {
     return Row(
+      crossAxisAlignment: .end,
       children: [
         Expanded(
-          child: TextField(
-            controller: _newLocationController,
-            decoration: InputDecoration(
-              hintText: 'Enter location name…',
-              isDense: true,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            onSubmitted: (_) => _addLocation(),
+          child:
+          UiHelper.inputField(
+              controller: _newLocationController,
+              context: context, label: 'Enter location name…',
+              onSubmitted: (_) => _addLocation()
           ),
+
         ),
         const SizedBox(width: 12),
         ElevatedButton.icon(
@@ -735,6 +611,7 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
           icon: const Icon(Icons.add),
           label: const Text('Add'),
           style: ElevatedButton.styleFrom(
+            iconSize: 20,
             backgroundColor: Theme.of(context).colorScheme.secondary,
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
@@ -850,7 +727,7 @@ class _LocationTileState extends State<_LocationTile> {
                           fontSize: 15,
                           color: loc.text.isEmpty
                               ? Colors.grey
-                              : Theme.of(context).colorScheme.onSurface,
+                              : Theme.of(context).colorScheme.onPrimary,
                           decoration:
                               isDeleted ? TextDecoration.lineThrough : null,
                         ),
@@ -901,34 +778,3 @@ class _LocationTileState extends State<_LocationTile> {
 
 // ── Error banner ──────────────────────────────────────────────────────────────
 
-class _ErrorBanner extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
-
-  const _ErrorBanner({required this.message, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.red.shade50,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.red.shade200),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.error_outline, color: Colors.red.shade700),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              message,
-              style: TextStyle(color: Colors.red.shade700),
-            ),
-          ),
-          TextButton(onPressed: onRetry, child: const Text('Retry')),
-        ],
-      ),
-    );
-  }
-}

@@ -63,6 +63,7 @@ class UiHelper {
     int maxLines = 1,
     TextInputType? keyboardType,
     TextEditingController? controller,
+    void Function(String)? onSubmitted,
   }) {
     final labelText = requiredField ? '$label *' : label;
     return Column(
@@ -79,6 +80,7 @@ class UiHelper {
         ),
         const SizedBox(height: 8),
         TextField(
+          onSubmitted: onSubmitted,
           controller: controller,
           keyboardType: keyboardType,
           maxLines: maxLines,

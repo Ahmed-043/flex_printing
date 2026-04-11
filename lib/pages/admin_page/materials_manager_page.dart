@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../methods/admin/media_utils.dart';
 import '../../models/System/system.dart';
 import '../../models/product/product_image.dart';
+import '../../shared_widgets/admin_manager_widgets.dart';
 import '../../shared_widgets/product_image_upload_box.dart';
 import '../../shared_widgets/ui_helper.dart';
 
@@ -308,14 +309,14 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
                 const Center(child: CircularProgressIndicator())
               else
                 if (_loadError != null)
-                  _ErrorBanner(
+                  AdminErrorBanner(
                     message: _loadError!,
                     onRetry: _loadItems,
                   )
                 else
                   ...[
                     // ── Images section ───────────────────────────────────────
-                    _sectionHeader(context, 'Images'),
+                    const AdminSectionHeader(title: 'Images'),
                     const SizedBox(height: 8),
                     Text(
                       'Add files one at a time. Drag & drop or click to upload.',
@@ -414,7 +415,6 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
 
   Widget _imageThumbnail(BuildContext context, int index, _MediaItem item,
       double size) {
-    final theme = Theme.of(context);
     final isDeleted = item.markedForDelete;
 
     Widget imageWidget;
@@ -436,172 +436,17 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
             ? child
             : const Center(
             child: CircularProgressIndicator(strokeWidth: 2)),
-        errorBuilder: (_, __, ___) =>
+        errorBuilder: (_, _, _) =>
         const Center(child: Icon(Icons.broken_image, color: Colors.grey)),
       );
     }
 
-    return SizedBox(
-      width: size,
-      height: size,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: isDeleted
-                ? ColorFiltered(
-              colorFilter: const ColorFilter.mode(
-                  Colors.grey, BlendMode.saturation),
-              child: imageWidget,
-            )
-                : imageWidget,
-          ),
-
-          // "NEW" badge for pending items
-          if (item.isPending)
-            Positioned(
-              bottom: 4,
-              left: 4,
-              child: Container(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade700,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: const Text(
-                  'NEW',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-
-          // Delete overlay
-          if (isDeleted)
-            Positioned.fill(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Container(
-                  color: Colors.red.withAlpha(60),
-                  child: const Center(
-                    child: Text(
-                      'Will be\ndeleted',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-          // Remove / restore button (top-right)
-          Positioned(
-            top: -6,
-            right: -6,
-            child: GestureDetector(
-              onTap: () => _toggleDelete(index),
-              child: Container(
-                width: 22,
-                height: 22,
-                decoration: BoxDecoration(
-                  color: isDeleted
-                      ? Colors.green.shade700
-                      : theme.colorScheme.secondary,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isDeleted ? Icons.restore : Icons.close,
-                  size: 14,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-
-          // Drag handle (bottom-right)
-          const Positioned(
-            bottom: 4,
-            right: 4,
-            child: Icon(
-              Icons.drag_handle,
-              size: 16,
-              color: Colors.white70,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _sectionHeader(BuildContext context, String title) {
-    final theme = Theme.of(context);
-    return Row(
-      children: [
-        Container(
-          width: 4,
-          height: 22,
-          decoration: BoxDecoration(
-            color: theme.colorScheme.secondary,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: theme.colorScheme.onPrimary,
-            fontFamily: 'RedHatDisplay',
-            letterSpacing: 0.5,
-          ),
-        ),
-      ],
-    );
-  }
-}
-// ── Error banner ──────────────────────────────────────────────────────────────
-
-class _ErrorBanner extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
-
-  const _ErrorBanner({required this.message, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.red.shade50,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.red.shade200),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.error_outline, color: Colors.red.shade700),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              message,
-              style: TextStyle(color: Colors.red.shade700),
-            ),
-          ),
-          TextButton(
-            onPressed: onRetry,
-            child: const Text('Retry'),
-          ),
-        ],
-      ),
+    return AdminImageThumbnail(
+      size: size,
+      isPending: item.isPending,
+      isDeleted: isDeleted,
+      image: imageWidget,
+      onToggleDelete: () => _toggleDelete(index),
     );
   }
 }
