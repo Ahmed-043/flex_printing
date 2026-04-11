@@ -53,7 +53,7 @@ class _ProductCardState extends State<ProductCard> {
                   ? Center(
                       child: Icon(
                         Icons.image_not_supported_rounded,
-                        size: 80,
+                        size: System.isMobile ? 35 : 80,
                         color: Theme.of(context).colorScheme.onPrimary.withAlpha(100),
                       ),
                     )
@@ -67,7 +67,7 @@ class _ProductCardState extends State<ProductCard> {
             overflow: TextOverflow.fade,
             textAlign: .center,
             style: TextStyle(
-              fontSize: 35,
+              fontSize: System.isMobile ? 25 : 35,
               fontWeight: .w400,
               color: Theme.of(context).colorScheme.onPrimary,),
           ),
