@@ -170,6 +170,8 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
                         Expanded(
                           child: IconButton(
                             onPressed: () {
+                              /// reset the timer
+                              _startAutoPlay();
                               scrollController.previousPage(
                                 duration: const Duration(seconds: 1),
                                 curve: Curves.easeInOut,
@@ -190,6 +192,8 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
                         Expanded(
                           child: IconButton(
                             onPressed: () {
+                              /// reset the timer
+                              _startAutoPlay();
                               scrollController.nextPage(
                                 duration: const Duration(seconds: 1),
                                 curve: Curves.easeInOut,

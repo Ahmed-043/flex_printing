@@ -1,8 +1,11 @@
+import 'package:flex_printing/methods/products/fetch_categories.dart';
 import 'package:flex_printing/pages/products_page/product_card.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
 
+import '../../methods/products/fetch_products.dart';
 import '../../models/System/system.dart';
+import '../../models/product/product_record.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -12,8 +15,28 @@ class ProductsPage extends StatefulWidget {
 }
 
 class _ProductsPageState extends State<ProductsPage> {
-  List<String> categories = ["All", "Sublimation", "DTF", "UV", "Roll to Roll"];
+  List<String> categories = ["All"];
   int _selectedCategoryIndex = 0;
+  List<ProductRecord> products = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    await fetchCategoryNames().then((names) {
+      setState(() {
+        categories = ["All", ...names];
+      });
+    });
+    final fetchedProducts = await fetchProducts(category: categories[_selectedCategoryIndex]);
+    setState(() {
+      products = fetchedProducts;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +44,7 @@ class _ProductsPageState extends State<ProductsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(height: System.isMobile ? 40 : 190),
+          SizedBox(height: System.isMobile ? 40 : 100),
           UiHelper.title(context: context, title: "Our Products"),
           SizedBox(height: System.isMobile ? 40 : 90),
           SizedBox(
@@ -41,6 +64,7 @@ class _ProductsPageState extends State<ProductsPage> {
                       setState(() {
                         _selectedCategoryIndex = index;
                       });
+                      _loadProducts();
                     },
                   )
               ),
@@ -52,16 +76,16 @@ class _ProductsPageState extends State<ProductsPage> {
             padding: EdgeInsets.symmetric(horizontal: System.isMobile ? 20 :90),
             child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: System.isMobile ? 100 : 200,
+                    maxCrossAxisExtent: System.isMobile ? 150 : 300,
                     childAspectRatio: 3 / 4,
                     crossAxisSpacing: System.isMobile ? 20 : 35,
                     mainAxisSpacing: System.isMobile ? 25 :45
                 ),
-                itemCount: 100,
+                itemCount: products.length,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index){
-                  return ProductCard();
+                  return ProductCard(product: products[index]);
                 }
             ),
           ),

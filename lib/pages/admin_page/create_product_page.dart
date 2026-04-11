@@ -1,10 +1,9 @@
 import 'package:flex_printing/shared_widgets/category_drowdown.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../methods/products/fetch_categories.dart';
 import '../../models/System/system.dart';
-import '../../models/product/category.dart' as product_model;
 import '../../models/product/product.dart';
 import '../../models/product/product_image.dart';
 import '../../models/product/product_spec.dart';
@@ -66,15 +65,9 @@ class _CreateProductPageState extends State<CreateProductPage> {
       });
     }
     try {
-      final session = Supabase.instance.client.auth.currentSession;
-      final user = Supabase.instance.client.auth.currentUser;
-      if (user != null) {
-        debugPrint('Supabase session user: ${user.email}, id: ${user.id}');
-      }
-      debugPrint('Supabase current session present: ${session != null}');
-      final List<product_model.Category> cats = await ProductService.fetchCategories();
+      final categoryNames = await fetchCategoryNames();
       if (mounted) {
-        _categoryNames = cats.map((c) => c.name).toList();
+        _categoryNames = categoryNames;
 
         setState(() {
           debugPrint('Loaded categories: ${_categoryNames.join(', ')}');
@@ -178,9 +171,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
       if (!mounted) return;
       _clearForm();
       _showSuccess(
-        'Product "${product.name}" saved '
-            '(id $productId, ${product.images.length} image(s), '
-            '${product.specs.length} spec(s))',
+        'Product Saved, ID $productId',
       );
       // Refresh category list so a newly added category shows up next time
       await _loadCategories();
@@ -211,7 +202,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message,style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),),
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         duration: const Duration(seconds: 5),
