@@ -1,6 +1,7 @@
 import 'package:flex_printing/models/System/system.dart';
 import 'package:flex_printing/models/product/product_record.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProductCard extends StatefulWidget {
@@ -37,7 +38,12 @@ class _ProductCardState extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
     debugPrint("ProductCard build: ${widget.product.id}, imageUrl: $_imageUrl");
-    return Column(
+    return GestureDetector(
+      onTap: () => context.go(
+        '/products/${widget.product.id}',
+        extra: widget.product,
+      ),
+      child: Column(
       children: [
         Expanded(
           flex: 2,
@@ -73,6 +79,7 @@ class _ProductCardState extends State<ProductCard> {
           ),
         ),
       ],
+      ),
     );
   }
 }
