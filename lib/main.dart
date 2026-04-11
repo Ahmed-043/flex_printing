@@ -1,4 +1,7 @@
+import 'package:flex_printing/pages/admin_page/clients_manager_page.dart';
 import 'package:flex_printing/pages/admin_page/create_product_page.dart';
+import 'package:flex_printing/pages/admin_page/events_manager_page.dart';
+import 'package:flex_printing/pages/admin_page/materials_manager_page.dart';
 import 'package:flex_printing/pages/contactus_page/contactus_page.dart';
 import 'package:flex_printing/config/supabase_config.dart';
 import 'package:flex_printing/pages/admin_page/admin_page.dart';
@@ -118,6 +121,24 @@ final GoRouter _router = GoRouter(
           path: 'admin/create-product',
           builder: (context, state) => const RootLayout(
             child: CreateProductPage(),
+          ),
+        ),
+        GoRoute(
+          path: 'admin/events',
+          builder: (context, state) => const RootLayout(
+            child: EventsManagerPage(),
+          ),
+        ),
+        GoRoute(
+          path: 'admin/materials',
+          builder: (context, state) => const RootLayout(
+            child: MaterialsManagerPage(),
+          ),
+        ),
+        GoRoute(
+          path: 'admin/clients',
+          builder: (context, state) => const RootLayout(
+            child: ClientsManagerPage(),
           ),
         ),
       ],
