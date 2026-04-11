@@ -5,8 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../methods/admin/media_utils.dart';
-import '../../methods/images/image_picker_utils.dart';
 import '../../models/System/system.dart';
+import '../../models/product/product_image.dart';
+import '../../shared_widgets/product_image_upload_box.dart';
 import '../../shared_widgets/ui_helper.dart';
 
 // ── Data models ───────────────────────────────────────────────────────────────
@@ -166,26 +167,11 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
 
   // ── Media actions ─────────────────────────────────────────────────────────
 
-  Future<void> _addImage() async {
-    final picked = await pickImageFile();
-    if (picked == null) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Processing image…'),
-        duration: Duration(seconds: 30),
-      ),
-    );
-
-    final compressed = await compressImageBytes(picked.bytes);
-
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
+  void _addImage(ProductImage img) {
     setState(() {
       _items.add(_MediaItem.pending(
-        localFileName: picked.fileName,
-        localBytes: compressed ?? picked.bytes,
+        localFileName: img.fileName,
+        localBytes: img.displayBytes,
       ));
     });
   }
@@ -201,17 +187,11 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
     });
   }
 
-  void _onReorderMedia(int oldRow, int newRow, int crossAxisCount) {
+  void _reorderImages(int oldIndex, int newIndex) {
     setState(() {
-      if (newRow > oldRow) newRow--;
-      final srcStart = oldRow * crossAxisCount;
-      final dstStart = newRow * crossAxisCount;
-      final srcEnd = (srcStart + crossAxisCount).clamp(0, _items.length);
-      final chunk = _items.sublist(srcStart, srcEnd);
-      _items.removeRange(srcStart, srcEnd);
-      final insertAt =
-          dstStart > srcStart ? dstStart - chunk.length : dstStart;
-      _items.insertAll(insertAt.clamp(0, _items.length), chunk);
+      if (newIndex > oldIndex) newIndex -= 1;
+      final item = _items.removeAt(oldIndex);
+      _items.insert(newIndex, item);
     });
   }
 
@@ -393,51 +373,48 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
   Widget _buildPage(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isCompact = System.isMobile || screenWidth < 900;
-    final crossAxisCount = isCompact ? 2 : 4;
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
-        horizontal: isCompact ? 16 : 48,
-        vertical: 32,
+        horizontal: isCompact ? 20 : 60,
+        vertical: 40,
       ),
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 960),
+          constraints: const BoxConstraints(maxWidth: 1200),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Header ───────────────────────────────────────────────────
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                    tooltip: 'Back to Admin',
-                    onPressed: () => context.go('/admin'),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: UiHelper.title(
-                      context: context,
-                      title: 'Events',
-                    ),
-                  ),
-                ],
-              ),
-
-              // ── Media section ────────────────────────────────────────────
-              const SizedBox(height: 24),
-              Text(
-                'Event Images',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onSurface,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: () => context.go('/admin'),
+                  icon: Icon(Icons.arrow_back,
+                      color: Theme.of(context).colorScheme.onPrimary),
+                  label: Text('Back to Admin',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary)),
                 ),
               ),
-              const SizedBox(height: 4),
-              const Text(
-                'Drag to reorder. Tap ✕ to remove.',
-                style: TextStyle(fontSize: 13, color: Colors.grey),
+              const SizedBox(height: 8),
+              Center(
+                child: UiHelper.title(
+                  context: context,
+                  title: 'Events',
+                ),
+              ),
+              SizedBox(height: isCompact ? 32 : 48),
+
+              // ── Media section ────────────────────────────────────────────
+              _sectionHeader(context, 'Event Images'),
+              const SizedBox(height: 8),
+              Text(
+                'Add files one at a time. Drag & drop or click to upload.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                ),
               ),
               const SizedBox(height: 16),
 
@@ -446,40 +423,23 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
               else if (_mediaLoadError != null)
                 _ErrorBanner(message: _mediaLoadError!, onRetry: _loadMedia)
               else ...[
-                if (_items.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 24),
-                    child: Center(
-                      child: Text(
-                        'No images yet. Add some below.',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  )
-                else
-                  _buildReorderableGrid(crossAxisCount),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: _saving ? null : _addImage,
-                  icon: const Icon(Icons.add_photo_alternate_outlined),
-                  label: const Text('Add Image'),
+                if (_items.isNotEmpty) ...[
+                  _imagePreviewsSection(context, isCompact),
+                  const SizedBox(height: 16),
+                ],
+                SizedBox(
+                  height: 150,
+                  child: ProductImageUploadBox(onImageAdded: _addImage),
                 ),
               ],
 
-              const SizedBox(height: 40),
+              SizedBox(height: isCompact ? 32 : 48),
               const Divider(),
               const SizedBox(height: 24),
 
               // ── Locations section ────────────────────────────────────────
-              Text(
-                'Event Locations',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 4),
+              _sectionHeader(context, 'Event Locations'),
+              const SizedBox(height: 8),
               const Text(
                 'Drag to reorder. Tap ✕ to remove. Tap text to edit.',
                 style: TextStyle(fontSize: 13, color: Colors.grey),
@@ -497,34 +457,36 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
                 _buildAddLocationRow(),
               ],
 
-              const SizedBox(height: 32),
+              SizedBox(height: isCompact ? 32 : 48),
 
-              // ── Single Save button ───────────────────────────────────────
+              // ── Save button ──────────────────────────────────────────────
               SizedBox(
                 width: double.infinity,
+                height: 56,
                 child: UiHelper.button(
                   callback: _saving ? null : _save,
                   filled: true,
-                  color: Colors.black,
-                  borderRadius: 12,
+                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  borderRadius: 14,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 24, vertical: 16),
+                      horizontal: 24, vertical: 12),
                   elevation: 2,
                   child: _saving
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
+                      ? SizedBox(
+                          width: 24,
+                          height: 24,
                           child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
+                            strokeWidth: 2.5,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         )
-                      : const Text(
+                      : Text(
                           'Save All Changes',
                           style: TextStyle(
-                            fontSize: 17,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
+                            color:
+                                Theme.of(context).colorScheme.onSecondary,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                 ),
@@ -537,59 +499,183 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
     );
   }
 
-  Widget _buildReorderableGrid(int crossAxisCount) {
-    final rowCount = (_items.length / crossAxisCount).ceil();
+  Widget _imagePreviewsSection(BuildContext context, bool isCompact) {
+    final thumbSize = isCompact ? 90.0 : 110.0;
 
-    return ReorderableListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      buildDefaultDragHandles: false,
-      itemCount: rowCount,
-      onReorder: (o, n) => _onReorderMedia(o, n, crossAxisCount),
-      itemBuilder: (context, rowIndex) {
-        final start = rowIndex * crossAxisCount;
-        final end = (start + crossAxisCount).clamp(0, _items.length);
-        final rowItems = _items.sublist(start, end);
+    return SizedBox(
+      height: thumbSize + 32,
+      child: ReorderableListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _items.length,
+        onReorder: _reorderImages,
+        buildDefaultDragHandles: false,
+        itemBuilder: (context, index) {
+          return ReorderableDragStartListener(
+            key: ValueKey(index),
+            index: index,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: _imageThumbnail(context, index, _items[index], thumbSize),
+            ),
+          );
+        },
+      ),
+    );
+  }
 
-        return Material(
-          key: ValueKey('media_row_$rowIndex'),
-          color: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ReorderableDragStartListener(
-                  index: rowIndex,
-                  child: const Padding(
-                    padding: EdgeInsets.only(right: 8, top: 40),
-                    child: Icon(Icons.drag_handle, color: Colors.grey),
+  Widget _imageThumbnail(
+      BuildContext context, int index, _MediaItem item, double size) {
+    final theme = Theme.of(context);
+    final isDeleted = item.markedForDelete;
+
+    Widget imageWidget;
+    if (item.isPending) {
+      imageWidget = Image.memory(
+        item.localBytes!,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+      );
+    } else {
+      imageWidget = Image.network(
+        item.publicUrl()!,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        loadingBuilder: (_, child, progress) => progress == null
+            ? child
+            : const Center(
+                child: CircularProgressIndicator(strokeWidth: 2)),
+        errorBuilder: (_, __, ___) =>
+            const Center(child: Icon(Icons.broken_image, color: Colors.grey)),
+      );
+    }
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: isDeleted
+                ? ColorFiltered(
+                    colorFilter: const ColorFilter.mode(
+                        Colors.grey, BlendMode.saturation),
+                    child: imageWidget,
+                  )
+                : imageWidget,
+          ),
+
+          // "NEW" badge for pending items
+          if (item.isPending)
+            Positioned(
+              bottom: 4,
+              left: 4,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade700,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Text(
+                  'NEW',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                Expanded(
-                  child: Row(
-                    children: [
-                      for (int col = 0; col < crossAxisCount; col++)
-                        Expanded(
-                          child: col < rowItems.length
-                              ? Padding(
-                                  padding: const EdgeInsets.only(right: 8),
-                                  child: _ImageTile(
-                                    item: rowItems[col],
-                                    onDelete: () =>
-                                        _toggleDeleteMedia(start + col),
-                                  ),
-                                )
-                              : const SizedBox.shrink(),
-                        ),
-                    ],
+              ),
+            ),
+
+          // Delete overlay
+          if (isDeleted)
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  color: Colors.red.withAlpha(60),
+                  child: const Center(
+                    child: Text(
+                      'Will be\ndeleted',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
+                    ),
                   ),
                 ),
-              ],
+              ),
+            ),
+
+          // Remove / restore button (top-right)
+          Positioned(
+            top: -6,
+            right: -6,
+            child: GestureDetector(
+              onTap: () => _toggleDeleteMedia(index),
+              child: Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: isDeleted
+                      ? Colors.green.shade700
+                      : theme.colorScheme.secondary,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  isDeleted ? Icons.restore : Icons.close,
+                  size: 14,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
-        );
-      },
+
+          // Drag handle (bottom-right)
+          const Positioned(
+            bottom: 4,
+            right: 4,
+            child: Icon(
+              Icons.drag_handle,
+              size: 16,
+              color: Colors.white70,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _sectionHeader(BuildContext context, String title) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        Container(
+          width: 4,
+          height: 22,
+          decoration: BoxDecoration(
+            color: theme.colorScheme.secondary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: theme.colorScheme.onPrimary,
+            fontFamily: 'RedHatDisplay',
+            letterSpacing: 0.5,
+          ),
+        ),
+      ],
     );
   }
 
@@ -656,114 +742,6 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
             ),
           ),
         ),
-      ],
-    );
-  }
-}
-
-// ── Image tile ────────────────────────────────────────────────────────────────
-
-class _ImageTile extends StatelessWidget {
-  final _MediaItem item;
-  final VoidCallback onDelete;
-
-  const _ImageTile({required this.item, required this.onDelete});
-
-  @override
-  Widget build(BuildContext context) {
-    final isDeleted = item.markedForDelete;
-
-    return Stack(
-      children: [
-        AspectRatio(
-          aspectRatio: 1,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: ColorFiltered(
-              colorFilter: isDeleted
-                  ? const ColorFilter.mode(Colors.red, BlendMode.saturation)
-                  : const ColorFilter.mode(
-                      Colors.transparent, BlendMode.dst),
-              child: item.isPending
-                  ? Image.memory(item.localBytes!, fit: BoxFit.cover)
-                  : Image.network(
-                      item.publicUrl()!,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (_, child, progress) =>
-                          progress == null
-                              ? child
-                              : const Center(
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2)),
-                      errorBuilder: (_, __, ___) => const Center(
-                        child:
-                            Icon(Icons.broken_image, color: Colors.grey),
-                      ),
-                    ),
-            ),
-          ),
-        ),
-        if (item.isPending)
-          Positioned(
-            top: 4,
-            left: 4,
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.green.shade700,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: const Text(
-                'NEW',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-        Positioned(
-          top: 4,
-          right: 4,
-          child: GestureDetector(
-            onTap: onDelete,
-            child: Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: isDeleted
-                    ? Colors.green.shade700
-                    : Colors.red.shade600,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                isDeleted ? Icons.restore : Icons.close,
-                color: Colors.white,
-                size: 16,
-              ),
-            ),
-          ),
-        ),
-        if (isDeleted)
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                color: Colors.red.withAlpha(60),
-                child: const Center(
-                  child: Text(
-                    'Will be\ndeleted',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12),
-                  ),
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }
