@@ -89,10 +89,11 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
           .order('created_at', ascending: true);
       setState(() {
         _items = (rows as List)
-            .map((r) => _MediaItem.existing(
-                  id: r['id'] as int,
-                  path: r['path'] as String,
-                ))
+            .map((r) =>
+            _MediaItem.existing(
+              id: r['id'] as int,
+              path: r['path'] as String,
+            ))
             .toList();
         _loading = false;
       });
@@ -160,9 +161,9 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
         final ext = extensionFromFileName(item.localFileName ?? 'image');
         final storagePath = '$_storageFolder/${generateUuid()}.$ext';
         await client.storage.from(_bucket).uploadBinary(
-              storagePath,
-              item.localBytes!,
-            );
+          storagePath,
+          item.localBytes!,
+        );
         item.uploadedPath = storagePath;
       }
 
@@ -258,7 +259,10 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
   }
 
   Widget _buildPage(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     final isCompact = System.isMobile || screenWidth < 900;
 
     return SingleChildScrollView(
@@ -278,10 +282,16 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
                 child: TextButton.icon(
                   onPressed: () => context.go('/admin'),
                   icon: Icon(Icons.arrow_back,
-                      color: Theme.of(context).colorScheme.onPrimary),
+                      color: Theme
+                          .of(context)
+                          .colorScheme
+                          .onPrimary),
                   label: Text('Back to Admin',
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary)),
+                          color: Theme
+                              .of(context)
+                              .colorScheme
+                              .onPrimary)),
                 ),
               ),
               const SizedBox(height: 8),
@@ -296,34 +306,36 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
               // ── Loading / error ──────────────────────────────────────────
               if (_loading)
                 const Center(child: CircularProgressIndicator())
-              else if (_loadError != null)
-                _ErrorBanner(
-                  message: _loadError!,
-                  onRetry: _loadItems,
-                )
-              else ...[
-                // ── Images section ───────────────────────────────────────
-                _sectionHeader(context, 'Images'),
-                const SizedBox(height: 8),
-                Text(
-                  'Add files one at a time. Drag & drop or click to upload.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                const SizedBox(height: 16),
+              else
+                if (_loadError != null)
+                  _ErrorBanner(
+                    message: _loadError!,
+                    onRetry: _loadItems,
+                  )
+                else
+                  ...[
+                    // ── Images section ───────────────────────────────────────
+                    _sectionHeader(context, 'Images'),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Add files one at a time. Drag & drop or click to upload.',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
 
-                if (_items.isNotEmpty) ...[
-                  _imagePreviewsSection(context, isCompact),
-                  const SizedBox(height: 16),
-                ],
+                    if (_items.isNotEmpty) ...[
+                      _imagePreviewsSection(context, isCompact),
+                      const SizedBox(height: 16),
+                    ],
 
-                SizedBox(
-                  height: 150,
-                  child: ProductImageUploadBox(onImageAdded: _addImage),
-                ),
-              ],
+                    SizedBox(
+                      height: 150,
+                      child: ProductImageUploadBox(onImageAdded: _addImage),
+                    ),
+                  ],
 
               SizedBox(height: isCompact ? 32 : 48),
 
@@ -334,29 +346,38 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
                 child: UiHelper.button(
                   callback: _saving ? null : _save,
                   filled: true,
-                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .secondaryContainer,
                   borderRadius: 14,
                   padding: const EdgeInsets.symmetric(
                       horizontal: 24, vertical: 12),
                   elevation: 2,
                   child: _saving
                       ? SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        )
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      color: Theme
+                          .of(context)
+                          .colorScheme
+                          .primary,
+                    ),
+                  )
                       : Text(
-                          'Save Changes',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color:
-                                Theme.of(context).colorScheme.onSecondary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                    'Save Changes',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color:
+                      Theme
+                          .of(context)
+                          .colorScheme
+                          .onSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 60),
@@ -391,8 +412,8 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
     );
   }
 
-  Widget _imageThumbnail(
-      BuildContext context, int index, _MediaItem item, double size) {
+  Widget _imageThumbnail(BuildContext context, int index, _MediaItem item,
+      double size) {
     final theme = Theme.of(context);
     final isDeleted = item.markedForDelete;
 
@@ -410,12 +431,13 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
         width: size,
         height: size,
         fit: BoxFit.cover,
-        loadingBuilder: (_, child, progress) => progress == null
+        loadingBuilder: (_, child, progress) =>
+        progress == null
             ? child
             : const Center(
-                child: CircularProgressIndicator(strokeWidth: 2)),
+            child: CircularProgressIndicator(strokeWidth: 2)),
         errorBuilder: (_, __, ___) =>
-            const Center(child: Icon(Icons.broken_image, color: Colors.grey)),
+        const Center(child: Icon(Icons.broken_image, color: Colors.grey)),
       );
     }
 
@@ -429,10 +451,10 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
             borderRadius: BorderRadius.circular(10),
             child: isDeleted
                 ? ColorFiltered(
-                    colorFilter: const ColorFilter.mode(
-                        Colors.grey, BlendMode.saturation),
-                    child: imageWidget,
-                  )
+              colorFilter: const ColorFilter.mode(
+                  Colors.grey, BlendMode.saturation),
+              child: imageWidget,
+            )
                 : imageWidget,
           ),
 
@@ -443,7 +465,7 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
               left: 4,
               child: Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                 decoration: BoxDecoration(
                   color: Colors.green.shade700,
                   borderRadius: BorderRadius.circular(6),
@@ -546,7 +568,7 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
       ],
     );
   }
-
+}
 // ── Error banner ──────────────────────────────────────────────────────────────
 
 class _ErrorBanner extends StatelessWidget {
