@@ -76,10 +76,10 @@ class _ProductsPageState extends State<ProductsPage> {
             padding: EdgeInsets.symmetric(horizontal: System.isMobile ? 20 :90),
             child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: System.isMobile ? 150 : 300,
+                    maxCrossAxisExtent: System.isMobile ? 180 : 350,
                     childAspectRatio: 3 / 4,
-                    crossAxisSpacing: System.isMobile ? 20 : 35,
-                    mainAxisSpacing: System.isMobile ? 25 :45
+                    crossAxisSpacing: System.isMobile ? 15 : 35,
+                    mainAxisSpacing: System.isMobile ? 20 :45
                 ),
                 itemCount: products.length,
                 shrinkWrap: true,
