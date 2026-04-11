@@ -24,10 +24,21 @@ class _AdminPageState extends State<AdminPage> {
     context.go('/admin/create-product');
   }
 
+  void _openMaterialsPage() {
+    context.go('/admin/materials');
+  }
+
+  void _openClientsPage() {
+    context.go('/admin/clients');
+  }
+
+  void _openEventsPage() {
+    context.go('/admin/events');
+  }
+
   @override
   Widget build(BuildContext context) {
-
-      return _landingView(context);
+    return _landingView(context);
   }
 
   Widget _landingView(BuildContext context) {
@@ -123,7 +134,7 @@ class _AdminPageState extends State<AdminPage> {
                       width: double.infinity,
                       height: 64,
                       child: UiHelper.button(
-                        callback: _openCreateProductPage,
+                        callback: _openMaterialsPage,
                         filled: true,
                         color: Colors.black,
                         borderRadius: 16,
@@ -157,7 +168,7 @@ class _AdminPageState extends State<AdminPage> {
                       width: double.infinity,
                       height: 64,
                       child: UiHelper.button(
-                        callback: _openCreateProductPage,
+                        callback: _openClientsPage,
                         filled: true,
                         color: Colors.black,
                         borderRadius: 16,
@@ -191,7 +202,7 @@ class _AdminPageState extends State<AdminPage> {
                       width: double.infinity,
                       height: 64,
                       child: UiHelper.button(
-                        callback: _openCreateProductPage,
+                        callback: _openEventsPage,
                         filled: true,
                         color: Colors.black,
                         borderRadius: 16,
