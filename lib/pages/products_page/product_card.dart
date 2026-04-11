@@ -38,12 +38,16 @@ class _ProductCardState extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
     debugPrint("ProductCard build: ${widget.product.id}, imageUrl: $_imageUrl");
-    return GestureDetector(
+    return InkWell(
       onTap: () => context.go(
         '/products/${widget.product.id}',
         extra: widget.product,
       ),
-      child: Column(
+      borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
+      child: Semantics(
+        label: 'View ${widget.product.name} details',
+        button: true,
+        child: Column(
       children: [
         Expanded(
           flex: 2,
@@ -79,6 +83,7 @@ class _ProductCardState extends State<ProductCard> {
           ),
         ),
       ],
+      ),
       ),
     );
   }

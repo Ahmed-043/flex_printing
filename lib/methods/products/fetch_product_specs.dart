@@ -16,7 +16,9 @@ Future<List<ProductSpecRecord>> fetchProductSpecs(int productId) async {
         .eq('product_id', productId)
         .order('sort_order', ascending: true);
 
-    return (response as List)
+    if (response is! List) return const <ProductSpecRecord>[];
+
+    return response
         .map((row) => ProductSpecRecord.fromJson(row as Map<String, dynamic>))
         .toList(growable: false);
   } catch (e) {
