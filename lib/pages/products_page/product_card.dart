@@ -33,7 +33,7 @@ class ProductCard extends StatelessWidget {
               width: double.infinity,
               height: double.infinity,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainer,
+                color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(150),
               ),
               child: imageUrl == null
                   ? Center(

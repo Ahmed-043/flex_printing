@@ -30,6 +30,9 @@ Future<PickedFile?> pickImageFile() async {
 /// Compresses [imageBytes] using JPEG encoding when the file exceeds size
 /// thresholds (mirrors the logic from inventry_management/files.dart).
 ///
+/// Images larger than 1080p bounds are downscaled to fit within 1920x1080
+/// while preserving aspect ratio before compression.
+///
 /// - > 1 200 KB  → quality 40
 /// - > 500 KB    → quality 70
 /// - ≤ 500 KB    → returned as-is
@@ -49,8 +52,29 @@ Future<Uint8List?> compressImageBytes(Uint8List imageBytes) async {
 Uint8List? _compressOnIsolate(Uint8List bytes) {
   final length = bytes.lengthInBytes;
   if (length <= 500 * 1024) return bytes;
+
   final decoded = img.decodeImage(bytes);
   if (decoded == null) return null;
+
+  const maxWidth = 1920;
+  const maxHeight = 1080;
+  var outputImage = decoded;
+
+  final widthScale = maxWidth / decoded.width;
+  final heightScale = maxHeight / decoded.height;
+  final scale = widthScale < heightScale ? widthScale : heightScale;
+
+  if (scale < 1) {
+    final targetWidth = (decoded.width * scale).round().clamp(1, maxWidth);
+    final targetHeight = (decoded.height * scale).round().clamp(1, maxHeight);
+    outputImage = img.copyResize(
+      decoded,
+      width: targetWidth,
+      height: targetHeight,
+      interpolation: img.Interpolation.average,
+    );
+  }
+
   final quality = length > 1200 * 1024 ? 40 : 70;
-  return Uint8List.fromList(img.encodeJpg(decoded, quality: quality));
+  return Uint8List.fromList(img.encodeJpg(outputImage, quality: quality));
 }

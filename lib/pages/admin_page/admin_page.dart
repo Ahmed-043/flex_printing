@@ -108,6 +108,108 @@ class _AdminPageState extends State<AdminPage> {
                         ),
                       ),
                     ),
+
+                    const SizedBox(height: 50),
+                    Text(
+                      'Update Materials and Parts',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey.shade700,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 64,
+                      child: UiHelper.button(
+                        callback: _openCreateProductPage,
+                        filled: true,
+                        color: Colors.black,
+                        borderRadius: 16,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 14,
+                        ),
+                        elevation: 2,
+                        child: Text(
+                          'Materials & Parts',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 50),
+                    Text(
+                      'Update Clients',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey.shade700,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 64,
+                      child: UiHelper.button(
+                        callback: _openCreateProductPage,
+                        filled: true,
+                        color: Colors.black,
+                        borderRadius: 16,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 14,
+                        ),
+                        elevation: 2,
+                        child: Text(
+                          'Our Clients',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 50),
+                    Text(
+                      'Update Events',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey.shade700,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 64,
+                      child: UiHelper.button(
+                        callback: _openCreateProductPage,
+                        filled: true,
+                        color: Colors.black,
+                        borderRadius: 16,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 14,
+                        ),
+                        elevation: 2,
+                        child: Text(
+                          'Events',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
