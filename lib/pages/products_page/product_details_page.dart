@@ -266,6 +266,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }) {
     return DecoratedBox(
       decoration: BoxDecoration(
+        borderRadius: .circular(12),
         color: isEven ? Colors.white : const Color(0xFFF9FAFB),
         border: isLast
             ? null

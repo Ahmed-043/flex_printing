@@ -50,7 +50,7 @@ class _ProductCardState extends State<ProductCard> {
         child: Column(
       children: [
         Expanded(
-          flex: 2,
+          flex: 3,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
             child: Container(
