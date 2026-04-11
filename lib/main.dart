@@ -40,6 +40,33 @@ String _friendlyStartupError(Object error) {
   return 'Supabase failed to initialize. Please verify your Supabase URL and anon key.';
 }
 
+ProductRecord? _productFromExtra(Object? extra, {int? expectedId}) {
+  if (extra == null) return null;
+
+  if (extra is ProductRecord) {
+    if (expectedId != null && extra.id != expectedId) return null;
+    return extra;
+  }
+
+  if (extra is Map) {
+    try {
+      final json = Map<String, dynamic>.from(extra as Map);
+      final firstImage = json['first_image'];
+      if (firstImage is Map) {
+        json['first_image'] = Map<String, dynamic>.from(firstImage as Map);
+      }
+
+      final parsed = ProductRecord.fromJson(json);
+      if (expectedId != null && parsed.id != expectedId) return null;
+      return parsed;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  return null;
+}
+
 final GoRouter _router = GoRouter(
   routes: [
     GoRoute(
@@ -60,8 +87,11 @@ final GoRouter _router = GoRouter(
             GoRoute(
               path: ':id',
               builder: (context, state) {
-                final product = state.extra as ProductRecord?;
                 final productId = int.tryParse(state.pathParameters['id'] ?? '');
+                final product = _productFromExtra(
+                  state.extra,
+                  expectedId: productId,
+                );
                 return RootLayout(
                   child: ProductDetailsPage(
                     product: product,
