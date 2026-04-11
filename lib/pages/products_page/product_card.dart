@@ -3,49 +3,25 @@ import 'package:flex_printing/models/product/product_record.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-class ProductCard extends StatefulWidget {
+class ProductCard extends StatelessWidget {
   final ProductRecord product;
   const ProductCard({super.key, required this.product});
 
   @override
-  State<ProductCard> createState() => _ProductCardState();
-}
-
-class _ProductCardState extends State<ProductCard> {
-  String? _imageUrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadImage();
-  }
-
-  Future<void> _loadImage() async {
-    final path = widget.product.firstImage?.path;
-
-    if (!mounted) return;
-
-    setState(() {
-      _imageUrl = (path == null || path.isEmpty)
-          ? null
-          : Supabase.instance.client.storage
-                .from('flex-printing')
-                .getPublicUrl(path);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    debugPrint("ProductCard build: ${widget.product.id}, imageUrl: $_imageUrl");
+    final path = product.firstImage?.path;
+    final imageUrl = (path == null || path.isEmpty)
+        ? null
+        : Supabase.instance.client.storage.from('flex-printing').getPublicUrl(path);
+
     return InkWell(
       onTap: () => context.go(
-        '/products/${widget.product.id}',
-        extra: widget.product,
+        '/products/${product.id}',
+        extra: product,
       ),
       borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
       child: Semantics(
-        label: 'View ${widget.product.name} details',
+        label: 'View ${product.name} details',
         button: true,
         child: Column(
       children: [
@@ -59,7 +35,7 @@ class _ProductCardState extends State<ProductCard> {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainer,
               ),
-              child: _imageUrl == null
+              child: imageUrl == null
                   ? Center(
                       child: Icon(
                         Icons.image_not_supported_rounded,
@@ -67,13 +43,17 @@ class _ProductCardState extends State<ProductCard> {
                         color: Theme.of(context).colorScheme.onPrimary.withAlpha(100),
                       ),
                     )
-                  : Image.network(_imageUrl!, fit: BoxFit.cover),
+                  : Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      filterQuality: FilterQuality.low,
+                    ),
             ),
           ),
         ),
         Expanded(
           child: Text(
-            widget.product.name,
+            product.name,
             overflow: TextOverflow.fade,
             textAlign: .center,
             style: TextStyle(
