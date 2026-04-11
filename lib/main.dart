@@ -61,8 +61,12 @@ final GoRouter _router = GoRouter(
               path: ':id',
               builder: (context, state) {
                 final product = state.extra as ProductRecord?;
+                final productId = int.tryParse(state.pathParameters['id'] ?? '');
                 return RootLayout(
-                  child: ProductDetailsPage(product: product),
+                  child: ProductDetailsPage(
+                    product: product,
+                    productId: productId,
+                  ),
                 );
               },
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../methods/products/fetch_product_by_id.dart';
 import '../../methods/products/fetch_product_specs.dart';
 import '../../models/System/system.dart';
 import '../../models/product/product_record.dart';
@@ -12,8 +13,13 @@ class ProductDetailsPage extends StatefulWidget {
   /// The product to display. May be [null] when the page is reached via direct
   /// URL (i.e. no [extra] was provided by go_router).
   final ProductRecord? product;
+  final int? productId;
 
-  const ProductDetailsPage({super.key, required this.product});
+  const ProductDetailsPage({
+    super.key,
+    required this.product,
+    this.productId,
+  });
 
   @override
   State<ProductDetailsPage> createState() => _ProductDetailsPageState();
@@ -23,6 +29,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   List<ProductSpecRecord> _specs = [];
   bool _loadingSpecs = true;
   String? _imageUrl;
+  ProductRecord? _product;
 
   @override
   void initState() {
@@ -31,9 +38,20 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 
   Future<void> _loadData() async {
-    final product = widget.product;
+    ProductRecord? product = widget.product;
+
+    if (product == null && widget.productId != null) {
+      product = await fetchProductById(widget.productId!);
+    }
+
     if (product == null) {
-      setState(() => _loadingSpecs = false);
+      if (!mounted) return;
+      setState(() {
+        _product = null;
+        _specs = const <ProductSpecRecord>[];
+        _imageUrl = null;
+        _loadingSpecs = false;
+      });
       return;
     }
 
@@ -51,6 +69,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
     if (!mounted) return;
     setState(() {
+      _product = product;
       _imageUrl = imageUrl;
       _specs = specs;
       _loadingSpecs = false;
@@ -61,7 +80,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.product == null) {
+    final product = _product;
+    if (product == null) {
+      if (_loadingSpecs) {
+        return const Center(child: CircularProgressIndicator());
+      }
       return _notFound(context);
     }
 
@@ -131,7 +154,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 
   Widget _heroText(BuildContext context, {required bool isCompact}) {
-    final product = widget.product!;
+    final product = _product!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -266,7 +289,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        borderRadius: .circular(12),
+        borderRadius: BorderRadius.circular(12),
         color: isEven ? Colors.white : const Color(0xFFF9FAFB),
         border: isLast
             ? null

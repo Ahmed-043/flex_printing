@@ -77,7 +77,7 @@ class _ProductCardState extends State<ProductCard> {
             overflow: TextOverflow.fade,
             textAlign: .center,
             style: TextStyle(
-              fontSize: System.isMobile ? 25 : 35,
+              fontSize: System.isMobile ? 16 : 35,
               fontWeight: .w400,
               color: Theme.of(context).colorScheme.onPrimary,),
           ),
