@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/product/product_spec_record.dart';
 
 /// Fetches spec rows for a single product from the `product_specs` table,
-/// ordered by [sort_order] ascending.
+/// ordered by `sort_order` ascending.
 ///
 /// Returns an empty list on any error so callers can degrade gracefully.
 Future<List<ProductSpecRecord>> fetchProductSpecs(int productId) async {

@@ -241,8 +241,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           final spec = specs[i];
           final isLast = i == specs.length - 1;
           final label = spec.key ?? '';
-          final value = spec.unit.isNotEmpty
-              ? '${spec.value} ${spec.unit}'
+          final trimmedUnit = spec.unit.trim();
+          final value = trimmedUnit.isNotEmpty
+              ? '${spec.value} $trimmedUnit'
               : spec.value;
           return _specRow(
             context,
