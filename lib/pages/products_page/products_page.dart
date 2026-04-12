@@ -111,6 +111,9 @@ class _ProductsPageState extends State<ProductsPage> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index){
+
+                  //final image = fetchProductImageBytes(products[index].firstImage?.path);
+
                   return ProductCard(product: products[index]);
                 }
             ),

@@ -15,27 +15,55 @@ class ProductCard extends StatefulWidget {
 }
 
 class _ProductCardState extends State<ProductCard> {
-  late final Future<Uint8List?> _imageBytesFuture;
+  Uint8List? _imageBytes;
+  bool _isLoading = false;
+  int _requestId = 0;
 
   @override
   void initState() {
     super.initState();
-    _imageBytesFuture = _loadImageBytes();
+    _loadImage();
   }
 
-  Future<Uint8List?> _loadImageBytes() async {
+  @override
+  void didUpdateWidget(covariant ProductCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.product.firstImage?.path != widget.product.firstImage?.path) {
+      _loadImage();
+    }
+  }
+
+  Future<void> _loadImage() async {
     final path = widget.product.firstImage?.path;
+    final requestId = ++_requestId;
+
     if (path == null || path.isEmpty) {
-      return null;
+      if (!mounted || requestId != _requestId) return;
+      setState(() {
+        _imageBytes = null;
+        _isLoading = false;
+      });
+      return;
     }
 
+    setState(() {
+      _isLoading = true;
+    });
+
+    Uint8List? bytes;
     try {
-      return await Supabase.instance.client.storage
+      bytes = await Supabase.instance.client.storage
           .from('flex-printing')
           .download(path);
     } catch (_) {
-      return null;
+      bytes = null;
     }
+
+    if (!mounted || requestId != _requestId) return;
+    setState(() {
+      _imageBytes = bytes;
+      _isLoading = false;
+    });
   }
 
   @override
@@ -61,32 +89,25 @@ class _ProductCardState extends State<ProductCard> {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(150),
               ),
-              child: FutureBuilder<Uint8List?>(
-                future: _imageBytesFuture,
-                builder: (context, snapshot) {
-                  final imageBytes = snapshot.data;
-                  if (snapshot.connectionState != ConnectionState.done) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (imageBytes == null || imageBytes.isEmpty) {
-                    return Center(
-                      child: Icon(
-                        Icons.image_not_supported_rounded,
-                        size: System.isMobile ? 35 : 80,
-                        color: Theme.of(context).colorScheme.onPrimary.withAlpha(100),
-                      ),
-                    );
-                  }
-
-                  return Image.memory(
-                    imageBytes,
-                    fit: BoxFit.cover,
-                    filterQuality: FilterQuality.low,
-                    gaplessPlayback: true,
-                  );
-                },
-              ),
+              child: (_imageBytes == null || _imageBytes!.isEmpty)
+                  ? Center(
+                      child: _isLoading
+                          ? SizedBox(
+                              width: System.isMobile ? 24 : 36,
+                              height: System.isMobile ? 24 : 36,
+                              child: const CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Icon(
+                              Icons.image_not_supported_rounded,
+                              size: System.isMobile ? 35 : 80,
+                              color: Theme.of(context).colorScheme.onPrimary.withAlpha(100),
+                            ),
+                    )
+                  : Image.memory(
+                      _imageBytes!,
+                      fit: BoxFit.cover,
+                      filterQuality: FilterQuality.low,
+                    ),
             ),
           ),
         ),
