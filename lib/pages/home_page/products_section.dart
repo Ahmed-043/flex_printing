@@ -97,8 +97,6 @@ class _ProductsSectionState extends State<ProductsSection> {
         crossAxisAlignment: .center,
         children: [
           ...ourProducts(context),
-          SizedBox(height: System.isMobile ? 150 : 370),
-          ...materials(context),
         ],
       ),
     );
@@ -156,47 +154,57 @@ class _ProductsSectionState extends State<ProductsSection> {
     ];
   }
 
-  List<Widget> materials(BuildContext context) {
-    return [
-      UiHelper.title(context: context, title: "Material & Parts"),
-      SizedBox(height: System.isMobile ? 20 : 50),
-      Text(
-        "All material and parts${System.isMobile ? "\n" : " "}are available",
-        textAlign: .center,
-        style: TextStyle(
-          fontSize: System.isMobile ? 20 : 58,
-          color: Theme.of(context).colorScheme.secondaryContainer,
+}
 
-        ),
-      ),
-      SizedBox(height: System.isMobile ? 30 : 75),
-      SizedBox(
+class MaterialsSection extends StatelessWidget {
+  const MaterialsSection({super.key});
 
-        width: double.infinity,
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: List.generate(
-              10,
-              (index) => Container(
-                height: System.isMobile ? 185 : 485,
-                width: System.isMobile ? 155 : 410,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(500),
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.image,
-                    color: Colors.grey,
-                    size: System.isMobile ? 30 : 80,
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          UiHelper.title(context: context, title: "Material & Parts"),
+          SizedBox(height: System.isMobile ? 20 : 50),
+          Text(
+            "All material and parts${System.isMobile ? "\n" : " "}are available",
+            textAlign: .center,
+            style: TextStyle(
+              fontSize: System.isMobile ? 20 : 58,
+              color: Theme.of(context).colorScheme.secondaryContainer,
+            ),
+          ),
+          SizedBox(height: System.isMobile ? 30 : 75),
+          SizedBox(
+            width: double.infinity,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(
+                  10,
+                  (index) => Container(
+                    height: System.isMobile ? 185 : 485,
+                    width: System.isMobile ? 155 : 410,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(500),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.image,
+                        color: Colors.grey,
+                        size: System.isMobile ? 30 : 80,
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
+        ],
       ),
-    ];
+    );
   }
 }

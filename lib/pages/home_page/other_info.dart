@@ -63,7 +63,6 @@ class OtherInfo extends StatelessWidget {
     }
 
     return SizedBox(
-      //height: System.isMobile ? 1300 : 1900,
       width: double.infinity,
       child: Column(
         children: [
@@ -76,7 +75,22 @@ class OtherInfo extends StatelessWidget {
               alignment: .center,
               children: info(),
             ),
-          SizedBox(height: System.isMobile ? 150 : 270),
+        ],
+      ),
+    );
+  }
+
+}
+
+class OurEquipmentsSection extends StatelessWidget {
+  const OurEquipmentsSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        children: [
           UiHelper.title(context: context, title: "Our Equipments"),
           SizedBox(height: System.isMobile ? 40 : 80),
           SizedBox(
@@ -87,14 +101,17 @@ class OtherInfo extends StatelessWidget {
               fit: BoxFit.contain,
             ),
           ),
-          SizedBox(height: System.isMobile ? 150 : 250),
-          _footer(context),
         ],
       ),
     );
   }
+}
 
-  Widget _footer(BuildContext context) {
+class FooterSection extends StatelessWidget {
+  const FooterSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       height: System.isMobile ? 220 : 410,
       width: double.infinity,
@@ -292,8 +309,9 @@ class OtherInfo extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget svgIcon(String name, {Color? color}) {
+Widget svgIcon(String name, {Color? color}) {
     return SvgPicture.asset(
       'assets/images/icons/$name.svg',
       width: System.isMobile ? 18 : 24,
@@ -303,4 +321,3 @@ class OtherInfo extends StatelessWidget {
           : ColorFilter.mode(color, BlendMode.srcIn),
     );
   }
-}

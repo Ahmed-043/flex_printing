@@ -18,6 +18,7 @@ class _ProductsPageState extends State<ProductsPage> {
   List<String> categories = ["All"];
   int _selectedCategoryIndex = 0;
   List<ProductRecord> products = [];
+  int _loadRequestId = 0;
 
   @override
   void initState() {
@@ -26,16 +27,44 @@ class _ProductsPageState extends State<ProductsPage> {
     _loadProducts();
   }
 
-  Future<void> _loadProducts() async {
-    await fetchCategoryNames().then((names) {
+  Future<void> _loadProducts({int? nextCategoryIndex}) async {
+    final requestId = ++_loadRequestId;
+
+    if (nextCategoryIndex != null) {
+      if (!mounted) return;
       setState(() {
-        categories = ["All", ...names];
+        _selectedCategoryIndex = nextCategoryIndex;
       });
+    }
+
+    final names = await fetchCategoryNames();
+    if (!mounted || requestId != _loadRequestId) return;
+
+    final nextCategories = ["All", ...names];
+    var selectedIndex = _selectedCategoryIndex;
+    if (selectedIndex >= nextCategories.length) {
+      selectedIndex = 0;
+    }
+
+    setState(() {
+      categories = nextCategories;
+      _selectedCategoryIndex = selectedIndex;
     });
-    final fetchedProducts = await fetchProducts(category: categories[_selectedCategoryIndex]);
+
+    final fetchedProducts = await fetchProducts(
+      category: nextCategories[selectedIndex],
+    );
+    if (!mounted || requestId != _loadRequestId) return;
+
     setState(() {
       products = fetchedProducts;
     });
+  }
+
+  @override
+  void dispose() {
+    _loadRequestId++;
+    super.dispose();
   }
 
   @override
@@ -61,10 +90,7 @@ class _ProductsPageState extends State<ProductsPage> {
                     categories[index],
                     selected: index == _selectedCategoryIndex,
                     onPressed: () {
-                      setState(() {
-                        _selectedCategoryIndex = index;
-                      });
-                      _loadProducts();
+                      _loadProducts(nextCategoryIndex: index);
                     },
                   )
               ),

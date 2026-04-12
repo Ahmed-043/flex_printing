@@ -28,29 +28,26 @@ class _HomeContentState extends State<HomeContent> {
   final ScrollController _scrollController = ScrollController();
   final Map<String, GlobalKey> _sectionKeys = {
     'products': GlobalKey(),
+    'materials': GlobalKey(),
     'clients': GlobalKey(),
     'about': GlobalKey(),
     'events': GlobalKey(),
     'upcoming': GlobalKey(),
     'other': GlobalKey(),
+    'equipment': GlobalKey(),
+    'footer': GlobalKey(),
   };
   final Map<String, bool> _visibleSections = {
-    'products': true,
+    'products': false,
+    'materials': false,
     'clients': false,
     'about': false,
     'events': false,
     'upcoming': false,
     'other': false,
+    'equipment': false,
+    'footer': false,
   };
-  final Map<String, double> _fallbackHeights = {
-    'products': 780,
-    'clients': 460,
-    'about': 520,
-    'events': 520,
-    'upcoming': 420,
-    'other': 360,
-  };
-  final Map<String, double> _measuredHeights = {};
   ScrollPosition? _parentScrollPosition;
   final GlobalKey _aboutKey = GlobalKey();
   final GlobalKey _eventsKey = GlobalKey();
@@ -106,7 +103,7 @@ class _HomeContentState extends State<HomeContent> {
       0,
       0,
       viewSize.width,
-      viewSize.height,
+      viewSize.height-250,
     );
     var changed = false;
 
@@ -123,7 +120,6 @@ class _HomeContentState extends State<HomeContent> {
       }
 
       final rect = renderObject.localToGlobal(Offset.zero) & renderObject.size;
-      _measuredHeights[key] = renderObject.size.height;
 
       final intersection = rect.intersect(viewportRect);
       final requiredHeight = (renderObject.size.height * 0.12).clamp(40.0, 180.0);
@@ -133,11 +129,6 @@ class _HomeContentState extends State<HomeContent> {
         _visibleSections[key] = isVisible;
         changed = true;
       }
-    }
-
-    if (!_visibleSections.values.any((value) => value)) {
-      _visibleSections['products'] = true;
-      changed = true;
     }
 
     if (changed) {
@@ -192,6 +183,11 @@ class _HomeContentState extends State<HomeContent> {
               sectionId: 'products',
               child: ProductsSection(),
             ),
+            Container(height: System.isMobile ? 125 : 240),
+            _lazySection(
+              sectionId: 'materials',
+              child: MaterialsSection(),
+            ),
             Container(height: System.isMobile ? 125 : 450),
             _lazySection(
               sectionId: 'clients',
@@ -219,6 +215,13 @@ class _HomeContentState extends State<HomeContent> {
               sectionId: 'other',
               child: OtherInfo(),
             ),
+            Container(height: System.isMobile ? 150 : 270),
+            _lazySection(
+              sectionId: 'equipment',
+              child: OurEquipmentsSection(),
+            ),
+            Container(height: System.isMobile ? 150 : 250),
+            FooterSection(),
           ],
         ),
       ),
@@ -230,27 +233,21 @@ class _HomeContentState extends State<HomeContent> {
     required Widget child,
     Key? anchorKey,
   }) {
-    final placeholderHeight = _measuredHeights[sectionId] ?? _fallbackHeights[sectionId] ?? 420;
-    final shouldRender = _visibleSections[sectionId] ?? false;
+    final isVisible = _visibleSections[sectionId] ?? false;
 
     return Container(
       key: anchorKey,
       child: Container(
         key: _sectionKeys[sectionId],
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 1420),
-          switchInCurve: Curves.easeOut,
-          switchOutCurve: Curves.easeIn,
-          transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: child),
-          child: shouldRender
-              ? KeyedSubtree(
-                  key: ValueKey('content-$sectionId'),
-                  child: child,
-                )
-              : SizedBox(
-                  key: ValueKey('placeholder-$sectionId'),
-                  height: placeholderHeight,
-                ),
+        alignment: Alignment.topCenter,
+        child: IgnorePointer(
+          ignoring: !isVisible,
+          child: AnimatedOpacity(
+            opacity: isVisible ? 1 : 0,
+            duration: const Duration(milliseconds: 1200),
+            curve: Curves.easeOut,
+            child: child,
+          ),
         ),
       ),
     );
