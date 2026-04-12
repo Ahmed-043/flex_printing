@@ -77,7 +77,7 @@ class NavButton extends StatelessWidget {
           }
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8),
           child: Text(
             title,
             style: TextStyle(

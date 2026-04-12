@@ -14,6 +14,15 @@ class RootLayout extends StatefulWidget {
 }
 
 class _RootLayoutState extends State<RootLayout> {
+  final ScrollController scrollController = ScrollController();
+
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -21,119 +30,125 @@ class _RootLayoutState extends State<RootLayout> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
-      body: CustomScrollView(
-        slivers: [
-          SliverLayoutBuilder(
-            builder: (context, constraints) {
-              final isHome = GoRouterState.of(context).uri.path == '/';
-              final isAtTop = constraints.scrollOffset <= 100;
-              final shouldRound = !isHome || !isAtTop;
-              return SliverAppBar(
-                shape: shouldRound
-                    ? const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(30),
-                          bottomRight: Radius.circular(30),
-                        ),
-                      )
-                    : null,
-                clipBehavior: Clip.antiAlias,
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                pinned: false,
-                floating: true,
-                snap: true,
-                titleSpacing: 0,
-                title: const SizedBox.shrink(),
-                toolbarHeight: useCompactNav ? 70 : 100,
-                leadingWidth: useCompactNav ? 190 : 350,
-                actionsPadding: EdgeInsets.symmetric(
-                  horizontal: useCompactNav ? 20 : 80,
-                ),
-                leading: InkWell(
-                  hoverColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                  onTap: () => context.go('/'),
-                  child: Row(
-                    crossAxisAlignment: .center,
-                    mainAxisAlignment: .end,
-                    children: [
-                      Container(
-                        //margin: EdgeInsets.only(top: 10),
-                        width: useCompactNav ? 48 : 65,
-                        height: useCompactNav ? 48 : 65,
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          shape: .circle,
-                        ),
-                        // logo.svg
-                        child: SvgPicture.asset(
-                          'assets/images/logo.svg',
-                          width: System.isMobile ? 48 : 65,
-                          height: System.isMobile ? 48 : 65,
+      body: Scrollbar(
+        thumbVisibility: true,
+        controller: scrollController,
+
+        child: CustomScrollView(
+          controller: scrollController,
+          slivers: [
+            SliverLayoutBuilder(
+              builder: (context, constraints) {
+                final isHome = GoRouterState.of(context).uri.path == '/';
+                final isAtTop = constraints.scrollOffset <= 100;
+                final shouldRound = !isHome || !isAtTop;
+                return SliverAppBar(
+                  shape: shouldRound
+                      ?  RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(System.isMobile ? 30 : 45),
+                            bottomRight: Radius.circular(System.isMobile ? 30 : 45),
+                          ),
                         )
-                      ),
-                      SizedBox(width: 10),
-                      Flexible(
-                        child: FittedBox(
-                          alignment: Alignment.centerLeft,
-                          fit: BoxFit.scaleDown,
-                          child: Row(
-                            crossAxisAlignment: .start,
-                            children: [
-                              Text(
-                                'TEX PRINT',
-                                style: TextStyle(
-                                  fontSize: useCompactNav ? 22 : 36,
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).colorScheme.onSecondary,
+                      : null,
+                  clipBehavior: Clip.antiAlias,
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  pinned: false,
+                  floating: true,
+                  snap: true,
+                  titleSpacing: 0,
+                  title: const SizedBox.shrink(),
+                  toolbarHeight: useCompactNav ? 70 : 100,
+                  leadingWidth: useCompactNav ? 190 : 350,
+                  actionsPadding: EdgeInsets.symmetric(
+                    horizontal: useCompactNav ? 20 : 80,
+                  ),
+                  leading: InkWell(
+                    hoverColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    onTap: () => context.go('/'),
+                    child: Row(
+                      crossAxisAlignment: .center,
+                      mainAxisAlignment: .end,
+                      children: [
+                        Container(
+                          //margin: EdgeInsets.only(top: 10),
+                          width: useCompactNav ? 48 : 65,
+                          height: useCompactNav ? 48 : 65,
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            shape: .circle,
+                          ),
+                          // logo.svg
+                          child: SvgPicture.asset(
+                            'assets/images/logo.svg',
+                            width: System.isMobile ? 48 : 65,
+                            height: System.isMobile ? 48 : 65,
+                          )
+                        ),
+                        SizedBox(width: 10),
+                        Flexible(
+                          child: FittedBox(
+                            alignment: Alignment.centerLeft,
+                            fit: BoxFit.scaleDown,
+                            child: Row(
+                              crossAxisAlignment: .start,
+                              children: [
+                                Text(
+                                  'TEX PRINT',
+                                  style: TextStyle(
+                                    fontSize: useCompactNav ? 22 : 36,
+                                    fontWeight: FontWeight.w600,
+                                    color: Theme.of(context).colorScheme.onSecondary,
+                                  ),
                                 ),
-                              ),
-                              Padding(
-                                padding:  EdgeInsets.only(top: useCompactNav ? 4 :8,left: useCompactNav ? 2 : 4),
-                                child: SvgPicture.asset(
-                                  'assets/images/icons/registered.svg',
-                                  width: useCompactNav ? 8 : 12,
-                                  height: useCompactNav ? 8 : 12,
-                                ),
-                              )
-                            ],
+                                Padding(
+                                  padding:  EdgeInsets.only(top: useCompactNav ? 4 :8,left: useCompactNav ? 2 : 4),
+                                  child: SvgPicture.asset(
+                                    'assets/images/icons/registered.svg',
+                                    width: useCompactNav ? 8 : 12,
+                                    height: useCompactNav ? 8 : 12,
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                actions: [
-                  useCompactNav
-                      ? Builder(
-                    builder: (context) {
-                      return InkWell(
-                        borderRadius: BorderRadius.circular(14),
-                        onTap: () async {
-                          final box =
-                          context.findRenderObject() as RenderBox;
-                          final pos = box.localToGlobal(Offset.zero);
-                          showTopMenu(
-                            context,
-                            buttonPos: pos,
-                            buttonSize: box.size,
-                          );
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: const Icon(Icons.menu_rounded, size: 30),
-                        ),
-                      );
-                    },
-                  )
-                      : Navbar(),
-                ],
+                  actions: [
+                    useCompactNav
+                        ? Builder(
+                      builder: (context) {
+                        return InkWell(
+                          borderRadius: BorderRadius.circular(14),
+                          onTap: () async {
+                            final box =
+                            context.findRenderObject() as RenderBox;
+                            final pos = box.localToGlobal(Offset.zero);
+                            showTopMenu(
+                              context,
+                              buttonPos: pos,
+                              buttonSize: box.size,
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: const Icon(Icons.menu_rounded, size: 30),
+                          ),
+                        );
+                      },
+                    )
+                        : Navbar(),
+                  ],
 
-              );
-            },
-          ),
-          SliverToBoxAdapter(child: widget.child),
-        ],
+                );
+              },
+            ),
+            SliverToBoxAdapter(child: widget.child),
+          ],
+        ),
       ),
     );
   }

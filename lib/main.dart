@@ -27,7 +27,6 @@ Future<void> main() async {
     debugPrintStack(stackTrace: st);
     startupError = _friendlyStartupError(e);
   }
-  printCategories();
   runApp(MyApp(startupError: startupError));
 }
 
