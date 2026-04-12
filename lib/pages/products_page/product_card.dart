@@ -1,27 +1,53 @@
+import 'dart:typed_data';
+
 import 'package:flex_printing/models/System/system.dart';
 import 'package:flex_printing/models/product/product_record.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-class ProductCard extends StatelessWidget {
+
+class ProductCard extends StatefulWidget {
   final ProductRecord product;
   const ProductCard({super.key, required this.product});
 
   @override
-  Widget build(BuildContext context) {
-    final path = product.firstImage?.path;
-    final imageUrl = (path == null || path.isEmpty)
-        ? null
-        : Supabase.instance.client.storage.from('flex-printing').getPublicUrl(path);
+  State<ProductCard> createState() => _ProductCardState();
+}
 
+class _ProductCardState extends State<ProductCard> {
+  late final Future<Uint8List?> _imageBytesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _imageBytesFuture = _loadImageBytes();
+  }
+
+  Future<Uint8List?> _loadImageBytes() async {
+    final path = widget.product.firstImage?.path;
+    if (path == null || path.isEmpty) {
+      return null;
+    }
+
+    try {
+      return await Supabase.instance.client.storage
+          .from('flex-printing')
+          .download(path);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return InkWell(
       onTap: () => context.go(
-        '/products/${product.id}',
-        extra: product,
+        '/products/${widget.product.id}',
+        extra: widget.product,
       ),
       borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
       child: Semantics(
-        label: 'View ${product.name} details',
+        label: 'View ${widget.product.name} details',
         button: true,
         child: Column(
       children: [
@@ -35,25 +61,38 @@ class ProductCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainer.withAlpha(150),
               ),
-              child: imageUrl == null
-                  ? Center(
+              child: FutureBuilder<Uint8List?>(
+                future: _imageBytesFuture,
+                builder: (context, snapshot) {
+                  final imageBytes = snapshot.data;
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (imageBytes == null || imageBytes.isEmpty) {
+                    return Center(
                       child: Icon(
                         Icons.image_not_supported_rounded,
                         size: System.isMobile ? 35 : 80,
                         color: Theme.of(context).colorScheme.onPrimary.withAlpha(100),
                       ),
-                    )
-                  : Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                      filterQuality: FilterQuality.low,
-                    ),
+                    );
+                  }
+
+                  return Image.memory(
+                    imageBytes,
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.low,
+                    gaplessPlayback: true,
+                  );
+                },
+              ),
             ),
           ),
         ),
         Expanded(
           child: Text(
-            product.name,
+            widget.product.name,
             overflow: TextOverflow.fade,
             textAlign: .center,
             style: TextStyle(
