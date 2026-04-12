@@ -103,7 +103,7 @@ class _HomeContentState extends State<HomeContent> {
       0,
       0,
       viewSize.width,
-      viewSize.height-250,
+      viewSize.height - 200,
     );
     var changed = false;
 
