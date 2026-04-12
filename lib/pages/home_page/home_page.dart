@@ -103,7 +103,7 @@ class _HomeContentState extends State<HomeContent> {
       0,
       0,
       viewSize.width,
-      viewSize.height - (System.isMobile ? 100 : 200),
+      viewSize.height - (System.isMobile ? 75 : 150),
     );
     var changed = false;
 
