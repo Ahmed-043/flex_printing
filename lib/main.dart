@@ -52,10 +52,10 @@ ProductRecord? _productFromExtra(Object? extra, {int? expectedId}) {
 
   if (extra is Map) {
     try {
-      final json = Map<String, dynamic>.from(extra as Map);
+      final json = Map<String, dynamic>.from(extra);
       final firstImage = json['first_image'];
       if (firstImage is Map) {
-        json['first_image'] = Map<String, dynamic>.from(firstImage as Map);
+        json['first_image'] = Map<String, dynamic>.from(firstImage);
       }
 
       final parsed = ProductRecord.fromJson(json);

@@ -44,6 +44,12 @@ class AppTheme {
       ),
 
       scaffoldBackgroundColor: _lightPrimary,
+      scrollbarTheme: ScrollbarThemeData(
+        thumbColor: MaterialStateProperty.all(_lightDark.withOpacity(0.2)),
+        trackColor: MaterialStateProperty.all(_lightDark.withOpacity(0.3)),
+        radius: const Radius.circular(8),
+        thickness: MaterialStateProperty.all(8),
+      ),
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,
         foregroundColor: _lightText,
@@ -80,6 +86,12 @@ class AppTheme {
       ),
 
       scaffoldBackgroundColor: _darkPrimary,
+      scrollbarTheme: ScrollbarThemeData(
+        thumbColor: MaterialStateProperty.all(_darkDark.withOpacity(0.2)),
+        trackColor: MaterialStateProperty.all(_darkDark.withOpacity(0.3)),
+        radius: const Radius.circular(8),
+        thickness: MaterialStateProperty.all(8),
+      ),
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,
         foregroundColor: _darkText,
