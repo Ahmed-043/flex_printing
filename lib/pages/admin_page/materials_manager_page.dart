@@ -345,7 +345,7 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
                 width: double.infinity,
                 height: 56,
                 child: UiHelper.button(
-                  callback: _saving ? null : _save,
+                  callback: _saving ? (){} : _save,
                   filled: true,
                   color: Theme
                       .of(context)

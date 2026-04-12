@@ -26,13 +26,41 @@ class HomeContent extends StatefulWidget {
 class _HomeContentState extends State<HomeContent> {
   late double screenHeight, screenWidth;
   final ScrollController _scrollController = ScrollController();
+  final Map<String, GlobalKey> _sectionKeys = {
+    'products': GlobalKey(),
+    'clients': GlobalKey(),
+    'about': GlobalKey(),
+    'events': GlobalKey(),
+    'upcoming': GlobalKey(),
+    'other': GlobalKey(),
+  };
+  final Map<String, bool> _visibleSections = {
+    'products': true,
+    'clients': false,
+    'about': false,
+    'events': false,
+    'upcoming': false,
+    'other': false,
+  };
+  final Map<String, double> _fallbackHeights = {
+    'products': 780,
+    'clients': 460,
+    'about': 520,
+    'events': 520,
+    'upcoming': 420,
+    'other': 360,
+  };
+  final Map<String, double> _measuredHeights = {};
+  ScrollPosition? _parentScrollPosition;
   final GlobalKey _aboutKey = GlobalKey();
   final GlobalKey _eventsKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     _scheduleInitialScroll(widget.initialSection);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateVisibleSections());
   }
 
   @override
@@ -44,9 +72,77 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final parentPosition = Scrollable.maybeOf(context)?.position;
+    if (_parentScrollPosition == parentPosition) {
+      return;
+    }
+    _parentScrollPosition?.removeListener(_onScroll);
+    _parentScrollPosition = parentPosition;
+    _parentScrollPosition?.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _updateVisibleSections());
+  }
+
+  @override
   void dispose() {
+    _parentScrollPosition?.removeListener(_onScroll);
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    _updateVisibleSections();
+  }
+
+  void _updateVisibleSections() {
+    if (!mounted) {
+      return;
+    }
+
+    final viewSize = MediaQuery.sizeOf(context);
+    final viewportRect = Rect.fromLTWH(
+      0,
+      0,
+      viewSize.width,
+      viewSize.height,
+    );
+    var changed = false;
+
+    for (final entry in _sectionKeys.entries) {
+      final key = entry.key;
+      final contextForKey = entry.value.currentContext;
+      if (contextForKey == null) {
+        continue;
+      }
+
+      final renderObject = contextForKey.findRenderObject();
+      if (renderObject is! RenderBox || !renderObject.hasSize) {
+        continue;
+      }
+
+      final rect = renderObject.localToGlobal(Offset.zero) & renderObject.size;
+      _measuredHeights[key] = renderObject.size.height;
+
+      final intersection = rect.intersect(viewportRect);
+      final requiredHeight = (renderObject.size.height * 0.12).clamp(40.0, 180.0);
+      final isVisible = intersection.height >= requiredHeight;
+
+      if (_visibleSections[key] != isVisible) {
+        _visibleSections[key] = isVisible;
+        changed = true;
+      }
+    }
+
+    if (!_visibleSections.values.any((value) => value)) {
+      _visibleSections['products'] = true;
+      changed = true;
+    }
+
+    if (changed) {
+      setState(() {});
+    }
   }
 
   void _scheduleInitialScroll(String? section) {
@@ -92,24 +188,69 @@ class _HomeContentState extends State<HomeContent> {
           children: [
             _banner(),
             Container(height: System.isMobile ? 80 : 200),
-            ProductsSection(),
+            _lazySection(
+              sectionId: 'products',
+              child: ProductsSection(),
+            ),
             Container(height: System.isMobile ? 125 : 450),
-            ClientsEvents(),
+            _lazySection(
+              sectionId: 'clients',
+              child: ClientsEvents(),
+            ),
             Container(height: System.isMobile ? 125 : 450),
-            Container(
-              key: _aboutKey,
+            _lazySection(
+              sectionId: 'about',
+              anchorKey: _aboutKey,
               child: AboutEvents(),
             ),
             Container(height: System.isMobile ? 85 : 450),
-            Container(
-              key: _eventsKey,
+            _lazySection(
+              sectionId: 'events',
+              anchorKey: _eventsKey,
               child: ClientsEvents(isEvents: true),
             ),
             Container(height: System.isMobile ? 164 : 290),
-            UpcomingEvents(),
+            _lazySection(
+              sectionId: 'upcoming',
+              child: UpcomingEvents(),
+            ),
             Container(height: System.isMobile ? 164 : 290),
-            OtherInfo(),
+            _lazySection(
+              sectionId: 'other',
+              child: OtherInfo(),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _lazySection({
+    required String sectionId,
+    required Widget child,
+    Key? anchorKey,
+  }) {
+    final placeholderHeight = _measuredHeights[sectionId] ?? _fallbackHeights[sectionId] ?? 420;
+    final shouldRender = _visibleSections[sectionId] ?? false;
+
+    return Container(
+      key: anchorKey,
+      child: Container(
+        key: _sectionKeys[sectionId],
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 1420),
+          switchInCurve: Curves.easeOut,
+          switchOutCurve: Curves.easeIn,
+          transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: child),
+          child: shouldRender
+              ? KeyedSubtree(
+                  key: ValueKey('content-$sectionId'),
+                  child: child,
+                )
+              : SizedBox(
+                  key: ValueKey('placeholder-$sectionId'),
+                  height: placeholderHeight,
+                ),
         ),
       ),
     );

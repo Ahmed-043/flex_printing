@@ -22,6 +22,7 @@ class _ProductsSectionState extends State<ProductsSection> {
   static const int _baseHomeCount = 6;
   int? _appliedLimit;
   bool _loadingProducts = false;
+  int _loadRequestId = 0;
 
   @override
   void initState() {
@@ -54,23 +55,38 @@ class _ProductsSectionState extends State<ProductsSection> {
   }
 
   Future<void> _loadProducts({required int limit}) async {
+    final requestId = ++_loadRequestId;
     _loadingProducts = true;
-    await fetchCategoryNames().then((names) {
-      setState(() {
-        categories = ["All", ...names];
-      });
-    });
-    final fetchedProducts = await fetchProducts(
-      limit: limit,
-      category: categories[_selectedCategoryIndex],
-    );
+    try {
+      final names = await fetchCategoryNames();
+      if (!mounted || requestId != _loadRequestId) return;
 
-    if (!mounted) return;
-    setState(() {
-      _appliedLimit = limit;
-      products = fetchedProducts;
-    });
-    _loadingProducts = false;
+      final nextCategories = ["All", ...names];
+      setState(() {
+        categories = nextCategories;
+      });
+
+      final fetchedProducts = await fetchProducts(
+        limit: limit,
+        category: nextCategories[_selectedCategoryIndex],
+      );
+
+      if (!mounted || requestId != _loadRequestId) return;
+      setState(() {
+        _appliedLimit = limit;
+        products = fetchedProducts;
+      });
+    } finally {
+      if (mounted && requestId == _loadRequestId) {
+        _loadingProducts = false;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _loadRequestId++;
+    super.dispose();
   }
   @override
   Widget build(BuildContext context) {
