@@ -6,48 +6,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../methods/admin/media_utils.dart';
 import '../../models/System/system.dart';
+import '../../models/media_item.dart';
 import '../../models/product/product_image.dart';
 import '../../shared_widgets/admin_manager_widgets.dart';
 import '../../shared_widgets/product_image_upload_box.dart';
 import '../../shared_widgets/ui_helper.dart';
 
-// ── Data models ───────────────────────────────────────────────────────────────
-
-class _MediaItem {
-  // Existing DB row fields (null for pending uploads)
-  int? id;
-  String? path;
-
-  // Pending upload fields (null for existing rows)
-  Uint8List? localBytes;
-  String? localFileName;
-
-  /// After upload, the storage path is stored here so the DB insert can use it.
-  String? uploadedPath;
-
-  bool markedForDelete;
-
-  _MediaItem.existing({required this.id, required this.path})
-      : localBytes = null,
-        localFileName = null,
-        markedForDelete = false;
-
-  _MediaItem.pending({required this.localFileName, required this.localBytes})
-      : id = null,
-        path = null,
-        markedForDelete = false;
-
-  bool get isExisting => id != null;
-  bool get isPending => id == null;
-
-  /// Public URL used to render the thumbnail.
-  String? publicUrl() {
-    if (path == null) return null;
-    return Supabase.instance.client.storage
-        .from('flex-printing')
-        .getPublicUrl(path!);
-  }
-}
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
@@ -63,7 +27,7 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
   static const _storageFolder = 'materials';
   static const _bucket = 'flex-printing';
 
-  List<_MediaItem> _items = [];
+  List<MediaItem> _items = [];
   bool _loading = true;
   bool _saving = false;
   String? _loadError;
@@ -91,7 +55,7 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
       setState(() {
         _items = (rows as List)
             .map((r) =>
-            _MediaItem.existing(
+            MediaItem.existing(
               id: r['id'] as int,
               path: r['path'] as String,
             ))
@@ -110,7 +74,7 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
 
   void _addImage(ProductImage img) {
     setState(() {
-      _items.add(_MediaItem.pending(
+      _items.add(MediaItem.pending(
         localFileName: img.fileName,
         localBytes: img.displayBytes,
       ));
@@ -400,6 +364,8 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
         onReorder: _reorderImages,
         buildDefaultDragHandles: false,
         itemBuilder: (context, index) {
+
+
           return ReorderableDragStartListener(
             key: ValueKey(index),
             index: index,
@@ -413,7 +379,7 @@ class _MaterialsManagerPageState extends State<MaterialsManagerPage> {
     );
   }
 
-  Widget _imageThumbnail(BuildContext context, int index, _MediaItem item,
+  Widget _imageThumbnail(BuildContext context, int index, MediaItem item,
       double size) {
     final isDeleted = item.markedForDelete;
 

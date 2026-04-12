@@ -6,41 +6,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../methods/admin/media_utils.dart';
 import '../../models/System/system.dart';
+import '../../models/media_item.dart';
 import '../../models/product/product_image.dart';
 import '../../shared_widgets/admin_manager_widgets.dart';
 import '../../shared_widgets/product_image_upload_box.dart';
 import '../../shared_widgets/ui_helper.dart';
 
-// ── Data models ───────────────────────────────────────────────────────────────
-
-class _MediaItem {
-  int? id;
-  String? path;
-  Uint8List? localBytes;
-  String? localFileName;
-  String? uploadedPath;
-  bool markedForDelete;
-
-  _MediaItem.existing({required this.id, required this.path})
-      : localBytes = null,
-        localFileName = null,
-        markedForDelete = false;
-
-  _MediaItem.pending({required this.localFileName, required this.localBytes})
-      : id = null,
-        path = null,
-        markedForDelete = false;
-
-  bool get isExisting => id != null;
-  bool get isPending => id == null;
-
-  String? publicUrl() {
-    if (path == null) return null;
-    return Supabase.instance.client.storage
-        .from('flex-printing')
-        .getPublicUrl(path!);
-  }
-}
 
 /// Represents one row in the `event_locations` table.
 class _LocationItem {
@@ -75,7 +46,7 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
   static const _bucket = 'flex-printing';
 
   // ── Media state ──────────────────────────────────────────────────────────
-  List<_MediaItem> _items = [];
+  List<MediaItem> _items = [];
   bool _loadingMedia = true;
   String? _mediaLoadError;
 
@@ -121,7 +92,7 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
           .order('created_at', ascending: true);
       setState(() {
         _items = (rows as List)
-            .map((r) => _MediaItem.existing(
+            .map((r) => MediaItem.existing(
                   id: r['id'] as int,
                   path: r['path'] as String,
                 ))
@@ -170,7 +141,7 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
 
   void _addImage(ProductImage img) {
     setState(() {
-      _items.add(_MediaItem.pending(
+      _items.add(MediaItem.pending(
         localFileName: img.fileName,
         localBytes: img.displayBytes,
       ));
@@ -525,7 +496,7 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
   }
 
   Widget _imageThumbnail(
-      BuildContext context, int index, _MediaItem item, double size) {
+      BuildContext context, int index, MediaItem item, double size) {
     final isDeleted = item.markedForDelete;
 
     Widget imageWidget;

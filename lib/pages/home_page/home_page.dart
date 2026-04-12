@@ -9,6 +9,7 @@ import 'package:flex_printing/pages/home_page/upcoming_events.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
 
+import 'materials_section.dart';
 import 'other_info.dart';
 
 class HomeContent extends StatefulWidget {
@@ -270,7 +271,7 @@ class _HomeContentState extends State<HomeContent> {
             children: _mobileBanner()),
       )
           : Padding(
-        padding: const EdgeInsets.only(left: 50.0, right: 50),
+        padding: const EdgeInsets.only(left: 100.0, right: 100),
         child: Row(
             children: _desktopBanner()),
       ),
@@ -312,7 +313,7 @@ class _HomeContentState extends State<HomeContent> {
                   overflow: TextOverflow.clip,
                   style: TextStyle(
                     height: 1,
-                    letterSpacing: 5,
+                    letterSpacing: 0,
                     fontWeight: FontWeight.w600,
                     fontSize: screenWidth < 1210 ? 35 : 43,
                     color: Theme.of(context).colorScheme.onSecondary,
@@ -325,24 +326,29 @@ class _HomeContentState extends State<HomeContent> {
               color: Colors.black,
               filled: true,
               borderRadius: 50,
-              padding: const EdgeInsets.symmetric(vertical: 15,horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 20),
               child: Text(
                 "Learn More",
                 style: TextStyle(
+                  fontWeight: FontWeight.w400,
                   color: Theme.of(context).colorScheme.onSecondary,
                   fontSize: screenWidth<1210 ? 27 : 34,
                 ),
               ),
             ),
-            Text(
-              "ONE DOOR SOLUTION",
-              style: TextStyle(
-                fontWeight: FontWeight.w200,
-                fontFamily: 'RedHatDisplay',
-                fontSize: screenWidth<1210 ? 35 : 43,
-                color: Theme.of(context).colorScheme.onSecondary,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 25.0),
+              child: Text(
+                "ONE DOOR SOLUTION",
+                style: TextStyle(
+                  fontWeight: FontWeight.w200,
+                  fontFamily: 'RedHatDisplay',
+                  fontSize: screenWidth<1210 ? 35 : 43,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
               ),
-            )
+            ),
+
           ],
         ),
       ),

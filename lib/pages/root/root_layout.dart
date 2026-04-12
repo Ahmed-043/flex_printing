@@ -44,10 +44,10 @@ class _RootLayoutState extends State<RootLayout> {
                 snap: true,
                 titleSpacing: 0,
                 title: const SizedBox.shrink(),
-                toolbarHeight: useCompactNav ? 70 : 80,
-                leadingWidth: useCompactNav ? 190 : 300,
+                toolbarHeight: useCompactNav ? 70 : 100,
+                leadingWidth: useCompactNav ? 190 : 350,
                 actionsPadding: EdgeInsets.symmetric(
-                  horizontal: useCompactNav ? 20 : 40,
+                  horizontal: useCompactNav ? 20 : 80,
                 ),
                 leading: InkWell(
                   hoverColor: Colors.transparent,

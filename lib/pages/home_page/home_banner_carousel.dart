@@ -161,51 +161,60 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
               children: [
                 _pages(),
                 SizedBox(
-                  height: 55,
+                 // height: 55,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.only(bottom: 25,right: 20,left: 20),
                     child: Row(
                       mainAxisAlignment: .center,
                       children: [
                         Expanded(
-                          child: IconButton(
-                            onPressed: () {
-                              /// reset the timer
-                              _startAutoPlay();
-                              scrollController.previousPage(
-                                duration: const Duration(seconds: 1),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            iconSize: 30,
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                              shape: const CircleBorder(),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: IconButton(
+                              padding: const EdgeInsets.all(0),
+                              onPressed: () {
+                                /// reset the timer
+                                _startAutoPlay();
+                                scrollController.previousPage(
+                                  duration: const Duration(seconds: 1),
+                                  curve: Curves.easeInOut,
+                                );
+                              },
+                              iconSize: 25,
+                              style: IconButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.black,
+                                shape: const CircleBorder(),
+                              ),
+                              icon: const Icon(Icons.arrow_back_ios_rounded),
                             ),
-                            icon: const Icon(Icons.arrow_back_ios_rounded),
                           ),
                         ),
                         Expanded(
                           flex: 8,
                             child: _nameBar()),
                         Expanded(
-                          child: IconButton(
-                            onPressed: () {
-                              /// reset the timer
-                              _startAutoPlay();
-                              scrollController.nextPage(
-                                duration: const Duration(seconds: 1),
-                                curve: Curves.easeInOut,
-                              );
-                            },
-                            iconSize: 30,
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                              shape: const CircleBorder(),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: IconButton(
+                              padding: const EdgeInsets.all(0),
+
+                              onPressed: () {
+                                /// reset the timer
+                                _startAutoPlay();
+                                scrollController.nextPage(
+                                  duration: const Duration(seconds: 1),
+                                  curve: Curves.easeInOut,
+                                );
+                              },
+                              iconSize: 25,
+                              style: IconButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.black,
+                                shape: const CircleBorder(),
+                              ),
+                              icon: const Icon(Icons.arrow_forward_ios_rounded),
                             ),
-                            icon: const Icon(Icons.arrow_forward_ios_rounded),
                           ),
                         ),
                       ],
@@ -245,7 +254,7 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
             overflow: TextOverflow.ellipsis,
             textAlign: .center,
             style: TextStyle(
-              fontSize: System.isMobile || small ? 20 : 28,
+              fontSize: System.isMobile || small ? 20 : 25,
               fontWeight: FontWeight.normal,
               fontFamily: 'PaytoneOne',
               wordSpacing: 5,

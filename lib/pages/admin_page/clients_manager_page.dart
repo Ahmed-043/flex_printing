@@ -6,41 +6,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../methods/admin/media_utils.dart';
 import '../../models/System/system.dart';
+import '../../models/media_item.dart';
 import '../../models/product/product_image.dart';
 import '../../shared_widgets/admin_manager_widgets.dart';
 import '../../shared_widgets/product_image_upload_box.dart';
 import '../../shared_widgets/ui_helper.dart';
 
-// ── Data model ────────────────────────────────────────────────────────────────
-
-class _MediaItem {
-  int? id;
-  String? path;
-  Uint8List? localBytes;
-  String? localFileName;
-  String? uploadedPath;
-  bool markedForDelete;
-
-  _MediaItem.existing({required this.id, required this.path})
-      : localBytes = null,
-        localFileName = null,
-        markedForDelete = false;
-
-  _MediaItem.pending({required this.localFileName, required this.localBytes})
-      : id = null,
-        path = null,
-        markedForDelete = false;
-
-  bool get isExisting => id != null;
-  bool get isPending => id == null;
-
-  String? publicUrl() {
-    if (path == null) return null;
-    return Supabase.instance.client.storage
-        .from('flex-printing')
-        .getPublicUrl(path!);
-  }
-}
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
@@ -56,7 +27,7 @@ class _ClientsManagerPageState extends State<ClientsManagerPage> {
   static const _storageFolder = 'clients';
   static const _bucket = 'flex-printing';
 
-  List<_MediaItem> _items = [];
+  List<MediaItem> _items = [];
   bool _loading = true;
   bool _saving = false;
   String? _loadError;
@@ -81,7 +52,7 @@ class _ClientsManagerPageState extends State<ClientsManagerPage> {
           .order('created_at', ascending: true);
       setState(() {
         _items = (rows as List)
-            .map((r) => _MediaItem.existing(
+            .map((r) => MediaItem.existing(
                   id: r['id'] as int,
                   path: r['path'] as String,
                 ))
@@ -98,7 +69,7 @@ class _ClientsManagerPageState extends State<ClientsManagerPage> {
 
   void _addImage(ProductImage img) {
     setState(() {
-      _items.add(_MediaItem.pending(
+      _items.add(MediaItem.pending(
         localFileName: img.fileName,
         localBytes: img.displayBytes,
       ));
@@ -361,7 +332,7 @@ class _ClientsManagerPageState extends State<ClientsManagerPage> {
   }
 
   Widget _imageThumbnail(
-      BuildContext context, int index, _MediaItem item, double size) {
+      BuildContext context, int index, MediaItem item, double size) {
     final isDeleted = item.markedForDelete;
 
     Widget imageWidget;
