@@ -26,7 +26,7 @@ class _UpcomingEventsState extends State<UpcomingEvents> {
       final client = Supabase.instance.client;
 
       final eventRows = await client
-          .from('events')
+          .from('upcomming_events')
           .select('path, sort_order, created_at')
           .order('sort_order', ascending: true)
           .order('created_at', ascending: true);

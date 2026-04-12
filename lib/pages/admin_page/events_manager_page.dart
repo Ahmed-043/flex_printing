@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -41,14 +40,21 @@ class EventsManagerPage extends StatefulWidget {
 
 class _EventsManagerPageState extends State<EventsManagerPage> {
   static const _tableName = 'events';
+  static const _upcommingTableName = 'upcomming_events';
   static const _locationsTable = 'event_locations';
   static const _storageFolder = 'events';
+  static const _upcommingStorageFolder = 'upcomming_events';
   static const _bucket = 'flex-printing';
 
   // ── Media state ──────────────────────────────────────────────────────────
   List<MediaItem> _items = [];
   bool _loadingMedia = true;
   String? _mediaLoadError;
+
+  // ── Upcoming media state ─────────────────────────────────────────────────
+  List<MediaItem> _upcommingItems = [];
+  bool _loadingUpcommingMedia = true;
+  String? _upcommingMediaLoadError;
 
   // ── Locations state ──────────────────────────────────────────────────────
   List<_LocationItem> _locations = [];
@@ -74,7 +80,7 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
   }
 
   Future<void> _loadAll() async {
-    await Future.wait([_loadMedia(), _loadLocations()]);
+    await Future.wait([_loadMedia(), _loadUpcommingMedia(), _loadLocations()]);
   }
 
   // ── Media loading ─────────────────────────────────────────────────────────
@@ -103,6 +109,34 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
       setState(() {
         _mediaLoadError = 'Failed to load images: $e';
         _loadingMedia = false;
+      });
+    }
+  }
+
+  Future<void> _loadUpcommingMedia() async {
+    setState(() {
+      _loadingUpcommingMedia = true;
+      _upcommingMediaLoadError = null;
+    });
+    try {
+      final rows = await Supabase.instance.client
+          .from(_upcommingTableName)
+          .select('id, path, sort_order, created_at')
+          .order('sort_order', ascending: true)
+          .order('created_at', ascending: true);
+      setState(() {
+        _upcommingItems = (rows as List)
+            .map((r) => MediaItem.existing(
+                  id: r['id'] as int,
+                  path: r['path'] as String,
+                ))
+            .toList();
+        _loadingUpcommingMedia = false;
+      });
+    } catch (e) {
+      setState(() {
+        _upcommingMediaLoadError = 'Failed to load upcoming images: $e';
+        _loadingUpcommingMedia = false;
       });
     }
   }
@@ -164,6 +198,34 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
       if (newIndex > oldIndex) newIndex -= 1;
       final item = _items.removeAt(oldIndex);
       _items.insert(newIndex, item);
+    });
+  }
+
+  void _addUpcommingImage(ProductImage img) {
+    setState(() {
+      _upcommingItems.add(MediaItem.pending(
+        localFileName: img.fileName,
+        localBytes: img.displayBytes,
+      ));
+    });
+  }
+
+  void _toggleDeleteUpcommingMedia(int index) {
+    setState(() {
+      final item = _upcommingItems[index];
+      if (item.isPending) {
+        _upcommingItems.removeAt(index);
+      } else {
+        item.markedForDelete = !item.markedForDelete;
+      }
+    });
+  }
+
+  void _reorderUpcommingImages(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) newIndex -= 1;
+      final item = _upcommingItems.removeAt(oldIndex);
+      _upcommingItems.insert(newIndex, item);
     });
   }
 
@@ -231,6 +293,17 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
         item.uploadedPath = storagePath;
       }
 
+      for (final item in _upcommingItems) {
+        if (!item.isPending) continue;
+        final ext = extensionFromFileName(item.localFileName ?? 'image');
+        final storagePath = '$_upcommingStorageFolder/${generateUuid()}.$ext';
+        await client.storage.from(_bucket).uploadBinary(
+              storagePath,
+              item.localBytes!,
+            );
+        item.uploadedPath = storagePath;
+      }
+
       // ── 2. Delete flagged images ────────────────────────────────────────
       final toDeleteMedia = _items.where((i) => i.markedForDelete).toList();
       if (toDeleteMedia.isNotEmpty) {
@@ -238,6 +311,15 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
         await client.storage.from(_bucket).remove(storagePaths);
         final ids = toDeleteMedia.map((i) => i.id!).toList();
         await client.from(_tableName).delete().inFilter('id', ids);
+      }
+
+      final toDeleteUpcommingMedia =
+          _upcommingItems.where((i) => i.markedForDelete).toList();
+      if (toDeleteUpcommingMedia.isNotEmpty) {
+        final storagePaths = toDeleteUpcommingMedia.map((i) => i.path!).toList();
+        await client.storage.from(_bucket).remove(storagePaths);
+        final ids = toDeleteUpcommingMedia.map((i) => i.id!).toList();
+        await client.from(_upcommingTableName).delete().inFilter('id', ids);
       }
 
       // ── 3. Insert new image rows + update sort_order ────────────────────
@@ -253,6 +335,22 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
         } else if (item.isExisting) {
           await client
               .from(_tableName)
+              .update({'sort_order': i}).eq('id', item.id!);
+        }
+      }
+
+      final survivingUpcommingMedia =
+          _upcommingItems.where((i) => !i.markedForDelete).toList();
+      for (int i = 0; i < survivingUpcommingMedia.length; i++) {
+        final item = survivingUpcommingMedia[i];
+        if (item.isPending && item.uploadedPath != null) {
+          await client.from(_upcommingTableName).insert({
+            'path': item.uploadedPath,
+            'sort_order': i,
+          });
+        } else if (item.isExisting) {
+          await client
+              .from(_upcommingTableName)
               .update({'sort_order': i}).eq('id', item.id!);
         }
       }
@@ -396,12 +494,58 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
                 AdminErrorBanner(message: _mediaLoadError!, onRetry: _loadMedia)
               else ...[
                 if (_items.isNotEmpty) ...[
-                  _imagePreviewsSection(context, isCompact),
+                  _imagePreviewsSection(
+                    context,
+                    isCompact,
+                    items: _items,
+                    onReorder: _reorderImages,
+                    onToggleDelete: _toggleDeleteMedia,
+                  ),
                   const SizedBox(height: 16),
                 ],
                 SizedBox(
                   height: 150,
                   child: ProductImageUploadBox(onImageAdded: _addImage),
+                ),
+              ],
+
+              SizedBox(height: isCompact ? 32 : 48),
+              const Divider(),
+              const SizedBox(height: 24),
+
+              // ── Upcoming media section ───────────────────────────────────
+              const AdminSectionHeader(title: 'Upcomming Event Images'),
+              const SizedBox(height: 8),
+              Text(
+                'Add files one at a time. Drag & drop or click to upload.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              if (_loadingUpcommingMedia)
+                const Center(child: CircularProgressIndicator())
+              else if (_upcommingMediaLoadError != null)
+                AdminErrorBanner(
+                  message: _upcommingMediaLoadError!,
+                  onRetry: _loadUpcommingMedia,
+                )
+              else ...[
+                if (_upcommingItems.isNotEmpty) ...[
+                  _imagePreviewsSection(
+                    context,
+                    isCompact,
+                    items: _upcommingItems,
+                    onReorder: _reorderUpcommingImages,
+                    onToggleDelete: _toggleDeleteUpcommingMedia,
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                SizedBox(
+                  height: 150,
+                  child: ProductImageUploadBox(onImageAdded: _addUpcommingImage),
                 ),
               ],
 
@@ -436,7 +580,7 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
                 width: double.infinity,
                 height: 56,
                 child: UiHelper.button(
-                  callback: _saving ? null : _save,
+                  callback: _saving ? (){} : _save,
                   filled: true,
                   color: Theme.of(context).colorScheme.secondaryContainer,
                   borderRadius: 14,
@@ -471,15 +615,21 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
     );
   }
 
-  Widget _imagePreviewsSection(BuildContext context, bool isCompact) {
+  Widget _imagePreviewsSection(
+    BuildContext context,
+    bool isCompact, {
+    required List<MediaItem> items,
+    required void Function(int oldIndex, int newIndex) onReorder,
+    required void Function(int index) onToggleDelete,
+  }) {
     final thumbSize = isCompact ? 90.0 : 110.0;
 
     return SizedBox(
       height: thumbSize + 32,
       child: ReorderableListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: _items.length,
-        onReorder: _reorderImages,
+        itemCount: items.length,
+        onReorder: onReorder,
         buildDefaultDragHandles: false,
         itemBuilder: (context, index) {
           return ReorderableDragStartListener(
@@ -487,7 +637,13 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
             index: index,
             child: Padding(
               padding: const EdgeInsets.only(right: 10),
-              child: _imageThumbnail(context, index, _items[index], thumbSize),
+              child: _imageThumbnail(
+                context,
+                index,
+                items[index],
+                thumbSize,
+                onToggleDelete: onToggleDelete,
+              ),
             ),
           );
         },
@@ -496,7 +652,8 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
   }
 
   Widget _imageThumbnail(
-      BuildContext context, int index, MediaItem item, double size) {
+      BuildContext context, int index, MediaItem item, double size,
+      {required void Function(int index) onToggleDelete}) {
     final isDeleted = item.markedForDelete;
 
     Widget imageWidget;
@@ -527,7 +684,7 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
       isPending: item.isPending,
       isDeleted: isDeleted,
       image: imageWidget,
-      onToggleDelete: () => _toggleDeleteMedia(index),
+      onToggleDelete: () => onToggleDelete(index),
     );
   }
 
