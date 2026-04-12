@@ -307,7 +307,7 @@ class _HomeContentState extends State<HomeContent> {
 
                 // 2) subtitle (can wrap normally)
                 Text(
-                  'PRINTING MACHINERY SUPPLER.',
+                  'PRINTING MACHINERY\nSUPPLER.',
                   maxLines: 3,
                   overflow: TextOverflow.clip,
                   style: TextStyle(
