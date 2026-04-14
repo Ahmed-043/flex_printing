@@ -100,7 +100,7 @@ class _MaterialsSectionState extends State<MaterialsSection> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
-    print(_items.length);
+
     final materialCards = List.generate(
       _items.length,
           (index) {

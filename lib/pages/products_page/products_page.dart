@@ -114,7 +114,12 @@ class _ProductsPageState extends State<ProductsPage> {
 
                   //final image = fetchProductImageBytes(products[index].firstImage?.path);
 
-                  return ProductCard(product: products[index]);
+                  return ProductCard(
+                    product: products[index],
+                    onDeleted: () => _loadProducts(
+                      nextCategoryIndex: _selectedCategoryIndex,
+                    ),
+                  );
                 }
             ),
           ),

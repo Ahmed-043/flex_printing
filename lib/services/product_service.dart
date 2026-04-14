@@ -97,6 +97,54 @@ class ProductService {
     throw lastError ?? Exception('Unknown product save error');
   }
 
+  /// Returns true when Supabase responds within a short timeout.
+  ///
+  /// UI gestures can call this and stay silent if the app is offline or the
+  /// Supabase host is unreachable.
+  static Future<bool> isConnected() async {
+    try {
+      await _client.from('products').select('id').limit(1).timeout(
+            const Duration(seconds: 4),
+          );
+      return true;
+    } catch (e) {
+      debugPrint('ProductService.isConnected failed: $e');
+      return false;
+    }
+  }
+
+  /// Deletes a product and all of its product-owned data.
+  ///
+  /// Categories are intentionally preserved.
+  static Future<void> deleteProduct(int productId) async {
+    try {
+      final imageRows = await _client
+          .from('product_images')
+          .select('id, path')
+          .eq('product_id', productId);
+
+      final imagePaths = <String>[];
+      for (final row in imageRows as List) {
+        final map = row as Map<String, dynamic>;
+        final path = map['path'] as String?;
+        if (path != null && path.isNotEmpty) {
+          imagePaths.add(path);
+        }
+      }
+
+      if (imagePaths.isNotEmpty) {
+        await _client.storage.from(_bucket).remove(imagePaths);
+      }
+
+      await _client.from('product_specs').delete().eq('product_id', productId);
+      await _client.from('product_images').delete().eq('product_id', productId);
+      await _client.from('products').delete().eq('id', productId);
+    } catch (e) {
+      debugPrint('ProductService.deleteProduct failed (productId=$productId): $e');
+      rethrow;
+    }
+  }
+
   static Future<int> _createProductOnce(Product product) async {
     // 1. Category
     int? categoryId;

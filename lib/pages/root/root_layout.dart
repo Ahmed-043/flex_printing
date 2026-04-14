@@ -2,7 +2,6 @@ import 'package:flex_printing/pages/root/root_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/System/system.dart';
 
 class RootLayout extends StatefulWidget {

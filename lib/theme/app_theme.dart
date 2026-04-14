@@ -7,6 +7,9 @@ class AppTheme {
   static const _lightText = Color(0xFFFFFFFF);
   static const _lightDark = Color(0xFF000000);
   static const _lightGrey = Color(0xFFD7D8D8);
+  static const _lightError = Color(0xFFED2024);
+
+
 
   // Dummy dark colors (change later)
   static const _darkPrimary = Color(0xFFFFFFFF);
@@ -14,6 +17,7 @@ class AppTheme {
   static const _darkText = Color(0xFFFFFFFF);
   static const _darkDark = Color(0xFF000000);
   static const _darkGrey = Color(0xFFD7D8D8);
+  static const _darkError = Color(0xFFED2024);
 
   static ThemeData light() {
     final scheme = ColorScheme.fromSeed(
@@ -29,6 +33,7 @@ class AppTheme {
       onSurface: _lightText,
       onPrimary: _lightDark,
       onSecondary: _lightText,
+      error: _lightError,
 
     );
 
@@ -73,6 +78,7 @@ class AppTheme {
       onSurface: _darkText,
       onPrimary: _darkDark,
       onSecondary: _darkText,
+      error: _darkError,
     );
 
     return ThemeData(
