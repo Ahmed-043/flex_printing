@@ -8,7 +8,12 @@ import '../../shared_widgets/ui_helper.dart';
 
 class ClientsEvents extends StatefulWidget {
   final bool isEvents;
-  const ClientsEvents({super.key, this.isEvents = false});
+  final bool isActive;
+  const ClientsEvents({
+    super.key,
+    this.isEvents = false,
+    this.isActive = true,
+  });
 
   @override
   State<ClientsEvents> createState() => _ClientsEventsState();
@@ -96,8 +101,8 @@ class _ClientsEventsState extends State<ClientsEvents> {
                 enlargeCenterPage: true,     // ⭐ center zoom
                 enlargeFactor: 0.18,         // ≈ your minScale 0.85
                 clipBehavior: Clip.none,
-                autoPlay: true,
-                autoPlayInterval: Duration(seconds: 2),
+                autoPlay: widget.isActive && itemCount > 1,
+                autoPlayInterval: const Duration(seconds: 2),
                 enableInfiniteScroll: true,
                 padEnds: true,
               ),

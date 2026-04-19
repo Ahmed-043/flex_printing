@@ -28,6 +28,7 @@ class _HomeContentState extends State<HomeContent> {
   late double screenHeight, screenWidth;
   final ScrollController _scrollController = ScrollController();
   final Map<String, GlobalKey> _sectionKeys = {
+    'banner': GlobalKey(),
     'products': GlobalKey(),
     'materials': GlobalKey(),
     'clients': GlobalKey(),
@@ -39,6 +40,7 @@ class _HomeContentState extends State<HomeContent> {
     'footer': GlobalKey(),
   };
   final Map<String, bool> _visibleSections = {
+    'banner': false,
     'products': false,
     'materials': false,
     'clients': false,
@@ -50,6 +52,8 @@ class _HomeContentState extends State<HomeContent> {
     'footer': false,
   };
   ScrollPosition? _parentScrollPosition;
+  bool _visibilityUpdateScheduled = false;
+  double _lastVisibilityCheckOffset = -1;
   final GlobalKey _aboutKey = GlobalKey();
   final GlobalKey _eventsKey = GlobalKey();
 
@@ -58,7 +62,7 @@ class _HomeContentState extends State<HomeContent> {
     super.initState();
     _scrollController.addListener(_onScroll);
     _scheduleInitialScroll(widget.initialSection);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _updateVisibleSections());
+    _scheduleVisibilityUpdate();
   }
 
   @override
@@ -79,7 +83,7 @@ class _HomeContentState extends State<HomeContent> {
     _parentScrollPosition?.removeListener(_onScroll);
     _parentScrollPosition = parentPosition;
     _parentScrollPosition?.addListener(_onScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _updateVisibleSections());
+    _scheduleVisibilityUpdate();
   }
 
   @override
@@ -91,7 +95,25 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   void _onScroll() {
-    _updateVisibleSections();
+    final offset = _parentScrollPosition?.pixels ??
+        (_scrollController.hasClients ? _scrollController.position.pixels : 0);
+    if (_lastVisibilityCheckOffset >= 0 &&
+        (offset - _lastVisibilityCheckOffset).abs() < 24) {
+      return;
+    }
+    _lastVisibilityCheckOffset = offset;
+    _scheduleVisibilityUpdate();
+  }
+
+  void _scheduleVisibilityUpdate() {
+    if (_visibilityUpdateScheduled || !mounted) {
+      return;
+    }
+    _visibilityUpdateScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _visibilityUpdateScheduled = false;
+      _updateVisibleSections();
+    });
   }
 
   void _updateVisibleSections() {
@@ -124,7 +146,10 @@ class _HomeContentState extends State<HomeContent> {
 
       final intersection = rect.intersect(viewportRect);
       final requiredHeight = (renderObject.size.height * 0.12).clamp(40.0, 180.0);
-      final isVisible = intersection.height >= requiredHeight;
+      final threshold = (_visibleSections[key] ?? false)
+          ? requiredHeight * 0.75
+          : requiredHeight;
+      final isVisible = intersection.height >= threshold;
 
       if (_visibleSections[key] != isVisible) {
         _visibleSections[key] = isVisible;
@@ -150,6 +175,7 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   void _scrollToSection(String section) {
+
     final targetContext = switch (section) {
       HomeContent.sectionAbout => _aboutKey.currentContext,
       HomeContent.sectionEvents => _eventsKey.currentContext,
@@ -178,7 +204,12 @@ class _HomeContentState extends State<HomeContent> {
         color: Theme.of(context).colorScheme.primary,
         child: Column(
           children: [
-            _banner(),
+            Container(
+              key: _sectionKeys['banner'],
+              child: RepaintBoundary(
+                child: _banner(),
+              ),
+            ),
             Container(height: System.isMobile ? 80 : 200),
             _lazySection(
               sectionId: 'products',
@@ -192,7 +223,9 @@ class _HomeContentState extends State<HomeContent> {
             Container(height: System.isMobile ? 125 : 450),
             _lazySection(
               sectionId: 'clients',
-              child: ClientsEvents(),
+              child: ClientsEvents(
+                isActive: _visibleSections['clients'] ?? false,
+              ),
             ),
             Container(height: System.isMobile ? 125 : 450),
             _lazySection(
@@ -204,7 +237,10 @@ class _HomeContentState extends State<HomeContent> {
             _lazySection(
               sectionId: 'events',
               anchorKey: _eventsKey,
-              child: ClientsEvents(isEvents: true),
+              child: ClientsEvents(
+                isEvents: true,
+                isActive: _visibleSections['events'] ?? false,
+              ),
             ),
             Container(height: System.isMobile ? 164 : 290),
             _lazySection(
@@ -243,11 +279,16 @@ class _HomeContentState extends State<HomeContent> {
         alignment: Alignment.topCenter,
         child: IgnorePointer(
           ignoring: !isVisible,
-          child: AnimatedOpacity(
-            opacity: isVisible ? 1 : 0,
-            duration: const Duration(milliseconds: 1200),
-            curve: Curves.easeOut,
-            child: child,
+          child: TickerMode(
+            enabled: isVisible,
+            child: RepaintBoundary(
+              child: AnimatedOpacity(
+                opacity: isVisible ? 1 : 0,
+                duration: const Duration(milliseconds: 1200),
+                curve: Curves.easeOut,
+                child: child,
+              ),
+            ),
           ),
         ),
       ),
@@ -261,6 +302,8 @@ class _HomeContentState extends State<HomeContent> {
     }else{
       containerHeight = min(containerHeight,1200);
     }
+    final useCompactNav = screenWidth < 1050;
+
     return Container(
       height: containerHeight,
       color: Theme.of(context).colorScheme.secondary,
@@ -271,7 +314,7 @@ class _HomeContentState extends State<HomeContent> {
             children: _mobileBanner()),
       )
           : Padding(
-        padding: const EdgeInsets.only(left: 100.0, right: 100),
+        padding: EdgeInsets.symmetric(horizontal: useCompactNav ? 50 : 100.0),
         child: Row(
             children: _desktopBanner()),
       ),
@@ -352,7 +395,7 @@ class _HomeContentState extends State<HomeContent> {
           ],
         ),
       ),
-      HomeBannerCarousel()
+      HomeBannerCarousel(isActive: _visibleSections['banner'] ?? false)
     ];
   }
 
@@ -408,7 +451,7 @@ class _HomeContentState extends State<HomeContent> {
           ],
         ),
       ),
-      HomeBannerCarousel(),
+      HomeBannerCarousel(isActive: _visibleSections['banner'] ?? false),
     ];
   }
 }

@@ -1,4 +1,6 @@
+import 'package:flex_printing/models/System/system_platform_io.dart';
 import 'package:flex_printing/pages/root/root_widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
@@ -14,6 +16,23 @@ class RootLayout extends StatefulWidget {
 
 class _RootLayoutState extends State<RootLayout> {
   final ScrollController scrollController = ScrollController();
+
+  void _scrollToTop() {
+    if (!scrollController.hasClients) return;
+    scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 450),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _handleHomeTap(bool isHome) {
+    if (isHome) {
+      _scrollToTop();
+      return;
+    }
+    context.go('/');
+  }
 
 
   @override
@@ -65,7 +84,7 @@ class _RootLayoutState extends State<RootLayout> {
                   leading: InkWell(
                     hoverColor: Colors.transparent,
                     splashColor: Colors.transparent,
-                    onTap: () => context.go('/'),
+                    onTap: () => _handleHomeTap(isHome),
                     child: Row(
                       crossAxisAlignment: .center,
                       mainAxisAlignment: .end,
@@ -130,6 +149,8 @@ class _RootLayoutState extends State<RootLayout> {
                               context,
                               buttonPos: pos,
                               buttonSize: box.size,
+                              currentRoute: GoRouterState.of(context).uri.path,
+                              onHomeTapWhileSelected: _scrollToTop,
                             );
                           },
                           child: Padding(
@@ -139,7 +160,10 @@ class _RootLayoutState extends State<RootLayout> {
                         );
                       },
                     )
-                        : Navbar(),
+                        : Navbar(
+                            currentRoute: GoRouterState.of(context).uri.path,
+                            onHomeTapWhileSelected: _scrollToTop,
+                          ),
                   ],
 
                 );
@@ -157,6 +181,8 @@ Future<void> showTopMenu(
   BuildContext context, {
   required Offset buttonPos,
   required Size buttonSize,
+  required String currentRoute,
+  VoidCallback? onHomeTapWhileSelected,
 }) async {
   final route = await showGeneralDialog<String>(
     context: context,
@@ -212,6 +238,7 @@ Future<void> showTopMenu(
                         MenuItem(title: 'About', route: '/?section=about'),
                         MenuItem(title: 'Events', route: '/?section=events'),
                         MenuItem(title: 'Contact', route: '/contact'),
+                        if(!kIsWeb)
                         MenuItem(title: 'Admin', route: '/admin'),
                       ],
                     ),
@@ -228,6 +255,8 @@ Future<void> showTopMenu(
   if (route != null && context.mounted) {
     if (route == '/admin') {
       showAdminAuthDialog(context);
+    } else if (route == '/' && currentRoute == '/') {
+      onHomeTapWhileSelected?.call();
     } else {
       context.go(route);
     }
@@ -235,7 +264,14 @@ Future<void> showTopMenu(
 }
 
 class Navbar extends StatelessWidget {
-  const Navbar({super.key});
+  const Navbar({
+    super.key,
+    required this.currentRoute,
+    this.onHomeTapWhileSelected,
+  });
+
+  final String currentRoute;
+  final VoidCallback? onHomeTapWhileSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -246,36 +282,37 @@ class Navbar extends StatelessWidget {
           NavButton(
             title: 'Home',
             route: '/',
-            currentRoute: GoRouterState.of(context).uri.path,
+            currentRoute: currentRoute,
+            onTapWhileSelected: onHomeTapWhileSelected,
           ),
 
           NavButton(
             title: 'Products',
             route: '/products',
-            currentRoute: GoRouterState.of(context).uri.path,
+            currentRoute: currentRoute,
           ),
           NavButton(
             title: 'About',
             route: '/',
-            currentRoute: GoRouterState.of(context).uri.path,
+            currentRoute: currentRoute,
             section: 'about',
           ),
           NavButton(
             title: 'Events',
             route: '/',
-            currentRoute: GoRouterState.of(context).uri.path,
+            currentRoute: currentRoute,
             section: 'events',
           ),
           NavButton(
             title: 'Contact',
             route: '/contact',
-            currentRoute: GoRouterState.of(context).uri.path,
+            currentRoute: currentRoute,
           ),
-
+          if(!kIsWeb)
           NavButton(
             title: 'Admin',
             route: '/admin',
-            currentRoute: GoRouterState.of(context).uri.path,
+            currentRoute: currentRoute,
             onTapOverride: () => showAdminAuthDialog(context),
           ),
         ],

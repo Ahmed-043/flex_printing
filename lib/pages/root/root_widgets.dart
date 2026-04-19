@@ -1,5 +1,4 @@
 
-import 'package:flex_printing/pages/root/root_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -40,6 +39,7 @@ class NavButton extends StatelessWidget {
   final String currentRoute;
   final String? section;
   final VoidCallback? onTapOverride;
+  final VoidCallback? onTapWhileSelected;
 
   const NavButton({
     super.key,
@@ -48,6 +48,7 @@ class NavButton extends StatelessWidget {
     required this.currentRoute,
     this.section,
     this.onTapOverride,
+    this.onTapWhileSelected,
   });
 
   @override
@@ -68,6 +69,10 @@ class NavButton extends StatelessWidget {
             onTapOverride!();
             return;
           }
+          if (isSelected && onTapWhileSelected != null) {
+            onTapWhileSelected!();
+            return;
+          }
           if (section != null) {
             context.go('/?section=$section');
             return;
@@ -81,8 +86,10 @@ class NavButton extends StatelessWidget {
           child: Text(
             title,
             style: TextStyle(
-              color: isSelected ? Colors.white60 : Colors.white,
+              decoration: isSelected ? TextDecoration.underline : TextDecoration.none,
+              color: Colors.white,
               fontWeight: FontWeight.w200,
+
               fontSize: screenWidth < 1050 ? 25 : 32,
             ),
           ),

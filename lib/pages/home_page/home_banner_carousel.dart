@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import '../../methods/images/fetch_images.dart';
 
 class HomeBannerCarousel extends StatefulWidget {
-  const HomeBannerCarousel({super.key});
+  const HomeBannerCarousel({super.key, this.isActive = true});
+
+  final bool isActive;
 
   @override
   State<HomeBannerCarousel> createState() => _HomeBannerCarouselState();
@@ -35,6 +37,18 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startAutoPlay();
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeBannerCarousel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.isActive && oldWidget.isActive) {
+      _autoTimer?.cancel();
+      return;
+    }
+    if (widget.isActive && !oldWidget.isActive) {
+      _startAutoPlay();
+    }
   }
 
   void _handleScroll() {
@@ -66,10 +80,11 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
 
   void _startAutoPlay() {
     _autoTimer?.cancel();
-    if (_bannerCount == 0) return;
+    if (_bannerCount == 0 || !widget.isActive) return;
 
     _autoTimer = Timer.periodic(const Duration(seconds: 3), (_) async {
       if (!mounted || !scrollController.hasClients || _autoAnimating) return;
+      if (!widget.isActive) return;
 
       final page = scrollController.page;
       if (page == null) return;
