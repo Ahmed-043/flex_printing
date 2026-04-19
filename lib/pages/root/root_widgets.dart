@@ -110,7 +110,7 @@ Future<void> showAdminAuthDialog(BuildContext context) {
 
 class AdminAuthDialog extends StatefulWidget {
   final VoidCallback ? onSuccess;
-  AdminAuthDialog({super.key, this.onSuccess});
+  const AdminAuthDialog({super.key, this.onSuccess});
 
   @override
   State<AdminAuthDialog> createState() => _AdminAuthDialogState();
