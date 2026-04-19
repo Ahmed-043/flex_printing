@@ -1,6 +1,7 @@
 import 'package:flex_printing/shared_widgets/category_drowdown.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../methods/products/fetch_categories.dart';
 import '../../models/System/system.dart';
@@ -8,6 +9,7 @@ import '../../models/product/product.dart';
 import '../../models/product/product_image.dart';
 import '../../models/product/product_spec.dart';
 import '../../services/product_service.dart';
+import '../../shared_widgets/admin_manager_widgets.dart';
 import '../../shared_widgets/product_image_upload_box.dart';
 import '../../shared_widgets/ui_helper.dart';
 
@@ -240,7 +242,8 @@ class _CreateProductPageState extends State<CreateProductPage> {
 
   @override
   Widget build(BuildContext context) {
-
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) return notSignedInView(context);
     return _createProductView(context);
   }
 

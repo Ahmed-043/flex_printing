@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -172,34 +170,10 @@ class _ClientsManagerPageState extends State<ClientsManagerPage> {
   @override
   Widget build(BuildContext context) {
     final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) return _notSignedInView(context);
+    if (user == null) return notSignedInView(context);
     return _buildPage(context);
   }
 
-  Widget _notSignedInView(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.lock_outline, size: 56, color: Colors.grey),
-            const SizedBox(height: 16),
-            const Text(
-              'You must be signed in to manage media.',
-              style: TextStyle(fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => context.go('/admin'),
-              child: const Text('Go to Admin'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildPage(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;

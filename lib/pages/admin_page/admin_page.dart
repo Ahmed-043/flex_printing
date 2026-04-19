@@ -1,10 +1,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../models/System/system.dart';
 
 import '../../shared_widgets/ui_helper.dart';
+import '../root/root_widgets.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -18,6 +20,14 @@ class _AdminPageState extends State<AdminPage> {
   @override
   void initState() {
     super.initState();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (!mounted) return;
+    //
+    //   final user = Supabase.instance.client.auth.currentUser;
+    //   if (user == null) {
+    //
+    //   }
+    // });
   }
 
   void _openCreateProductPage() {
@@ -35,13 +45,36 @@ class _AdminPageState extends State<AdminPage> {
   void _openEventsPage() {
     context.go('/admin/events');
   }
+  Future<void> _signOut() async {
+    try {
+      await Supabase.instance.client.auth.signOut();
+      if (mounted) setState(() {});
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          //_errorMessage = 'Sign out failed. Please try again.';
+        });
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
+    final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) {
+        return AdminAuthDialog(onSuccess: (){
+          setState(() {
+
+          });
+        },);
+      }
     return _landingView(context);
   }
 
   Widget _landingView(BuildContext context) {
+    final theme = Theme.of(context);
+
     final screenWidth = MediaQuery
         .of(context)
         .size
@@ -57,7 +90,8 @@ class _AdminPageState extends State<AdminPage> {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 820),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: .center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 width: double.infinity,
@@ -222,6 +256,21 @@ class _AdminPageState extends State<AdminPage> {
                       ),
                     ),
                   ],
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 20),
+                width: 200,
+                height: 40,
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: theme.colorScheme.error,
+                    backgroundColor: theme.colorScheme.errorContainer.withAlpha(20),
+                  ),
+                  onPressed: _signOut,
+                  child: Text('Sign Out',
+                      style:
+                      TextStyle(color: theme.colorScheme.secondary)),
                 ),
               ),
             ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class AdminSectionHeader extends StatelessWidget {
   final String title;
@@ -176,3 +177,27 @@ class AdminImageThumbnail extends StatelessWidget {
   }
 }
 
+Widget notSignedInView(BuildContext context) {
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.lock_outline, size: 56, color: Colors.grey),
+          const SizedBox(height: 16),
+          const Text(
+            'You must be signed in to manage media.',
+            style: TextStyle(fontSize: 16),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: () => context.go('/admin'),
+            child: const Text('Go to Admin'),
+          ),
+        ],
+      ),
+    ),
+  );
+}

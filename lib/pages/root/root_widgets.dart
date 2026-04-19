@@ -104,18 +104,19 @@ class NavButton extends StatelessWidget {
 Future<void> showAdminAuthDialog(BuildContext context) {
   return showDialog<void>(
     context: context,
-    builder: (_) => const _AdminAuthDialog(),
+    builder: (_) =>  AdminAuthDialog(),
   );
 }
 
-class _AdminAuthDialog extends StatefulWidget {
-  const _AdminAuthDialog();
+class AdminAuthDialog extends StatefulWidget {
+  final VoidCallback ? onSuccess;
+  AdminAuthDialog({super.key, this.onSuccess});
 
   @override
-  State<_AdminAuthDialog> createState() => _AdminAuthDialogState();
+  State<AdminAuthDialog> createState() => _AdminAuthDialogState();
 }
 
-class _AdminAuthDialogState extends State<_AdminAuthDialog> {
+class _AdminAuthDialogState extends State<AdminAuthDialog> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -154,6 +155,7 @@ class _AdminAuthDialogState extends State<_AdminAuthDialog> {
         setState(() {
         _isLoading = false;
       });
+      widget.onSuccess?.call();
       }
     } catch (e) {
       if (mounted) {
@@ -267,6 +269,7 @@ class _AdminAuthDialogState extends State<_AdminAuthDialog> {
                 _labeledField(
                   label: 'Password',
                   child: TextField(
+
                     cursorColor:  theme.colorScheme.onSecondary,
                     controller: _passwordController,
                     obscureText: _obscurePassword,
