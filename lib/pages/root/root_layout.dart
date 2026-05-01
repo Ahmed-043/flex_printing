@@ -44,10 +44,10 @@ class _RootLayoutState extends State<RootLayout> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth > 1050){
-      System.isMobile = false;
-    }
-    final useCompactNav = System.isMobile;
+    // if (screenWidth > 1050){
+    //   System.isMobile = false;
+    // }
+    final useCompactNav = System.isMobile || screenWidth < 1050;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
