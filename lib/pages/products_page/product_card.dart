@@ -114,6 +114,8 @@ class _ProductCardState extends State<ProductCard> {
 
   @override
   Widget build(BuildContext context) {
+    final dpr = MediaQuery.of(context).devicePixelRatio;
+
     return InkWell(
       onTap: () => context.go(
         '/products/${widget.product.id}',
@@ -157,11 +159,18 @@ class _ProductCardState extends State<ProductCard> {
                                       .withAlpha(100),
                                 ),
                         )
-                      : Image.memory(
-                          _imageBytes!,
-                          fit: BoxFit.cover,
-                          filterQuality: FilterQuality.low,
-                        ),
+                      : SizedBox(
+                    // width: MediaQuery.of(context).size.width,
+                    // height: MediaQuery.of(context).size.height,
+                    child: Image.memory(
+                      _imageBytes!,
+                     // isAntiAlias: true,
+                      fit: BoxFit.cover,
+                      filterQuality: FilterQuality.low,
+                      cacheWidth: 450, //(MediaQuery.of(context).size.width * dpr).toInt(),
+                      cacheHeight: 450 //(MediaQuery.of(context).size.height * dpr).toInt(),
+                    ),
+                  ),
                 ),
               ),
             ),

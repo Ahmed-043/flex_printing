@@ -116,9 +116,20 @@ class _MaterialsSectionState extends State<MaterialsSection> with SingleTickerPr
           ),
           clipBehavior: Clip.antiAlias,
           child: item.localBytes != null
-              ? Image.memory(item.localBytes!, fit: BoxFit.cover)
+              ? Image.memory(
+            item.localBytes!,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.low,
+          )
               : imageUrl != null
-              ? Image.network(imageUrl, fit: BoxFit.cover, filterQuality: FilterQuality.low)
+              ? Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.low,
+            cacheWidth: (MediaQuery.of(context).size.width *
+                MediaQuery.of(context).devicePixelRatio)
+                .toInt(),
+          )
               : Center(
             child: Icon(
               Icons.image,

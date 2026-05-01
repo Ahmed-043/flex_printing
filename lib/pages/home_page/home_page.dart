@@ -8,6 +8,7 @@ import 'package:flex_printing/pages/home_page/products_section.dart';
 import 'package:flex_printing/pages/home_page/upcoming_events.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'materials_section.dart';
 import 'other_info.dart';
@@ -365,7 +366,10 @@ class _HomeContentState extends State<HomeContent> {
               ],
             ),
             UiHelper.button(
-              callback: () {},
+              callback: () {
+                context.go('/products');
+                return;
+              },
               color: Colors.black,
               filled: true,
               borderRadius: 50,
