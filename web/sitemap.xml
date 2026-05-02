@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://texprinttp.com/</loc>
+    </url>
+    <url>
+        <loc>https://texprinttp.com/?section=about</loc>
+    </url>
+    <url>
+        <loc>https://texprinttp.com/?section=events</loc>
+    </url>
+    <url>
+        <loc>https://texprinttp.com/products</loc>
+    </url>
+    <url>
+        <loc>https://texprinttp.com/contact</loc>
+    </url>
+    <!-- Dynamic product pages exist at /products/{id}, but the IDs come from
+         Supabase data and cannot be enumerated in this static sitemap file. -->
+</urlset>

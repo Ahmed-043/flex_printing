@@ -440,7 +440,10 @@ class _HomeContentState extends State<HomeContent> {
               ),
             ),
             UiHelper.button(
-              callback: () {},
+              callback: () {
+                context.go('/products');
+                return;
+              },
               color: Colors.black,
               filled: true,
               borderRadius: 50,

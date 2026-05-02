@@ -6,6 +6,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/product/category.dart' as product_model;
 import '../models/product/product.dart';
 
+enum CategoryDeleteStatus { deleted, inUse, notFound }
+
 /// Service that wraps all Supabase operations related to products.
 ///
 /// Bucket name: "flex-printing"
@@ -19,6 +21,39 @@ class ProductService {
   static const int _maxCreateAttempts = 2;
 
   // ── Categories ─────────────────────────────────────────────────────────────
+
+  /// Deletes a category by [name] only if no product currently references it.
+  static Future<CategoryDeleteStatus> deleteCategoryIfUnusedByName(String name) async {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) {
+      return CategoryDeleteStatus.notFound;
+    }
+
+    final existing = await _client
+        .from('categories')
+        .select('id')
+        .ilike('name', trimmed)
+        .maybeSingle();
+
+    if (existing == null) {
+      return CategoryDeleteStatus.notFound;
+    }
+
+    final categoryId = existing['id'] as int;
+
+    final usageRows = await _client
+        .from('products')
+        .select('id')
+        .eq('category', categoryId)
+        .limit(1);
+
+    if ((usageRows as List).isNotEmpty) {
+      return CategoryDeleteStatus.inUse;
+    }
+
+    await _client.from('categories').delete().eq('id', categoryId);
+    return CategoryDeleteStatus.deleted;
+  }
 
   /// Loads all categories ordered by name.
   static Future<List<product_model.Category>> fetchCategories() async {
@@ -267,4 +302,3 @@ class ProductService {
     }
   }
 }
-

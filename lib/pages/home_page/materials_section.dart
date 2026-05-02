@@ -47,6 +47,9 @@ class _MaterialsSectionState extends State<MaterialsSection> with SingleTickerPr
           .select('id, path, sort_order, created_at')
           .order('sort_order', ascending: true)
           .order('created_at', ascending: true);
+
+      if (!mounted) return;
+
       setState(() {
         _items = (rows as List)
             .map((r) =>
@@ -64,6 +67,11 @@ class _MaterialsSectionState extends State<MaterialsSection> with SingleTickerPr
 
 
   void _onTick(Duration elapsed) {
+    if (_items.isEmpty) {
+      _lastElapsed = elapsed;
+      return;
+    }
+
     if (!_scrollController.hasClients) {
       _lastElapsed = elapsed;
       return;
@@ -100,46 +108,7 @@ class _MaterialsSectionState extends State<MaterialsSection> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
-
-    final materialCards = List.generate(
-      _items.length,
-          (index) {
-        final item = _items[index];
-        final imageUrl = item.publicUrl();
-        return Container(
-          height: System.isMobile ? 185 : 485,
-          width: System.isMobile ? 155 : 410,
-          //margin: EdgeInsets.only(right: System.isMobile ? 12 : 20),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade300,
-            borderRadius: BorderRadius.circular(500),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: item.localBytes != null
-              ? Image.memory(
-            item.localBytes!,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.low,
-          )
-              : imageUrl != null
-              ? Image.network(
-            imageUrl,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.low,
-            cacheWidth: (MediaQuery.of(context).size.width *
-                MediaQuery.of(context).devicePixelRatio)
-                .toInt(),
-          )
-              : Center(
-            child: Icon(
-              Icons.image,
-              color: Colors.grey,
-              size: System.isMobile ? 30 : 80,
-            ),
-          ),
-        );
-      },
-    );
+    final totalCount = _items.isEmpty ? 0 : _items.length * 2;
 
     return SizedBox(
       width: double.infinity,
@@ -150,7 +119,7 @@ class _MaterialsSectionState extends State<MaterialsSection> with SingleTickerPr
           SizedBox(height: System.isMobile ? 20 : 50),
           Text(
             "All material and parts${System.isMobile ? "\n" : " "}are available",
-            textAlign: .center,
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: System.isMobile ? 20 : 58,
               color: Theme.of(context).colorScheme.secondaryContainer,
@@ -159,12 +128,47 @@ class _MaterialsSectionState extends State<MaterialsSection> with SingleTickerPr
           SizedBox(height: System.isMobile ? 30 : 75),
           SizedBox(
             width: double.infinity,
-            child: SingleChildScrollView(
+            height: System.isMobile ? 185 : 485,
+            child: ListView.builder(
               controller: _scrollController,
               scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [...materialCards, ...materialCards],
-              ),
+              itemCount: totalCount,
+              itemBuilder: (context, index) {
+                final item = _items[index % _items.length];
+                final imageUrl = item.publicUrl();
+
+                return Container(
+                  height: System.isMobile ? 185 : 485,
+                  width: System.isMobile ? 155 : 410,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(500),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: item.localBytes != null
+                      ? Image.memory(
+                    item.localBytes!,
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.low,
+                  )
+                      : imageUrl != null
+                      ? Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.low,
+                    cacheWidth: (MediaQuery.of(context).size.width *
+                        MediaQuery.of(context).devicePixelRatio)
+                        .toInt(),
+                  )
+                      : Center(
+                    child: Icon(
+                      Icons.image,
+                      color: Colors.grey,
+                      size: System.isMobile ? 30 : 80,
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ],

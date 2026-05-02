@@ -23,10 +23,12 @@ class CategoryDropdownTextField extends StatefulWidget {
 
 class _CategoryDropdownTextFieldState extends State<CategoryDropdownTextField> {
   final FocusNode _focusNode = FocusNode();
+  late List<String> _categories;
 
   @override
   void initState() {
     super.initState();
+    _categories = [...widget.categories];
     _focusNode.addListener(() {
       if (!_focusNode.hasFocus) {
         _commitTypedValue();
@@ -34,8 +36,16 @@ class _CategoryDropdownTextFieldState extends State<CategoryDropdownTextField> {
     });
   }
 
+  @override
+  void didUpdateWidget(covariant CategoryDropdownTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.categories != widget.categories) {
+      _categories = [...widget.categories];
+    }
+  }
+
   List<String> _sortedCategories() {
-    final list = [...widget.categories];
+    final list = [..._categories];
     list.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     return list;
   }
@@ -45,7 +55,7 @@ class _CategoryDropdownTextFieldState extends State<CategoryDropdownTextField> {
     if (value.isEmpty) {
       return null;
     }
-    for (final c in widget.categories) {
+    for (final c in _categories) {
       if (c.toLowerCase() == value.toLowerCase()) {
         return c;
       }
@@ -67,16 +77,16 @@ class _CategoryDropdownTextFieldState extends State<CategoryDropdownTextField> {
       return;
     }
 
-    widget.categories.add(typed);
-    widget.categories.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-    widget.controller.text = typed;
-
-    widget.onCategoriesChanged?.call();
-    widget.onAdd?.call(typed);
-
     if (mounted) {
-      setState(() {});
+      setState(() {
+        _categories.add(typed);
+        _categories.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+        widget.controller.text = typed;
+      });
     }
+
+    widget.onAdd?.call(typed);
+    widget.onCategoriesChanged?.call();
   }
 
   @override
@@ -85,9 +95,12 @@ class _CategoryDropdownTextFieldState extends State<CategoryDropdownTextField> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     final sorted = _sortedCategories();
+    final theme = Theme.of(context);
+    final selectionColor = theme.colorScheme.secondary.withAlpha(70);
 
     return RawAutocomplete<String>(
       textEditingController: widget.controller,
@@ -106,37 +119,44 @@ class _CategoryDropdownTextFieldState extends State<CategoryDropdownTextField> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: controller,
-              focusNode: focusNode,
-              textInputAction: TextInputAction.done,
-              cursorColor: Theme.of(context).colorScheme.onPrimary,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
+            TextSelectionTheme(
+              data: TextSelectionThemeData(
+                cursorColor: theme.colorScheme.secondary,
+                selectionColor: selectionColor,
+                selectionHandleColor: theme.colorScheme.secondary,
               ),
-              decoration: InputDecoration(
-                hintText: widget.hintText,
-                filled: true,
-                fillColor: Colors.transparent,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
+              child: TextField(
+                controller: controller,
+                focusNode: focusNode,
+                textInputAction: TextInputAction.done,
+                cursorColor: Theme.of(context).colorScheme.secondary,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFFD1D5DC)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFF909398)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFFD1D5DC)),
-                ),
+                decoration: InputDecoration(
+                  hintText: widget.hintText,
+                  filled: true,
+                  fillColor: Colors.transparent,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFD1D5DC)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFF909398)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFD1D5DC)),
+                  ),
 
+                ),
               ),
             ),
           ],

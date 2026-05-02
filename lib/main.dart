@@ -14,8 +14,14 @@ import 'package:flex_printing/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+
 Future<void> main() async {
+  usePathUrlStrategy();
+
   WidgetsFlutterBinding.ensureInitialized();
+
   String? startupError;
   try {
     await Supabase.initialize(

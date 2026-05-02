@@ -43,7 +43,7 @@ class _RootLayoutState extends State<RootLayout> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth > 1050){
+    if (screenWidth > 850){
       System.isMobile = false;
     }
     final useCompactNav = System.isMobile;

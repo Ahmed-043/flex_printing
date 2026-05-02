@@ -1,11 +1,14 @@
 import 'package:flex_printing/methods/products/fetch_categories.dart';
 import 'package:flex_printing/pages/products_page/product_card.dart';
+import 'package:flex_printing/services/product_service.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../methods/products/fetch_products.dart';
 import '../../models/System/system.dart';
 import '../../models/product/product_record.dart';
+import 'delete_dialog.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -61,6 +64,84 @@ class _ProductsPageState extends State<ProductsPage> {
     });
   }
 
+  Future<void> _handleCategoryLongPress(int index) async {
+    if (index <= 0 || index >= categories.length) return;
+
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) return;
+
+    final connected = await ProductService.isConnected();
+    if (!connected || !mounted) return;
+
+    final categoryName = categories[index];
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => DeleteCategoryDialog(categoryName: categoryName),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    try {
+      final result =
+          await ProductService.deleteCategoryIfUnusedByName(categoryName);
+      if (!mounted) return;
+
+      if (result == CategoryDeleteStatus.inUse) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Cannot delete "$categoryName" because it is used by one or more products.',
+            ),
+            backgroundColor: Colors.orange.shade800,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
+      }
+
+      if (result == CategoryDeleteStatus.notFound) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Category "$categoryName" was not found.'),
+            backgroundColor: Colors.orange.shade800,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        await _loadProducts(nextCategoryIndex: 0);
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Category "$categoryName" deleted successfully.'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+
+      var nextIndex = _selectedCategoryIndex;
+      if (_selectedCategoryIndex == index) {
+        nextIndex = 0;
+      } else if (index < _selectedCategoryIndex) {
+        nextIndex = _selectedCategoryIndex - 1;
+      }
+
+      await _loadProducts(nextCategoryIndex: nextIndex);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            ProductService.toUserMessage(e, action: 'delete category'),
+          ),
+          backgroundColor: Colors.red.shade700,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _loadRequestId++;
@@ -89,13 +170,16 @@ class _ProductsPageState extends State<ProductsPage> {
                     context,
                     categories[index],
                     selected: index == _selectedCategoryIndex,
-                    onPressed: () {
+                    onPress: () {
                       _loadProducts(nextCategoryIndex: index);
                     },
-                  )
+                    onLongPress: index == 0
+                        ? null
+                        : () => _handleCategoryLongPress(index),
+                  ),
+                ),
               ),
             ),
-          ),
           ),
           SizedBox(height: System.isMobile ? 40 : 90),
           Padding(
@@ -133,12 +217,15 @@ class _ProductsPageState extends State<ProductsPage> {
     BuildContext context,
     String title, {
     bool selected = false,
-    VoidCallback? onPressed,
-  }) {
+    VoidCallback? onPress,
+    VoidCallback? onLongPress,
+
+      }) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: System.isMobile ? 6 : 12),
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: onPress,
+        onLongPress: onLongPress,
         style: ElevatedButton.styleFrom(
           elevation: 0,
           backgroundColor: selected

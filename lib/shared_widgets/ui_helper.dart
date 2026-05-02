@@ -66,6 +66,9 @@ class UiHelper {
     void Function(String)? onSubmitted,
   }) {
     final labelText = requiredField ? '$label *' : label;
+    final theme = Theme.of(context);
+    final selectionColor = theme.colorScheme.secondary.withAlpha(70);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -79,41 +82,62 @@ class UiHelper {
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
-          onSubmitted: onSubmitted,
-          controller: controller,
-          keyboardType: keyboardType,
-          maxLines: maxLines,
-          cursorColor: Theme.of(context).colorScheme.onPrimary,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
+        TextSelectionTheme(
+          data: TextSelectionThemeData(
+            cursorColor: theme.colorScheme.secondary,
+            selectionColor: selectionColor,
+            selectionHandleColor: theme.colorScheme.secondary,
           ),
-          decoration: InputDecoration(
-            hintText: hint,
-            filled: true,
-            fillColor:Colors.transparent,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 14,
+          child: TextField(
+            onSubmitted: onSubmitted,
+            controller: controller,
+            keyboardType: keyboardType,
+            maxLines: maxLines,
+            cursorColor: theme.colorScheme.secondary,
+            style: TextStyle(
+              color: theme.colorScheme.onPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
             ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Color(0xFFD1D5DC),
+            contextMenuBuilder: (context, editableTextState) {
+              return Theme(
+                data: theme.copyWith(
+                  colorScheme: theme.colorScheme.copyWith(
+                    surface: theme.colorScheme.secondaryContainer,
+                    onSurface: theme.colorScheme.onSecondary,
+                  ),
+                ),
+                child: AdaptiveTextSelectionToolbar.buttonItems(
+                  anchors: editableTextState.contextMenuAnchors,
+                  buttonItems: editableTextState.contextMenuButtonItems,
+                ),
+              );
+            },
+            decoration: InputDecoration(
+              hintText: hint,
+              filled: true,
+              fillColor:Colors.transparent,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
               ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Color(0xFF909398),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Color(0xFFD1D5DC),
+                ),
               ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Color(0xFFD1D5DC),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Color(0xFF909398),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: Color(0xFFD1D5DC),
+                ),
               ),
             ),
           ),
@@ -128,36 +152,57 @@ class UiHelper {
     Color color = const Color(0xFFA1A3A8),
   }) {
     final theme = Theme.of(context);
-    return TextField(
-      controller: controller,
-      style: TextStyle(
-        fontSize: 14,
-        color: theme.colorScheme.onPrimary,
+    final selectionColor = theme.colorScheme.secondary.withAlpha(70);
+    return TextSelectionTheme(
+      data: TextSelectionThemeData(
+        cursorColor: theme.colorScheme.secondary,
+        selectionColor: selectionColor,
+        selectionHandleColor: theme.colorScheme.secondary,
       ),
-      cursorColor: Theme.of(context).colorScheme.onPrimary,
+      child: TextField(
+        controller: controller,
+        style: TextStyle(
+          fontSize: 14,
+          color: theme.colorScheme.onPrimary,
+        ),
+        cursorColor: Theme.of(context).colorScheme.secondary,
+        contextMenuBuilder: (context, editableTextState) {
+          return Theme(
+            data: theme.copyWith(
+              colorScheme: theme.colorScheme.copyWith(
+                surface: theme.colorScheme.secondaryContainer,
+                onSurface: theme.colorScheme.onSecondary,
+              ),
+            ),
+            child: AdaptiveTextSelectionToolbar.buttonItems(
+              anchors: editableTextState.contextMenuAnchors,
+              buttonItems: editableTextState.contextMenuButtonItems,
+            ),
+          );
+        },
 
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
-        isDense: true,
-        filled: true,
-        fillColor: Colors.transparent,
-        contentPadding:
-        const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: color),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide:  BorderSide(color: color),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide:  BorderSide(color: color),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
+          isDense: true,
+          filled: true,
+          fillColor: Colors.transparent,
+          contentPadding:
+          const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: color),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide:  BorderSide(color: color),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide:  BorderSide(color: color),
+          ),
         ),
       ),
     );
   }
 }
-
