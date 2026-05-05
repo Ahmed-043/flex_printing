@@ -1,5 +1,4 @@
-import 'dart:async';
-
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flex_printing/models/System/system.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
@@ -19,21 +18,10 @@ class _MaterialsSectionState extends State<MaterialsSection> {
 
   List<MediaItem> _items = [];
 
-  late final PageController _pageController;
-  int _currentPage = 1000; // fake infinite start
-  Timer? _autoScrollTimer;
-
   @override
   void initState() {
     super.initState();
-
-    _pageController = PageController(
-      viewportFraction: System.isMobile ? 0.5 : 0.4,
-      initialPage: _currentPage,
-    );
-
     _loadItems();
-    _startAutoScroll();
   }
 
   Future<void> _loadItems() async {
@@ -61,32 +49,6 @@ class _MaterialsSectionState extends State<MaterialsSection> {
     }
   }
 
-  void _startAutoScroll() {
-    _autoScrollTimer?.cancel();
-
-    _autoScrollTimer = Timer.periodic(const Duration(seconds: 3), (_) {
-      if (!mounted || _items.isEmpty) return;
-
-      _currentPage++;
-
-      _pageController.animateToPage(
-        _currentPage,
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOut,
-      );
-    });
-  }
-
-  void _stopAutoScroll() {
-    _autoScrollTimer?.cancel();
-  }
-
-  @override
-  void dispose() {
-    _autoScrollTimer?.cancel();
-    _pageController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,59 +73,56 @@ class _MaterialsSectionState extends State<MaterialsSection> {
 
           SizedBox(
             width: double.infinity,
-            height: System.isMobile ? 185 : 485,
+            child: CarouselSlider.builder(
+              itemCount: _items.isEmpty ? 0 : _items.length,
+              options: CarouselOptions(
+                height: System.isMobile ? 200 : 485,
+                viewportFraction: System.isMobile ? 0.4 : 0.4,
+                enlargeCenterPage: true,
+                enlargeFactor: System.isMobile ? 0.55 : 0.5,
+                clipBehavior: Clip.none,
+                autoPlay: _items.isNotEmpty,
+                autoPlayInterval: const Duration(seconds: 2),
+                enableInfiniteScroll: true,
+                padEnds: true,
+              ),
+              itemBuilder: (context, index, realIndex) {
+                final item = _items[index];
+                final imageUrl = item.publicUrl();
 
-            child: GestureDetector(
-              onPanDown: (_) => _stopAutoScroll(),
-              onPanCancel: _startAutoScroll,
-              onPanEnd: (_) => _startAutoScroll(),
-
-              child: PageView.builder(
-                controller: _pageController,
-                scrollDirection: Axis.horizontal,
-
-                itemBuilder: (context, index) {
-                  if (_items.isEmpty) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  final item = _items[index % _items.length];
-                  final imageUrl = item.publicUrl();
-
-                  return Center(
-                    child: Container(
-                      height: System.isMobile ? 185 : 485,
-                      width: System.isMobile ? 155 : 410,
-                      margin: const EdgeInsets.symmetric(horizontal: 8),
-
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(500),
-                      ),
-
-                      clipBehavior: Clip.antiAlias,
-
-                      child: item.localBytes != null
-                          ? Image.memory(
-                        item.localBytes!,
-                        fit: BoxFit.cover,
-                      )
-                          : imageUrl != null
-                          ? Image.network(
-                        imageUrl,
-                        fit: BoxFit.cover,
-                      )
-                          : Center(
-                        child: Icon(
-                          Icons.image,
-                          color: Colors.grey,
-                          size: System.isMobile ? 30 : 80,
-                        ),
+                return Center(
+                  child: Container(
+                    height: System.isMobile ? 250 : 485,
+                    width: System.isMobile ? 250 : 500,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                     // borderRadius: BorderRadius.circular(500),
+                     //  border: Border.all(
+                     //    color: Colors.grey.shade300,
+                     //    width: 2,
+                     //  ),
+                    ),
+                    //clipBehavior: Clip.antiAlias,
+                    child: item.localBytes != null
+                        ? Image.memory(
+                      item.localBytes!,
+                      fit: BoxFit.fitWidth,
+                    )
+                        : imageUrl != null
+                        ? Image.network(
+                      imageUrl,
+                      fit: BoxFit.contain,
+                    )
+                        : Center(
+                      child: Icon(
+                        Icons.image,
+                        color: Colors.grey,
+                        size: System.isMobile ? 30 : 80,
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ],

@@ -4,16 +4,16 @@
         <loc>https://texprinttp.com/</loc>
     </url>
     <url>
-        <loc>https://texprinttp.com/?section=about</loc>
+        <loc>https://texprinttp.com/#/?section=about</loc>
     </url>
     <url>
-        <loc>https://texprinttp.com/?section=events</loc>
+        <loc>https://texprinttp.com/#/?section=events</loc>
     </url>
     <url>
-        <loc>https://texprinttp.com/products</loc>
+        <loc>https://texprinttp.com/#/products</loc>
     </url>
     <url>
-        <loc>https://texprinttp.com/contact</loc>
+        <loc>https://texprinttp.com/#/contact</loc>
     </url>
     <!-- Dynamic product pages exist at /products/{id}, but the IDs come from
          Supabase data and cannot be enumerated in this static sitemap file. -->

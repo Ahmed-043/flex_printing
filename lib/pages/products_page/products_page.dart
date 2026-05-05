@@ -1,4 +1,5 @@
 import 'package:flex_printing/methods/products/fetch_categories.dart';
+import 'package:flex_printing/pages/home_page/other_info.dart';
 import 'package:flex_printing/pages/products_page/product_card.dart';
 import 'package:flex_printing/services/product_service.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
@@ -208,6 +209,7 @@ class _ProductsPageState extends State<ProductsPage> {
             ),
           ),
           SizedBox(height: System.isMobile ? 75 : 150),
+          FooterSection(),
         ],
       ),
     );

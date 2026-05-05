@@ -2,6 +2,8 @@ import 'package:flex_printing/models/System/system.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter/gestures.dart';
+import 'package:go_router/go_router.dart';
 
 class OtherInfo extends StatelessWidget {
   const OtherInfo({super.key});
@@ -176,7 +178,7 @@ class FooterSection extends StatelessWidget {
           SizedBox(
             width: System.isMobile ? 250 : 300,
             child: Column(
-              crossAxisAlignment: .start,
+              crossAxisAlignment: .center,
               children: [
                 Text(
                   "Quick Links",
@@ -188,52 +190,76 @@ class FooterSection extends StatelessWidget {
                 ),
                 SizedBox(height: System.isMobile ? 15 : 20),
                 SizedBox(
-                  width: System.isMobile ? 250 : 300,
-                  child: Text(
-                    "Home\nAbout Us\nProducts\nServices\nContact",
-                    style: TextStyle(
+                 // width: System.isMobile ? 250 : 300,
+                  child: Builder(builder: (context) {
+                    final linkStyle = TextStyle(
                       fontSize: 17,
                       letterSpacing: 1,
                       height: 2,
                       fontWeight: FontWeight.w300,
-                    ),
-                  ),
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    );
+
+                    TextSpan link(String label, VoidCallback onTap) {
+                      return TextSpan(
+                        text: label,
+                        style: linkStyle,
+                        recognizer: TapGestureRecognizer()..onTap = onTap,
+                      );
+                    }
+
+                    return RichText(
+                      text: TextSpan(
+                        children: [
+                          link('Home', () => context.go('/')),
+                          const TextSpan(text: '\n'),
+                          link('About Us', () => context.go(Uri(path: '/', queryParameters: {'section': 'about'}).toString())),
+                          const TextSpan(text: '\n'),
+                          link('Products', () => context.go('/products')),
+                          const TextSpan(text: '\n'),
+                          link('Services', () => context.go(Uri(path: '/', queryParameters: {'section': 'services'}).toString())),
+                          const TextSpan(text: '\n'),
+                          link('Contact Us', () => context.go('/contact')),
+                        ],
+                      ),
+                    );
+                  }),
                 ),
 
               ],
             ),
           ),
-            if(MediaQuery.of(context).size.width > 1280)
-              SizedBox(
-            width: System.isMobile ? 250 : 300,
-            child: Column(
-              crossAxisAlignment: .start,
-              children: [
-                Text(
-                  "Our Services",
-                  style: TextStyle(
-                    fontSize: System.isMobile ? 20 : 25,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSecondary,
-                  ),
-                ),
-                SizedBox(height: System.isMobile ? 15 : 20),
-                SizedBox(
-                  width: System.isMobile ? 250 : 300,
-                  child: Text(
-                    "Custom T-Shirt Printing\nBusiness Cards\nBanners & Posters\nBrochures & Flyers\nStickers & Labels",
-                    style: TextStyle(
-                      fontSize: 17,
-                      letterSpacing: 1,
-                      height: 2,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                ),
-
-              ],
-            ),
-          ),
+          //   if(MediaQuery.of(context).size.width > 1280)
+          //     SizedBox(
+          //   width: System.isMobile ? 250 : 300,
+          //   child: Column(
+          //     crossAxisAlignment: .start,
+          //     children: [
+          //       Text(
+          //         "Our Services",
+          //         style: TextStyle(
+          //           fontSize: System.isMobile ? 20 : 25,
+          //           fontWeight: FontWeight.w600,
+          //           color: Theme.of(context).colorScheme.onSecondary,
+          //         ),
+          //       ),
+          //       SizedBox(height: System.isMobile ? 15 : 20),
+          //       SizedBox(
+          //         width: System.isMobile ? 250 : 300,
+          //         child: Text(
+          //           "Custom T-Shirt Printing\nBusiness Cards\nBanners & Posters\nBrochures & Flyers\nStickers & Labels",
+          //           style: TextStyle(
+          //             fontSize: 17,
+          //             letterSpacing: 1,
+          //             height: 2,
+          //             fontWeight: FontWeight.w300,
+          //           ),
+          //         ),
+          //       ),
+          //
+          //     ],
+          //   ),
+          // ),
           ],
           SizedBox(
             width: System.isMobile ? 185 : 300,

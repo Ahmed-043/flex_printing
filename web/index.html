@@ -1,118 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Base href replaced by Flutter build --base-href -->
-  <base href="$FLUTTER_BASE_HREF" />
+    <base href="$FLUTTER_BASE_HREF" />
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#E8121A" />
+    <meta name="color-scheme" content="light dark" />
+    <title>TEX PRINT | Textile Printing Machinery</title>
+    <meta name="description" content="TEX PRINT — Textile printing machinery and solutions: DTF, sublimation, UV, roll-to-roll transfer, and more." />
+    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+    <link rel="canonical" href="https://texprinttp.com/" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="TEX PRINT" />
+    <link rel="apple-touch-icon" href="logo.png">
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="TEX PRINT" />
+    <meta property="og:title" content="TEX PRINT | Textile Printing Machinery" />
+    <meta property="og:description" content="Textile printing machinery and solutions: DTF, sublimation, UV, roll-to-roll transfer, and more." />
+    <meta property="og:url" content="https://texprinttp.com/" />
+    <meta property="og:image" content="https://texprinttp.com/seo/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="TEX PRINT | Textile Printing Machinery" />
+    <meta name="twitter:description" content="Textile printing machinery and solutions: DTF, sublimation, UV, roll-to-roll transfer, and more." />
+    <meta name="twitter:image" content="https://texprinttp.com/seo/og-image.png" />
+    <meta name="google-site-verification" content="v-ak-JMSf1rcFA-7pbRu6KMeDL294VHPB8FgXFlH9rg" />
 
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "TEX PRINT",
+            "url": "https://texprinttp.com/",
+            "logo": "https://texprinttp.com/logo.png",
+            "description": "Textile printing machinery and solutions: DTF, sublimation, UV, roll-to-roll transfer, and more.",
+            "sameAs": []
+        }
+    </script>
 
-  <!-- Mobile / Theme -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0B57D0" />
-  <meta name="color-scheme" content="light dark" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { width: 100%; height: 100%; background: #fff; overflow: hidden; }
 
-  <!-- Primary SEO -->
-  <title>TEX PRINT | Textile Printing Machinery</title>
-  <meta
-          name="description"
-          content="TEX PRINT — Textile printing machinery and solutions: DTF, sublimation, UV, roll-to-roll transfer, and more."
-  />
-  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
-  <link rel="canonical" href="https://texprinttp.com/" />
+        #flutter_splash {
+          position: fixed; inset: 0;
+          display: flex; flex-direction: column;
+          align-items: center; justify-content: center;
+          background: #ffffff;
+          z-index: 9999; overflow: hidden;
+        }
 
-  <!-- App manifest -->
-  <link rel="manifest" href="manifest.json" />
+        #thread-canvas {
+          position: absolute; inset: 0;
+          width: 100%; height: 100%; opacity: 0.06;
+        }
 
-  <!-- Icons (clean + crawler friendly) -->
-  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        .scan-beam {
+          position: absolute; top: 0; left: -25%; width: 18%; height: 100%;
+          background: linear-gradient(90deg, transparent 0%, rgba(232,18,26,0.18) 50%, transparent 100%);
+          animation: scan 2.6s ease-in-out infinite; pointer-events: none;
+        }
+        @keyframes scan { 0%{ left: -20%; } 100%{ left: 108%; } }
 
-  <!-- iOS / PWA -->
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="TEX PRINT" />
+        .splash-center {
+          position: relative; z-index: 1;
+          display: flex; flex-direction: column;
+          align-items: center; gap: 24px;
+        }
 
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="TEX PRINT">
-  <link rel="apple-touch-icon" href="logo.png">
+        .logo-area {
+          position: relative; width: 260px; height: 260px;
+          display: flex; align-items: center; justify-content: center;
+        }
 
-  <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="TEX PRINT" />
-  <meta property="og:title" content="TEX PRINT | Textile Printing Machinery" />
-  <meta
-          property="og:description"
-          content="Textile printing machinery and solutions: DTF, sublimation, UV, roll-to-roll transfer, and more."
-  />
-  <meta property="og:url" content="https://texprinttp.com/" />
+        /* Translucent radial glow — uses rgba so threads/bg show through */
+        .logo-glow {
+          position: absolute;
+          width: 260px; height: 260px;
+          border-radius: 50%;
+          background: radial-gradient(circle,
+            rgba(210,150,150,0.55) 0%,
+            rgba(225,180,180,0.35) 28%,
+            rgba(255,200,200,0.15) 58%,
+            rgba(255,225,225,0.0)  100%
+          );
+          animation: glowPulse 2.6s ease-in-out infinite;
+          pointer-events: none;
+        }
+        @keyframes glowPulse {
+          0%, 100% { transform: scale(0.6); opacity: 0.6; }
+          50%       { transform: scale(1.085); opacity: 1;   }
+        }
 
-  <!-- IMPORTANT: create this image at 1200x630 and place it under /web/seo/og-image.png -->
-  <meta property="og:image" content="https://texprinttp.com/seo/og-image.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
+        .logo-img-wrap {
+          position: relative; z-index: 1;
+          width: 140px; height: 140px;
+          display: flex; align-items: center; justify-content: center;
+          animation: logoPulse 2.6s ease-in-out infinite;
+        }
+        .logo-img-wrap img {
+          width: 140px; height: 140px;
+          object-fit: contain; display: block;
+        }
+        @keyframes logoPulse {
+          0%, 100% { transform: scale(1);    }
+          50%       { transform: scale(1.05); }
+        }
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="TEX PRINT | Textile Printing Machinery" />
-  <meta
-          name="twitter:description"
-          content="Textile printing machinery and solutions: DTF, sublimation, UV, roll-to-roll transfer, and more."
-  />
-  <meta name="twitter:image" content="https://texprinttp.com/seo/og-image.png" />
-  <meta name="google-site-verification" content="v-ak-JMSf1rcFA-7pbRu6KMeDL294VHPB8FgXFlH9rg" />
-  <!-- Structured data -->
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "TEX PRINT",
-      "url": "https://texprinttp.com/",
-      "logo": "https://texprinttp.com/logo.png",
-      "description": "Textile printing machinery and solutions: DTF, sublimation, UV, roll-to-roll transfer, and more.",
-      "sameAs": []
-    }
-  </script>
+        .brand-text {
+          font-family: 'Segoe UI', Arial, sans-serif;
+          font-size: clamp(20px, 4.5vw, 28px);
+          font-weight: 800; letter-spacing: 0.22em;
+          color: #1a1a1a; text-transform: uppercase; text-align: center;
+          animation: fadeUp 0.8s ease both;
+        }
+        .brand-text span { color: #E8121A; }
+        .brand-sub {
+          margin-top: 5px;
+          font-family: 'Segoe UI', Arial, sans-serif;
+          font-size: clamp(10px, 2vw, 12px);
+          font-weight: 400; letter-spacing: 0.32em; color: #aaa;
+          text-transform: uppercase; text-align: center;
+          animation: fadeUp 0.8s 0.18s ease both;
+        }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(14px); }
+          to   { opacity: 1; transform: translateY(0);    }
+        }
 
-  <style>
-    /* Simple splash screen until Flutter renders the first frame. */
-    HTML, body { width: 100%; height: 100%; margin: 0; padding: 0; }
-    #flutter_splash {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: white;
-      z-index: 9999;
-    }
-    #flutter_splash img {
-      display: block;
-      width: min(160px, 60vw);
-      height: auto;
-      max-height: 60vh;
-    }
-  </style>
+        .progress-wrap {
+          width: clamp(200px, 50vw, 280px); height: 3px;
+          background: rgba(0,0,0,0.07); border-radius: 99px; overflow: hidden;
+          animation: fadeUp 0.8s 0.35s ease both;
+        }
+        .progress-fill {
+          height: 100%; width: 0; border-radius: 99px;
+          background: linear-gradient(90deg, #c0000a 0%, #E8121A 55%, #ff6060 100%);
+          animation: pf 2.8s cubic-bezier(.4,0,.2,1) forwards;
+        }
+        @keyframes pf {
+          0%{width:0} 40%{width:52%} 70%{width:74%} 90%{width:90%} 100%{width:100%}
+        }
+
+        .status-text {
+          font-family: 'Segoe UI', Arial, sans-serif;
+          font-size: 11px; letter-spacing: 0.16em;
+          color: #E8121A; text-transform: uppercase;
+          transition: opacity 0.35s;
+        }
+
+        #flutter_splash.fade-out { animation: out 0.5s ease forwards; }
+        @keyframes out { to { opacity: 0; pointer-events: none; } }
+    </style>
 </head>
 
 <body>
 <noscript>
-  <div style="padding:16px;font-family:Arial,Helvetica,sans-serif;">
-    TEX PRINT requires JavaScript to run. Please enable JavaScript in your browser.
-  </div>
+    <div style="padding:16px;font-family:Arial,Helvetica,sans-serif;">
+        TEX PRINT requires JavaScript to run. Please enable JavaScript in your browser.
+    </div>
 </noscript>
 
-<div id="flutter_splash" aria-label="Loading">
-  <img src="logo.png" alt="TEX PRINT logo" />
+<div id="flutter_splash" aria-label="Loading TEX PRINT">
+
+    <canvas id="thread-canvas"></canvas>
+    <div class="scan-beam"></div>
+
+    <div class="splash-center">
+
+        <div class="logo-area">
+            <div class="logo-glow"></div>
+            <div class="logo-img-wrap">
+                <img src="logo.png" alt="TEX PRINT logo" />
+            </div>
+        </div>
+
+        <div>
+            <div class="brand-text"><span>TEX</span> PRINT</div>
+            <div class="brand-sub">Textile Printing Machinery</div>
+        </div>
+
+        <div class="progress-wrap">
+            <div class="progress-fill"></div>
+        </div>
+
+        <div class="status-text" id="status-label">Initializing...</div>
+
+    </div>
 </div>
 
 <script>
-  window.addEventListener('flutter-first-frame', function () {
-    var splash = document.getElementById('flutter_splash');
-    if (splash) splash.remove();
-  });
+    (function () {
+      var canvas = document.getElementById('thread-canvas');
+      var ctx = canvas.getContext('2d');
+      var W, H, threads = [];
+      function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+      function makeThread() {
+        var isH = Math.random() > 0.5;
+        return { isH: isH,
+          pos:   isH ? Math.random() * (H || 600) : Math.random() * (W || 400),
+          off:   Math.random() * 600,
+          spd:   0.18 + Math.random() * 0.22,
+          hue:   Math.random() > 0.5 ? 0 : 355,
+          alpha: 0.4 + Math.random() * 0.45,
+          w:     0.4 + Math.random() * 0.7
+        };
+      }
+      resize();
+      window.addEventListener('resize', resize);
+      for (var i = 0; i < 30; i++) threads.push(makeThread());
+      var t = 0;
+      function draw() {
+        ctx.clearRect(0, 0, W, H); t += 0.5;
+        threads.forEach(function (h) {
+          var wave = Math.sin((t + h.off) * 0.018) * 5;
+          ctx.beginPath();
+          ctx.strokeStyle = 'hsla(' + h.hue + ',80%,45%,' + h.alpha + ')';
+          ctx.lineWidth = h.w;
+          if (h.isH) { ctx.moveTo(0, h.pos + wave); ctx.lineTo(W, h.pos - wave); }
+          else        { ctx.moveTo(h.pos + wave, 0); ctx.lineTo(h.pos - wave, H); }
+          ctx.stroke();
+          if (!h.isH) { h.pos += h.spd; if (h.pos > W + 10) { h.pos = -10; h.off = Math.random() * 600; } }
+        });
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+
+    var msgs = ['Initializing...', 'Loading modules...', 'Preparing workspace...', 'Almost ready...'];
+    var mi = 0, el = document.getElementById('status-label');
+    var iv = setInterval(function () {
+      mi = (mi + 1) % msgs.length; el.style.opacity = '0';
+      setTimeout(function () { el.textContent = msgs[mi]; el.style.opacity = '1'; }, 200);
+    }, 720);
+
+    window.addEventListener('flutter-first-frame', function () {
+      clearInterval(iv);
+      var s = document.getElementById('flutter_splash');
+      if (s) { s.classList.add('fade-out'); setTimeout(function () { s.remove(); }, 540); }
+    });
 </script>
 
 <script src="flutter_bootstrap.js" async></script>
