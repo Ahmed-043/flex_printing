@@ -86,6 +86,7 @@ class _RootLayoutState extends State<RootLayout> {
                   leading: InkWell(
                     hoverColor: Colors.transparent,
                     splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
                     onTap: () => _handleHomeTap(isHome),
                     child: Row(
                       crossAxisAlignment: .center,
