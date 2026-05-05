@@ -77,14 +77,14 @@ class _MaterialsSectionState extends State<MaterialsSection> {
               itemCount: _items.isEmpty ? 0 : _items.length,
               options: CarouselOptions(
                 height: System.isMobile ? 200 : 485,
-                viewportFraction: System.isMobile ? 0.4 : 0.4,
+                viewportFraction: System.isMobile ? 0.45 : 0.3,
                 enlargeCenterPage: true,
-                enlargeFactor: System.isMobile ? 0.55 : 0.5,
+                enlargeFactor: System.isMobile ? 0.5 : 0.35,
                 clipBehavior: Clip.none,
                 autoPlay: _items.isNotEmpty,
                 autoPlayInterval: const Duration(seconds: 2),
                 enableInfiniteScroll: true,
-                padEnds: true,
+               // padEnds: true,
               ),
               itemBuilder: (context, index, realIndex) {
                 final item = _items[index];
