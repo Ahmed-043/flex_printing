@@ -16,7 +16,7 @@ typedef PickedFile = ({String fileName, Uint8List bytes});
 Future<PickedFile?> pickImageFile() async {
   try {
     final result = await FilePicker.platform.pickFiles(
-      type: FileType.any,
+      type: FileType.image,
       withData: true,
     );
     if (result == null) return null;
