@@ -109,47 +109,29 @@
           50%       { transform: scale(1.05); }
         }
 
-        .brand-text {
-          font-family: 'Segoe UI', Arial, sans-serif;
-          font-size: clamp(20px, 4.5vw, 28px);
-          font-weight: 800; letter-spacing: 0.22em;
-          color: #1a1a1a; text-transform: uppercase; text-align: center;
-          animation: fadeUp 0.8s ease both;
-        }
-        .brand-text span { color: #E8121A; }
-        .brand-sub {
-          margin-top: 5px;
-          font-family: 'Segoe UI', Arial, sans-serif;
-          font-size: clamp(10px, 2vw, 12px);
-          font-weight: 400; letter-spacing: 0.32em; color: #aaa;
-          text-transform: uppercase; text-align: center;
-          animation: fadeUp 0.8s 0.18s ease both;
-        }
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(14px); }
-          to   { opacity: 1; transform: translateY(0);    }
-        }
+        /* Brand text, subtitle and loading bar removed from splash */
 
-        .progress-wrap {
-          width: clamp(200px, 50vw, 280px); height: 3px;
-          background: rgba(0,0,0,0.07); border-radius: 99px; overflow: hidden;
-          animation: fadeUp 0.8s 0.35s ease both;
+        /* Zoom overlay used to animate logo expanding to cover viewport
+           after Flutter has rendered the first frame. We clone the logo
+           into a fixed overlay and apply a GPU-friendly transform. */
+        .splash-zoom-overlay {
+          position: fixed;
+          z-index: 100000;
+          left: 0; top: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          border-radius: 50%;
+          will-change: transform, border-radius, opacity;
+          /* Controlled zoom: slower, smooth ease-out. Adjust duration here.
+             Note: reduce the scale multiplier in the JS (currently 7.50) to avoid
+             an abrupt initial jump or very long visual coverage. */
+          transition: transform 6400ms cubic-bezier(.22,.8,.2,1), border-radius 9400ms cubic-bezier(.22,.8,.2,1), opacity 800ms ease;
+          background: #ffffff;
         }
-        .progress-fill {
-          height: 100%; width: 0; border-radius: 99px;
-          background: linear-gradient(90deg, #c0000a 0%, #E8121A 55%, #ff6060 100%);
-          animation: pf 2.8s cubic-bezier(.4,0,.2,1) forwards;
-        }
-        @keyframes pf {
-          0%{width:0} 40%{width:52%} 70%{width:74%} 90%{width:90%} 100%{width:100%}
-        }
-
-        .status-text {
-          font-family: 'Segoe UI', Arial, sans-serif;
-          font-size: 11px; letter-spacing: 0.16em;
-          color: #E8121A; text-transform: uppercase;
-          transition: opacity 0.35s;
-        }
+        .splash-zoom-overlay img { width: 100%; height: 100%; object-fit: contain; display: block; }
+        .splash-zoom-overlay.zoomed { border-radius: 0; }
 
         #flutter_splash.fade-out { animation: out 0.5s ease forwards; }
         @keyframes out { to { opacity: 0; pointer-events: none; } }
@@ -176,16 +158,7 @@
             </div>
         </div>
 
-        <div>
-            <div class="brand-text"><span>TEX</span> PRINT</div>
-            <div class="brand-sub">Textile Printing Machinery</div>
-        </div>
-
-        <div class="progress-wrap">
-            <div class="progress-fill"></div>
-        </div>
-
-        <div class="status-text" id="status-label">Initializing...</div>
+        <!-- Brand text, subtitle and loading bar removed -->
 
     </div>
 </div>
@@ -228,17 +201,74 @@
       draw();
     })();
 
-    var msgs = ['Initializing...', 'Loading modules...', 'Preparing workspace...', 'Almost ready...'];
-    var mi = 0, el = document.getElementById('status-label');
-    var iv = setInterval(function () {
-      mi = (mi + 1) % msgs.length; el.style.opacity = '0';
-      setTimeout(function () { el.textContent = msgs[mi]; el.style.opacity = '1'; }, 200);
-    }, 720);
-
     window.addEventListener('flutter-first-frame', function () {
-      clearInterval(iv);
-      var s = document.getElementById('flutter_splash');
-      if (s) { s.classList.add('fade-out'); setTimeout(function () { s.remove(); }, 540); }
+      // Perform a zoom animation: clone the logo, expand it to cover the
+      // viewport, then remove the splash so the Flutter app becomes visible.
+      var splash = document.getElementById('flutter_splash');
+      var logoWrap = document.querySelector('.logo-img-wrap');
+      var logoImg = logoWrap && logoWrap.querySelector('img');
+
+      if (!splash || !logoImg) {
+        if (splash) { splash.remove(); }
+        return;
+      }
+
+      var rect = logoImg.getBoundingClientRect();
+
+      var overlay = document.createElement('div');
+      overlay.className = 'splash-zoom-overlay';
+      overlay.style.left = rect.left + 'px';
+      overlay.style.top = rect.top + 'px';
+      overlay.style.width = rect.width + 'px';
+      overlay.style.height = rect.height + 'px';
+      overlay.style.transform = 'translate(0px, 0px) scale(1)';
+      overlay.style.opacity = '1';
+
+      var clone = logoImg.cloneNode(true);
+      overlay.appendChild(clone);
+      document.body.appendChild(overlay);
+
+      // Force layout to ensure the transition runs
+      // eslint-disable-next-line no-unused-expressions
+      overlay.getBoundingClientRect();
+
+      var vw = Math.max(window.innerWidth, document.documentElement.clientWidth);
+      var vh = Math.max(window.innerHeight, document.documentElement.clientHeight);
+      var centerX = vw / 2;
+      var centerY = vh / 2;
+      var currentCenterX = rect.left + rect.width / 2;
+      var currentCenterY = rect.top + rect.height / 2;
+      var tx = centerX - currentCenterX;
+      var ty = centerY - currentCenterY;
+
+      var scaleX = vw / rect.width;
+      var scaleY = vh / rect.height;
+      // Reduce the overshoot multiplier to avoid an excessively large final size
+      // which makes the movement feel fast at start and then linger. 2.8 is a
+      // moderate overshoot that covers the viewport without extreme scaling.
+      var scale = Math.max(scaleX, scaleY) * 2.8;
+
+      requestAnimationFrame(function () {
+        overlay.style.transform = 'translate(' + tx + 'px, ' + ty + 'px) scale(' + scale + ')';
+        overlay.classList.add('zoomed');
+      });
+
+      var cleanup = function () {
+        overlay.style.opacity = '0';
+        // wait for opacity fade to finish before removing
+        setTimeout(function () {
+          try { overlay.remove(); } catch (e) {}
+        }, 320);
+        try { splash.remove(); } catch (e) {}
+        overlay.removeEventListener('transitionend', cleanup);
+      };
+
+      overlay.addEventListener('transitionend', function (ev) {
+        if (ev.propertyName === 'transform') cleanup();
+      });
+
+      // Safety fallback (should be longer than the transform + fade)
+      setTimeout(cleanup, 1500);
     });
 </script>
 

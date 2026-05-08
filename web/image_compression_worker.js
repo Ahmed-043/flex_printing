@@ -2,6 +2,11 @@ self.onmessage = async (event) => {
   const data = event.data || {};
   const id = data.id;
 
+  const maxWidth = 1920;
+  const maxHeight = 1080;
+  const highQuality = 0.92;
+  const lowQuality = 0.82;
+
   try {
     const input = data.bytes;
     const inputBytes =
@@ -22,35 +27,55 @@ self.onmessage = async (event) => {
     }
 
     const blob = new Blob([inputBytes]);
-    const bitmap = await createImageBitmap(blob);
 
-    const maxWidth = 1920;
-    const maxHeight = 1080;
-
-    let targetWidth = bitmap.width;
-    let targetHeight = bitmap.height;
+    let bitmap;
+    try {
+      bitmap = await createImageBitmap(blob);
+    } catch (error) {
+      throw new Error(
+        error && error.message ? error.message : String(error)
+      );
+    }
 
     const widthScale = maxWidth / bitmap.width;
     const heightScale = maxHeight / bitmap.height;
     const scale = Math.min(widthScale, heightScale);
 
-    if (scale < 1) {
-      targetWidth = Math.max(1, Math.min(maxWidth, Math.round(bitmap.width * scale)));
-      targetHeight = Math.max(
-        1,
-        Math.min(maxHeight, Math.round(bitmap.height * scale))
-      );
-    }
+    const targetWidth = scale < 1
+      ? Math.max(1, Math.min(maxWidth, Math.round(bitmap.width * scale)))
+      : bitmap.width;
+    const targetHeight = scale < 1
+      ? Math.max(1, Math.min(maxHeight, Math.round(bitmap.height * scale)))
+      : bitmap.height;
 
     const canvas = new OffscreenCanvas(targetWidth, targetHeight);
     const context = canvas.getContext('2d');
     if (!context) {
+      bitmap.close();
       throw new Error('Failed to obtain 2D canvas context.');
     }
-    context.drawImage(bitmap, 0, 0, targetWidth, targetHeight);
+
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = 'high';
+
+    if (scale < 1) {
+      context.drawImage(
+        bitmap,
+        0,
+        0,
+        bitmap.width,
+        bitmap.height,
+        0,
+        0,
+        targetWidth,
+        targetHeight,
+      );
+    } else {
+      context.drawImage(bitmap, 0, 0);
+    }
     bitmap.close();
 
-    const quality = originalLength > 1200 * 1024 ? 0.4 : 0.7;
+    const quality = originalLength > 1200 * 1024 ? lowQuality : highQuality;
     const compressedBlob = await canvas.convertToBlob({
       type: 'image/jpeg',
       quality,
