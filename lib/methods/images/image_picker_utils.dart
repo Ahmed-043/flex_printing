@@ -4,6 +4,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
 
+import 'image_compression_worker_stub.dart'
+    if (dart.library.html) 'image_compression_worker_web.dart'
+    as worker_compression;
+
 /// Result record from [pickImageFile].
 typedef PickedFile = ({String fileName, Uint8List bytes});
 
@@ -37,9 +41,28 @@ Future<PickedFile?> pickImageFile() async {
 /// - > 500 KB    → quality 70
 /// - ≤ 500 KB    → returned as-is
 ///
-/// Heavy decode/encode runs in a separate isolate via [compute].
+/// On web, compression is attempted in a dedicated Web Worker.
+/// On non-web platforms, heavy decode/encode runs in a separate isolate via
+/// [compute].
 /// Returns null only on an unrecoverable error.
 Future<Uint8List?> compressImageBytes(Uint8List imageBytes) async {
+  if (kIsWeb) {
+    try {
+      final workerResult =
+          await worker_compression.compressImageBytesInWorker(imageBytes);
+      if (workerResult != null) return workerResult;
+    } catch (e) {
+      debugPrint('compressImageBytes web worker error: $e');
+    }
+
+    try {
+      return _compressOnIsolate(imageBytes);
+    } catch (e) {
+      debugPrint('compressImageBytes web fallback error: $e');
+      return null;
+    }
+  }
+
   try {
     return await compute(_compressOnIsolate, imageBytes);
   } catch (e) {
