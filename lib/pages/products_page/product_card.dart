@@ -116,77 +116,98 @@ class _ProductCardState extends State<ProductCard> {
   Widget build(BuildContext context) {
     final dpr = MediaQuery.of(context).devicePixelRatio;
 
-    return InkWell(
-      onTap: () => context.go(
-        '/products/${widget.product.id}',
-        extra: widget.product,
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
+        color: Theme.of(context).colorScheme.primary,
+        // border: Border.all(
+        //   color: Theme.of(context).colorScheme.onPrimary.withAlpha(30),
+        //   width: 1.5,
+        // ),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.onPrimary.withAlpha(20),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      onLongPress: _handleLongPress,
-      borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
-      child: Semantics(
-        label: 'View ${widget.product.name} details',
-        button: true,
-        child: Column(
-          children: [
-            Expanded(
-              flex: 3,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
-                child: Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .surfaceContainer
-                        .withAlpha(150),
-                  ),
-                  child: (_imageBytes == null || _imageBytes!.isEmpty)
-                      ? Center(
-                          child: _isLoading
-                              ? SizedBox(
-                                  width: System.isMobile ? 24 : 36,
-                                  height: System.isMobile ? 24 : 36,
-                                  child: const CircularProgressIndicator(
-                                      strokeWidth: 2),
-                                )
-                              : Icon(
-                                  Icons.image_not_supported_rounded,
-                                  size: System.isMobile ? 35 : 80,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onPrimary
-                                      .withAlpha(100),
-                                ),
-                        )
-                      : SizedBox(
-                    // width: MediaQuery.of(context).size.width,
-                    // height: MediaQuery.of(context).size.height,
-                    child: Image.memory(
-                      _imageBytes!,
-                     // isAntiAlias: true,
-                      fit: BoxFit.cover,
-                      filterQuality: FilterQuality.low,
-                      cacheWidth: 350, //(MediaQuery.of(context).size.width * dpr).toInt(),
-                      cacheHeight: 350 //(MediaQuery.of(context).size.height * dpr).toInt(),
+      child: Material(
+        borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
+        child: InkWell(
+          onTap: () => context.go(
+            '/products/${widget.product.id}',
+            extra: widget.product,
+          ),
+          splashColor: Theme.of(context).colorScheme.secondary.withAlpha(150),
+          onLongPress: _handleLongPress,
+          borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
+          child: Semantics(
+            label: 'View ${widget.product.name} details',
+            button: true,
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
+                    child: Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      decoration: BoxDecoration(
+                        // color: Theme.of(context)
+                        //     .colorScheme
+                        //     .surfaceContainer
+                        //     .withAlpha(150),
+                      ),
+                      child: (_imageBytes == null || _imageBytes!.isEmpty)
+                          ? Center(
+                              child: _isLoading
+                                  ? SizedBox(
+                                      width: System.isMobile ? 24 : 36,
+                                      height: System.isMobile ? 24 : 36,
+                                      child: const CircularProgressIndicator(
+                                          strokeWidth: 2),
+                                    )
+                                  : Icon(
+                                      Icons.image_not_supported_rounded,
+                                      size: System.isMobile ? 35 : 80,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary
+                                          .withAlpha(100),
+                                    ),
+                            )
+                          : SizedBox(
+                        // width: MediaQuery.of(context).size.width,
+                        // height: MediaQuery.of(context).size.height,
+                        child: Image.memory(
+                          _imageBytes!,
+                         // isAntiAlias: true,
+                          fit: BoxFit.cover,
+                          filterQuality: FilterQuality.low,
+                          cacheWidth: 350, //(MediaQuery.of(context).size.width * dpr).toInt(),
+                          cacheHeight: 350 //(MediaQuery.of(context).size.height * dpr).toInt(),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            Expanded(
-              child: Text(
-                widget.product.name,
-                overflow: TextOverflow.fade,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: System.isMobile ? 16 : 35,
-                  fontWeight: FontWeight.w400,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                Expanded(
+                  child: Text(
+                    widget.product.name,
+                    overflow: TextOverflow.fade,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: System.isMobile ? 16 : 30,
+                      fontWeight: FontWeight.w400,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

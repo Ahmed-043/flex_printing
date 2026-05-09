@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../methods/products/fetch_product_by_id.dart';
+import '../../methods/products/fetch_product_images.dart';
 import '../../methods/products/fetch_product_specs.dart';
 import '../../models/System/system.dart';
 import '../../models/product/product_record.dart';
@@ -28,13 +30,21 @@ class ProductDetailsPage extends StatefulWidget {
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   List<ProductSpecRecord> _specs = [];
   bool _loadingSpecs = true;
-  String? _imageUrl;
+  List<String> _imageUrls = [];
   ProductRecord? _product;
+  final PageController _imagePageController = PageController();
+  int _currentImageIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    _imagePageController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -49,20 +59,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       setState(() {
         _product = null;
         _specs = const <ProductSpecRecord>[];
-        _imageUrl = null;
+        _imageUrls = const <String>[];
         _loadingSpecs = false;
       });
       return;
     }
 
-    // Resolve image URL from Supabase Storage.
-    final path = product.firstImage?.path;
-    String? imageUrl;
-    if (path != null && path.isNotEmpty) {
-      imageUrl = Supabase.instance.client.storage
-          .from('flex-printing')
-          .getPublicUrl(path);
-    }
+    final imageRecords = await fetchProductImages(product.id);
+    final imageUrls = imageRecords
+        .map((image) => image.path)
+        .whereType<String>()
+        .where((path) => path.trim().isNotEmpty)
+        .map((path) => Supabase.instance.client.storage
+            .from('flex-printing')
+            .getPublicUrl(path))
+        .toList(growable: false);
 
     // Fetch spec rows.
     final specs = await fetchProductSpecs(product.id);
@@ -70,7 +81,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     if (!mounted) return;
     setState(() {
       _product = product;
-      _imageUrl = imageUrl;
+      _imageUrls = imageUrls;
+      _currentImageIndex = 0;
       _specs = specs;
       _loadingSpecs = false;
     });
@@ -215,8 +227,64 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           borderRadius: BorderRadius.circular(isCompact ? 20 : 30),
         ),
         clipBehavior: Clip.antiAlias,
-        child: _imageUrl != null
-            ? Image.network(_imageUrl!, fit: BoxFit.cover)
+        child: _imageUrls.isNotEmpty
+            ? Stack(
+                fit: StackFit.expand,
+                children: [
+                  ScrollConfiguration(
+                    behavior: const _MouseDragScrollBehavior(),
+                    child: PageView.builder(
+                      controller: _imagePageController,
+                      itemCount: _imageUrls.length,
+                      onPageChanged: (index) {
+                        if (!mounted) return;
+                        setState(() => _currentImageIndex = index);
+                      },
+                      itemBuilder: (context, index) {
+                        return Image.network(
+                          _imageUrls[index],
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Center(
+                            child: Icon(
+                              Icons.broken_image_rounded,
+                              size: isCompact ? 50 : 80,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimary
+                                  .withAlpha(100),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  if (_imageUrls.length > 1)
+                    Positioned(
+                      right: 12,
+                      bottom: 12,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withAlpha(110),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          child: Text(
+                            '${_currentImageIndex + 1}/${_imageUrls.length}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              )
             : Center(
                 child: Icon(
                   Icons.image_not_supported_rounded,
@@ -389,3 +457,17 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     );
   }
 }
+
+class _MouseDragScrollBehavior extends MaterialScrollBehavior {
+  const _MouseDragScrollBehavior();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+        PointerDeviceKind.stylus,
+        PointerDeviceKind.invertedStylus,
+        PointerDeviceKind.trackpad,
+      };
+}
+
