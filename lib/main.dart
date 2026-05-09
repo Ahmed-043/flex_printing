@@ -58,6 +58,7 @@ ProductRecord? _productFromExtra(Object? extra, {int? expectedId}) {
 
   if (extra is Map) {
     try {
+      
       final json = Map<String, dynamic>.from(extra);
       final firstImage = json['first_image'];
       if (firstImage is Map) {

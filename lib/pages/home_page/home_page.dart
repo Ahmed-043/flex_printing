@@ -10,6 +10,7 @@ import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'footer.dart';
 import 'materials_section.dart';
 import 'other_info.dart';
 

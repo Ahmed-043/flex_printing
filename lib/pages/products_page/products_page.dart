@@ -9,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../methods/products/fetch_products.dart';
 import '../../models/System/system.dart';
 import '../../models/product/product_record.dart';
+import '../home_page/footer.dart';
 import 'delete_dialog.dart';
 
 class ProductsPage extends StatefulWidget {

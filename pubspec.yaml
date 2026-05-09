@@ -39,6 +39,7 @@ dependencies:
   carousel_slider: ^5.1.2
   flutter_svg: ^2.2.4
   supabase_flutter: ^2.12.2
+  url_launcher: ^6.3.1
   file_picker: ^10.3.2
   image: ^4.5.4
   dotted_border: ^3.1.0
