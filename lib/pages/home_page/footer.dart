@@ -24,7 +24,7 @@ class FooterSection extends StatelessWidget {
         'assets/images/icons/$name.svg',
         width: System.isMobile ? 18 : 24,
         height: System.isMobile ? 18 : 24,
-        colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSecondary, BlendMode.srcIn),
+        //colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSecondary),
       );
     }
     Widget socialIconLink({
@@ -41,6 +41,7 @@ class FooterSection extends StatelessWidget {
             button: true,
             label: label,
             child: svgIcon(
+
               assetName,
             ),
           ),
