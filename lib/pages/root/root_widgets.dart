@@ -1,4 +1,5 @@
 
+import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -11,17 +12,24 @@ class MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Navigator.pop(context, route);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Align(
-          alignment: Alignment.centerLeft,
+    return Material(
+      color: Theme.of(context).colorScheme.secondary,
+      child: InkWell(
+        splashColor: Theme.of(context).colorScheme.onSecondary.withAlpha(100),
+        highlightColor: Colors.transparent,
+        hoverColor: Theme.of(context).colorScheme.onSecondary.withAlpha(50),
+        onTap: () {
+          Navigator.pop(context, route);
+        },
+        child: Container(
+          width: double.infinity,
+          height: 60,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Text(
             title,
             style: const TextStyle(
+              fontSize: 18,
+              letterSpacing: 1.2,
               color: Colors.white,
               fontWeight: FontWeight.w600,
             ),
@@ -59,38 +67,42 @@ class NavButton extends StatelessWidget {
     final isSelected = section == null &&
         (currentRoute == route || currentRoute.startsWith('$route/'));
 
-    return Padding(
-      padding: const EdgeInsets.only(left: 16),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-
-        onTap: () {
-          if (onTapOverride != null && !isSelected) {
-            onTapOverride!();
-            return;
-          }
-          if (isSelected && onTapWhileSelected != null) {
-            onTapWhileSelected!();
-            return;
-          }
-          if (section != null) {
-            context.go('/?section=$section');
-            return;
-          }
-          if (!isSelected) {
-            context.go(route);
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8),
-          child: Text(
-            title,
-            style: TextStyle(
-              decoration: isSelected ? TextDecoration.underline : TextDecoration.none,
-              color: Colors.white,
-              fontWeight: FontWeight.w200,
-
-              fontSize: screenWidth < 1050 ? 25 : 32,
+    return HoverRotate(
+      degrees: 10,
+      uniDirectional: true,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+      
+          onTap: () {
+            if (onTapOverride != null && !isSelected) {
+              onTapOverride!();
+              return;
+            }
+            if (isSelected && onTapWhileSelected != null) {
+              onTapWhileSelected!();
+              return;
+            }
+            if (section != null) {
+              context.go('/?section=$section');
+              return;
+            }
+            if (!isSelected) {
+              context.go(route);
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8),
+            child: Text(
+              title,
+              style: TextStyle(
+                decoration: isSelected ? TextDecoration.underline : TextDecoration.none,
+                color: Colors.white,
+                fontWeight: FontWeight.w200,
+      
+                fontSize: screenWidth < 1050 ? 25 : 32,
+              ),
             ),
           ),
         ),

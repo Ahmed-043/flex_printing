@@ -14,28 +14,35 @@ class UiHelper {
     double borderRadius = 20,
     double? elevation,
     EdgeInsetsGeometry? padding,
+    double rotation = 2.5,
   }) {
+    // Wrap the button with a small hover-rotate widget so on desktop/web
+    // it slightly rotates by +12 degrees when hovered.
     return Material(
       color: Colors.transparent,
-      child: ElevatedButton(
-        onPressed: callback,
-        style: ElevatedButton.styleFrom(
-          padding: padding, // removes internal padding
+      child: HoverRotate(
+        enabled: !System.isMobile,
+        degrees: rotation,
+        duration: const Duration(milliseconds: 120),
+        child: ElevatedButton(
+          onPressed: callback,
+          style: ElevatedButton.styleFrom(
+            padding: padding, // removes internal padding
 
-          backgroundColor: filled
-              ? color ?? Colors.transparent
-              : Colors.transparent,
-          overlayColor:  Colors.white, // splash color
-          elevation: elevation,
-          //white splash
+            backgroundColor: filled
+                ? color ?? Colors.transparent
+                : Colors.transparent,
+            overlayColor: Colors.white, // splash color
+            elevation: elevation,
 
-          enableFeedback: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
-            side: BorderSide(color: color ?? Colors.transparent),
+            enableFeedback: true,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(borderRadius),
+              side: BorderSide(color: color ?? Colors.transparent),
+            ),
           ),
+          child: child,
         ),
-        child: child
       ),
     );
   }
@@ -206,3 +213,67 @@ class UiHelper {
     );
   }
 }
+
+/// Internal helper widget: rotates its child by [degrees] when hovered.
+class HoverRotate extends StatefulWidget {
+  final Widget child;
+  final double degrees;
+  final Duration duration;
+  final bool enabled;
+  final bool uniDirectional;
+  const HoverRotate({
+    required this.child,
+    this.degrees = 4,
+    this.duration = const Duration(milliseconds: 120),
+    this.enabled = true,
+    this.uniDirectional = false,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<HoverRotate> createState() => HoverRotateState();
+}
+
+class HoverRotateState extends State<HoverRotate> {
+  // current rotation in turns (-1.0..1.0 where 1.0 == 360deg)
+  double _turns = 0.0;
+
+  void _setExit() {
+    if (!widget.enabled) return;
+    if (mounted) setState(() => _turns = 0.0);
+  }
+
+  void _updateFromPointer(PointerEvent e) {
+    if (!widget.enabled) return;
+    try {
+      final box = context.findRenderObject() as RenderBox?;
+      if (box == null) return;
+      final local = box.globalToLocal(e.position);
+      final width = box.size.width;
+      // If pointer is left of center, rotate negative; else positive.
+      final sign = (local.dx < (width / 2) && !widget.uniDirectional) ? -1.0 : 1.0;
+      final targetTurns = (sign * widget.degrees) / 360.0;
+      if (mounted) setState(() => _turns = targetTurns);
+    } catch (_) {
+      // fallback: positive rotation
+      if (mounted) setState(() => _turns = (widget.degrees / 360.0));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (e) => _updateFromPointer(e),
+      onHover: (e) => _updateFromPointer(e),
+      onExit: (_) => _setExit(),
+      child: widget.child,
+      // child: AnimatedRotation(
+      //   turns: _turns,
+      //   duration: widget.duration,
+      //   curve: Curves.easeOut,
+      //   child: widget.child,
+      // ),
+    );
+  }
+}
+

@@ -1,3 +1,4 @@
+import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -22,8 +23,8 @@ class FooterSection extends StatelessWidget {
     Widget svgIcon(String name) {
       return SvgPicture.asset(
         'assets/images/icons/$name.svg',
-        width: System.isMobile ? 18 : 24,
-        height: System.isMobile ? 18 : 24,
+        width: System.isMobile ? 24 : 32,
+        height: System.isMobile ? 24 : 32,
         //colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSecondary),
       );
     }
@@ -32,17 +33,19 @@ class FooterSection extends StatelessWidget {
       required String url,
       required String label,
     }) {
-      return MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: GestureDetector(
-          onTap: () => openSocial(url),
-          behavior: HitTestBehavior.opaque,
-          child: Semantics(
-            button: true,
-            label: label,
-            child: svgIcon(
-
-              assetName,
+      return HoverRotate(
+        degrees: 45,
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            onTap: () => openSocial(url),
+            behavior: HitTestBehavior.opaque,
+            child: Semantics(
+              button: true,
+              label: label,
+              child: svgIcon(
+                assetName,
+              ),
             ),
           ),
         ),
@@ -90,22 +93,22 @@ class FooterSection extends StatelessWidget {
                       url: 'https://www.facebook.com/share/1FQTfiSdT7/',
                       label: 'Facebook',
                     ),
-                    SizedBox(width: 20),
+                    SizedBox(width: 30),
                     socialIconLink(
                       assetName: 'Icon-1',
                       url: 'https://www.instagram.com/texprint01?igsh=MWwwaG5pYXY4YzBraA==',
                       label: 'Instagram',
                     ),
-                    SizedBox(width: 20),
+                    SizedBox(width: 30),
                     socialIconLink(
                       assetName: 'Icon-2',
                       url: 'https://www.tiktok.com/@user758364154?_r=1&_t=ZS-96CB2Na9yOz',
                       label: 'TikTok',
                     ),
-                    SizedBox(width: 20),
-                    svgIcon(
-                      'Icon-3',
-                    ),
+                    // SizedBox(width: 20),
+                    // svgIcon(
+                    //   'Icon-3',
+                    // ),
                   ],
                 ),
               ],

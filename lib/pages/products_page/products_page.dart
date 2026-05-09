@@ -224,26 +224,29 @@ class _ProductsPageState extends State<ProductsPage> {
     VoidCallback? onLongPress,
 
       }) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: System.isMobile ? 6 : 12),
-      child: ElevatedButton(
-        onPressed: onPress,
-        onLongPress: onLongPress,
-        style: ElevatedButton.styleFrom(
-          elevation: 0,
-          backgroundColor: selected
-              ? Theme.of(context).colorScheme.secondary
-              : Colors.grey.shade200,
-          padding:  EdgeInsets.symmetric(horizontal: System.isMobile ? 10 : 30, vertical: System.isMobile ? 10 : 20),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-        ),
-        child: Text(
-          title,
-          style: TextStyle(
-            fontSize: System.isMobile ? 16 :26,
-            color: selected
-                ? Theme.of(context).colorScheme.onSecondary
-                : const Color(0xFF364153),
+    return HoverRotate(
+      degrees: 6,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: System.isMobile ? 6 : 12),
+        child: ElevatedButton(
+          onPressed: onPress,
+          onLongPress: onLongPress,
+          style: ElevatedButton.styleFrom(
+            elevation: 0,
+            backgroundColor: selected
+                ? Theme.of(context).colorScheme.secondary
+                : Colors.grey.shade200,
+            padding:  EdgeInsets.symmetric(horizontal: System.isMobile ? 10 : 30, vertical: System.isMobile ? 10 : 20),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+          ),
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: System.isMobile ? 16 :26,
+              color: selected
+                  ? Theme.of(context).colorScheme.onSecondary
+                  : const Color(0xFF364153),
+            ),
           ),
         ),
       ),

@@ -146,6 +146,7 @@ class _ProductsSectionState extends State<ProductsSection> {
           color: Theme.of(context).colorScheme.secondaryContainer,
           filled: true,
           borderRadius: 75,
+          rotation: 8,
           child: Text(
             "Load More",
             style: TextStyle(

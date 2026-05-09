@@ -142,23 +142,27 @@ class _RootLayoutState extends State<RootLayout> {
                     useCompactNav
                         ? Builder(
                       builder: (context) {
-                        return InkWell(
-                          borderRadius: BorderRadius.circular(14),
-                          onTap: () async {
-                            final box =
-                            context.findRenderObject() as RenderBox;
-                            final pos = box.localToGlobal(Offset.zero);
-                            showTopMenu(
-                              context,
-                              buttonPos: pos,
-                              buttonSize: box.size,
-                              currentRoute: GoRouterState.of(context).uri.path,
-                              onHomeTapWhileSelected: _scrollToTop,
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: const Icon(Icons.menu_rounded, size: 30),
+                        return SizedBox(
+                          height: 60,
+                          width: 60,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(18),
+                            onTap: () async {
+                              final box =
+                              context.findRenderObject() as RenderBox;
+                              final pos = box.localToGlobal(Offset.zero);
+                              showTopMenu(
+                                context,
+                                buttonPos: pos,
+                                buttonSize: box.size,
+                                currentRoute: GoRouterState.of(context).uri.path,
+                                onHomeTapWhileSelected: _scrollToTop,
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: const Icon(Icons.menu_rounded, size: 30),
+                            ),
                           ),
                         );
                       },
@@ -201,21 +205,26 @@ Future<void> showTopMenu(
       // Menu position: directly under the button
       final top = buttonPos.dy + buttonSize.height + 25;
       final left = buttonPos.dx - 60;
-      const width = 100.0;
+      const width = 150.0;
 
-      return FadeTransition(
-        opacity: CurvedAnimation(parent: anim, curve: Curves.easeOut),
-        child: Stack(
-          children: [
-            // tap outside to close
-            Positioned.fill(
-              child: GestureDetector(onTap: () => Navigator.pop(ctx)),
-            ),
+      return Stack(
+        children: [
+          // tap outside to close
+          Positioned.fill(
+            child: GestureDetector(onTap: () => Navigator.pop(ctx)),
+          ),
 
-            Positioned(
-              top: top,
-              left: left,
-              width: width,
+          Positioned(
+            top: top,
+            left: left,
+            width: width,
+            child: SlideTransition(
+
+              position: Tween<Offset>(
+
+                begin: const Offset(1.0, 0.0),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(parent: anim, curve: Curves.easeOut)),
               child: Material(
                 color: Colors.transparent,
                 child: DecoratedBox(
@@ -249,8 +258,8 @@ Future<void> showTopMenu(
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       );
     },
   );

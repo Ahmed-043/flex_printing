@@ -374,6 +374,7 @@ class _HomeContentState extends State<HomeContent> {
               color: Colors.black,
               filled: true,
               borderRadius: 50,
+              rotation: 8,
               padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 20),
               child: Text(
                 "Learn More",
