@@ -10,6 +10,7 @@ import 'package:flex_printing/pages/products_page/product_details_page.dart';
 import 'package:flex_printing/pages/products_page/products_page.dart';
 import 'package:flex_printing/pages/root/root_layout.dart';
 import 'package:flex_printing/models/product/product_record.dart';
+import 'package:flex_printing/shared_widgets/app_cursor.dart';
 import 'package:flex_printing/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -165,6 +166,9 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.light(),
         darkTheme: AppTheme.dark(),
         themeMode: ThemeMode.system,
+        builder: (context, child) => AppCursor(
+          child: child ?? const SizedBox.shrink(),
+        ),
         home: _StartupErrorScreen(message: startupError!),
       );
     }
@@ -174,6 +178,9 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system, // uses device setting for now
+      builder: (context, child) => AppCursor(
+        child: child ?? const SizedBox.shrink(),
+      ),
       routerConfig: _router,
     );
   }
