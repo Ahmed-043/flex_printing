@@ -201,9 +201,11 @@ class _CreateProductPageState extends State<CreateProductPage> {
   }
 
   void _showSuccess(String message) {
+    final theme = Theme.of(context).colorScheme;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message,style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),),
+        content: Text(message,style: TextStyle(color: theme.onSecondary),),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -251,6 +253,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
   Widget _createProductView(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isCompact = System.isMobile || screenWidth < 900;
+    final theme = Theme.of(context).colorScheme;
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
@@ -267,8 +270,8 @@ class _CreateProductPageState extends State<CreateProductPage> {
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
                   onPressed: _showAdminLandingPage,
-                  icon:  Icon(Icons.arrow_back,color: Theme.of(context).colorScheme.onPrimary),
-                  label: Text('Back to Admin',style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),),
+                  icon:  Icon(Icons.arrow_back,color: theme.onPrimary),
+                  label: Text('Back to Admin',style: TextStyle(color: theme.onPrimary),),
                 ),
               ),
               const SizedBox(height: 8),
@@ -294,7 +297,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
                 child: UiHelper.button(
                   callback: _isSaving ? (){} : _onSave,
                   filled: true,
-                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  color: theme.secondaryContainer,
                   borderRadius: 14,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
@@ -307,14 +310,14 @@ class _CreateProductPageState extends State<CreateProductPage> {
                     height: 24,
                     child: CircularProgressIndicator(
                       strokeWidth: 2.5,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: theme.primary,
                     ),
                   )
                       :  Text(
                     'Save Product',
                     style: TextStyle(
                       fontSize: 18,
-                      color: Theme.of(context).colorScheme.onSecondary,
+                      color: theme.onSecondary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -503,6 +506,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
             .of(context)
             .size
             .width < 900;
+    final theme = Theme.of(context).colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -521,7 +525,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
               child: SizedBox(
                 width: 16,
                 height: 16,
-                child: CircularProgressIndicator(strokeWidth: 2,color: Theme.of(context).colorScheme.secondary,),
+                child: CircularProgressIndicator(strokeWidth: 2,color: theme.secondary,),
               ),
                        ),
            ),

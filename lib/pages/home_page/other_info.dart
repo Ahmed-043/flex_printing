@@ -1,16 +1,13 @@
 import 'package:flex_printing/models/System/system.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:flutter/gestures.dart';
-import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class OtherInfo extends StatelessWidget {
   const OtherInfo({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
     List<Widget> info() {
       Widget info(IconData icon, String description) {
         return Padding(
@@ -23,7 +20,7 @@ class OtherInfo extends StatelessWidget {
                 width: System.isMobile ? 70 : 115,
                 child: Icon(
                   icon,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: theme.onPrimary,
                   size: System.isMobile ? 70 : 115,
                 ),
               ),
@@ -36,7 +33,7 @@ class OtherInfo extends StatelessWidget {
                   style: TextStyle(
                     height: 1.2,
                     fontSize: System.isMobile ? 15 : 25,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: theme.onPrimary,
                   ),
                 ),
               ),

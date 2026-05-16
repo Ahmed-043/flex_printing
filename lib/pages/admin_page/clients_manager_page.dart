@@ -178,6 +178,7 @@ class _ClientsManagerPageState extends State<ClientsManagerPage> {
   Widget _buildPage(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isCompact = System.isMobile || screenWidth < 900;
+    final theme = Theme.of(context).colorScheme;
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
@@ -195,11 +196,11 @@ class _ClientsManagerPageState extends State<ClientsManagerPage> {
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
                   onPressed: () => context.go('/admin'),
-                  icon: Icon(Icons.arrow_back,
-                      color: Theme.of(context).colorScheme.onPrimary),
-                  label: Text('Back to Admin',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary)),
+                  icon: Icon(Icons.arrow_back, color: theme.onPrimary),
+                  label: Text(
+                    'Back to Admin',
+                    style: TextStyle(color: theme.onPrimary),
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -248,7 +249,7 @@ class _ClientsManagerPageState extends State<ClientsManagerPage> {
                 child: UiHelper.button(
                   callback: _saving ? (){} : _save,
                   filled: true,
-                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  color: theme.secondaryContainer,
                   borderRadius: 14,
                   padding: const EdgeInsets.symmetric(
                       horizontal: 24, vertical: 12),
@@ -259,15 +260,14 @@ class _ClientsManagerPageState extends State<ClientsManagerPage> {
                           height: 24,
                           child: CircularProgressIndicator(
                             strokeWidth: 2.5,
-                            color: Theme.of(context).colorScheme.primary,
+                            color: theme.primary,
                           ),
                         )
                       : Text(
                           'Save Changes',
                           style: TextStyle(
                             fontSize: 18,
-                            color:
-                                Theme.of(context).colorScheme.onSecondary,
+                            color: theme.onSecondary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),

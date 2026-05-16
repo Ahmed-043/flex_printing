@@ -10,23 +10,16 @@
     "prefer_related_applications": false,
     "icons": [
         {
-            "src": "logo.png",
-
-            "type": "image/png"
+            "src": "logo.svg",
+            "type": "image/svg+xml",
+            "sizes": "any"
         },
         {
-            "src": "logo.png",
-            "type": "image/png"
-        },
-        {
-            "src": "logo.png",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
-            "src": "logo.png",
-            "type": "image/png",
+            "src": "logo.svg",
+            "type": "image/svg+xml",
+            "sizes": "any",
             "purpose": "maskable"
         }
+
     ]
 }

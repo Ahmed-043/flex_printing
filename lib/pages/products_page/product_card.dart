@@ -114,19 +114,19 @@ class _ProductCardState extends State<ProductCard> {
 
   @override
   Widget build(BuildContext context) {
-    final dpr = MediaQuery.of(context).devicePixelRatio;
-
+    // final dpr = MediaQuery.of(context).devicePixelRatio;
+    final theme = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
-        color: Theme.of(context).colorScheme.primary,
+        color: theme.primary,
         // border: Border.all(
-        //   color: Theme.of(context).colorScheme.onPrimary.withAlpha(30),
+        //   color: theme.onPrimary.withAlpha(30),
         //   width: 1.5,
         // ),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.onPrimary.withAlpha(20),
+            color: theme.onPrimary.withAlpha(20),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -139,7 +139,7 @@ class _ProductCardState extends State<ProductCard> {
             '/products/${widget.product.id}',
             extra: widget.product,
           ),
-          splashColor: Theme.of(context).colorScheme.secondary.withAlpha(150),
+          splashColor: theme.onPrimary.withAlpha(50),
           onLongPress: _handleLongPress,
           borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
           child: Semantics(
@@ -166,7 +166,8 @@ class _ProductCardState extends State<ProductCard> {
                                   ? SizedBox(
                                       width: System.isMobile ? 24 : 36,
                                       height: System.isMobile ? 24 : 36,
-                                      child: const CircularProgressIndicator(
+                                      child: CircularProgressIndicator(
+                                        color: theme.secondary,
                                           strokeWidth: 2),
                                     )
                                   : Icon(
@@ -194,14 +195,20 @@ class _ProductCardState extends State<ProductCard> {
                   ),
                 ),
                 Expanded(
-                  child: Text(
-                    widget.product.name,
-                    overflow: TextOverflow.fade,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: System.isMobile ? 16 : 30,
-                      fontWeight: FontWeight.w400,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal:System.isMobile ? 0 : 8.0),
+                    child: Center(
+                      child: Text(
+                        widget.product.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.clip,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: System.isMobile ? 16 : 26,
+                          fontWeight: FontWeight.w400,
+                          color: theme.onPrimary,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -213,4 +220,3 @@ class _ProductCardState extends State<ProductCard> {
     );
   }
 }
-

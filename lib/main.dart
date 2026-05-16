@@ -12,6 +12,7 @@ import 'package:flex_printing/pages/root/root_layout.dart';
 import 'package:flex_printing/models/product/product_record.dart';
 import 'package:flex_printing/shared_widgets/app_cursor.dart';
 import 'package:flex_printing/theme/app_theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -166,8 +167,9 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.light(),
         darkTheme: AppTheme.dark(),
         themeMode: ThemeMode.system,
-        builder: (context, child) => AppCursor(
-          child: child ?? const SizedBox.shrink(),
+        builder: (context, child) => _wrapWithCursor(
+          context,
+          child ?? const SizedBox.shrink(),
         ),
         home: _StartupErrorScreen(message: startupError!),
       );
@@ -178,8 +180,9 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system, // uses device setting for now
-      builder: (context, child) => AppCursor(
-        child: child ?? const SizedBox.shrink(),
+      builder: (context, child) => _wrapWithCursor(
+        context,
+        child ?? const SizedBox.shrink(),
       ),
       routerConfig: _router,
     );
@@ -234,4 +237,26 @@ class _StartupErrorScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+bool _shouldUseCursor(BuildContext context) {
+  final media = MediaQuery.maybeOf(context);
+  final isSmallScreen = media != null && media.size.shortestSide < 700;
+  if (isSmallScreen) return false;
+  if (kIsWeb) return true;
+  switch (defaultTargetPlatform) {
+    case TargetPlatform.linux:
+    case TargetPlatform.macOS:
+    case TargetPlatform.windows:
+      return true;
+    case TargetPlatform.android:
+    case TargetPlatform.iOS:
+    case TargetPlatform.fuchsia:
+      return false;
+  }
+}
+
+Widget _wrapWithCursor(BuildContext context, Widget child) {
+  if (!_shouldUseCursor(context)) return child;
+  return AppCursor(child: child);
 }

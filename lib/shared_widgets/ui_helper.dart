@@ -47,8 +47,9 @@ class UiHelper {
     );
   }
   static Widget title({required BuildContext context, required String title}){
+    final theme = Theme.of(context).colorScheme;
     return Container(
-      color: Theme.of(context).colorScheme.secondaryContainer,
+      color: theme.secondaryContainer,
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 2),
       child: Text(
         title,
@@ -57,7 +58,7 @@ class UiHelper {
           fontWeight: FontWeight.w600,
           letterSpacing: 2,
           fontFamily: "RedHatDisplay",
-          color: Theme.of(context).colorScheme.onSecondary,
+          color: theme.onSecondary,
         ),
       ),
     );
@@ -172,7 +173,7 @@ class UiHelper {
           fontSize: 14,
           color: theme.colorScheme.onPrimary,
         ),
-        cursorColor: Theme.of(context).colorScheme.secondary,
+        cursorColor: theme.colorScheme.secondary,
         contextMenuBuilder: (context, editableTextState) {
           return Theme(
             data: theme.copyWith(
@@ -223,7 +224,7 @@ class HoverRotate extends StatefulWidget {
   final bool uniDirectional;
   const HoverRotate({
     required this.child,
-    this.degrees = 4,
+    this.degrees = 1,
     this.duration = const Duration(milliseconds: 120),
     this.enabled = true,
     this.uniDirectional = false,
@@ -237,6 +238,7 @@ class HoverRotate extends StatefulWidget {
 class HoverRotateState extends State<HoverRotate> {
   // current rotation in turns (-1.0..1.0 where 1.0 == 360deg)
   double _turns = 0.0;
+  final degrees = 1;
 
   void _setExit() {
     if (!widget.enabled) return;
@@ -252,7 +254,7 @@ class HoverRotateState extends State<HoverRotate> {
       final width = box.size.width;
       // If pointer is left of center, rotate negative; else positive.
       final sign = (local.dx < (width / 2) && !widget.uniDirectional) ? -1.0 : 1.0;
-      final targetTurns = (sign * widget.degrees) / 360.0;
+      final targetTurns = (sign * degrees) / 360.0;
       if (mounted) setState(() => _turns = targetTurns);
     } catch (_) {
       // fallback: positive rotation
@@ -266,13 +268,13 @@ class HoverRotateState extends State<HoverRotate> {
       onEnter: (e) => _updateFromPointer(e),
       onHover: (e) => _updateFromPointer(e),
       onExit: (_) => _setExit(),
-      child: widget.child,
-      // child: AnimatedRotation(
-      //   turns: _turns,
-      //   duration: widget.duration,
-      //   curve: Curves.easeOut,
-      //   child: widget.child,
-      // ),
+     // child: widget.child,
+      child: AnimatedRotation(
+        turns: _turns,
+        duration: widget.duration,
+        curve: Curves.easeOut,
+        child: widget.child,
+      ),
     );
   }
 }

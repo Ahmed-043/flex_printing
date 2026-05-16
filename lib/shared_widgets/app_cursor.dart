@@ -20,6 +20,7 @@ class _AppCursorState extends State<AppCursor> {
   Offset? _cursorPosition;
   bool _isHovering = false;
   bool _isOverClickable = false;
+  bool _isTouching = false;
 
   bool _isClickableCursor(MouseCursor cursor) {
     if (cursor == SystemMouseCursors.click) return true;
@@ -43,7 +44,10 @@ class _AppCursorState extends State<AppCursor> {
   }
 
   bool get _supportsCustomCursor {
-    if (kIsWeb) return true;
+    if (kIsWeb) {
+      return defaultTargetPlatform != TargetPlatform.android &&
+          defaultTargetPlatform != TargetPlatform.iOS;
+    }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
       case TargetPlatform.iOS:
@@ -70,12 +74,12 @@ class _AppCursorState extends State<AppCursor> {
   }
 
   void _handleEnter(PointerEnterEvent event) {
-    if (!_supportsCustomCursor) return;
+    if (!_supportsCustomCursor || _isTouching) return;
     _updateCursorPosition(event.position);
   }
 
   void _handleHover(PointerHoverEvent event) {
-    if (!_supportsCustomCursor) return;
+    if (!_supportsCustomCursor || _isTouching) return;
     _updateCursorPosition(event.position);
   }
 
@@ -87,42 +91,65 @@ class _AppCursorState extends State<AppCursor> {
     });
   }
 
+  void _handlePointerDown(PointerDownEvent event) {
+    if (event.kind == PointerDeviceKind.touch) {
+      setState(() {
+        _isTouching = true;
+        _isHovering = false;
+        _isOverClickable = false;
+      });
+    }
+  }
+
+  void _handlePointerUpOrCancel(PointerEvent event) {
+    if (event.kind == PointerDeviceKind.touch) {
+      setState(() {
+        _isTouching = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_supportsCustomCursor) {
       return widget.child;
     }
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.none,
-      onEnter: _handleEnter,
-      onHover: _handleHover,
-      onExit: _handleExit,
-      child: Stack(
-        key: _stackKey,
-        fit: StackFit.expand,
-        children: [
-          widget.child,
-          if (_isHovering && _cursorPosition != null)
-            Positioned(
-              left: _cursorPosition!.dx - (_cursorSize / 2),
-              top: _cursorPosition!.dy - (_cursorSize / 2),
-              child: IgnorePointer(
-                child: AnimatedOpacity(
-                  opacity: _isHovering ? (_isOverClickable ? 0.25 : 1) : 0,
-                  duration: const Duration(milliseconds: 80),
-                  child: SizedBox(
-                    width: _cursorSize,
-                    height: _cursorSize,
-                    child: SvgPicture.asset(
-                      'assets/images/logo.svg',
-                      fit: BoxFit.contain,
+    return Listener(
+      onPointerDown: _handlePointerDown,
+      onPointerUp: _handlePointerUpOrCancel,
+      onPointerCancel: _handlePointerUpOrCancel,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.none,
+        onEnter: _handleEnter,
+        onHover: _handleHover,
+        onExit: _handleExit,
+        child: Stack(
+          key: _stackKey,
+          fit: StackFit.expand,
+          children: [
+            widget.child,
+            if (_isHovering && !_isTouching && _cursorPosition != null)
+              Positioned(
+                left: _cursorPosition!.dx - (_cursorSize / 2),
+                top: _cursorPosition!.dy - (_cursorSize / 2),
+                child: IgnorePointer(
+                  child: AnimatedOpacity(
+                    opacity: _isHovering ? (_isOverClickable ? 0.25 : 1) : 0,
+                    duration: const Duration(milliseconds: 80),
+                    child: SizedBox(
+                      width: _cursorSize,
+                      height: _cursorSize,
+                      child: SvgPicture.asset(
+                        'assets/images/logo.svg',
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }

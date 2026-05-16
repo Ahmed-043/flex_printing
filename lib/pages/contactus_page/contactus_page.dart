@@ -15,6 +15,7 @@ class _ContactusPageState extends State<ContactusPage> {
   @override
   Widget build(BuildContext context) {
     compact = MediaQuery.of(context).size.width < 1200 ;
+    final theme = Theme.of(context).colorScheme;
 
     return SizedBox(
       height: MediaQuery.of(context).size.height - 100,
@@ -28,7 +29,7 @@ class _ContactusPageState extends State<ContactusPage> {
               width: 1150,
               padding: EdgeInsets.symmetric(horizontal: System.isMobile ? 20 : 50, vertical: 28),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
+                color: theme.surface,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
@@ -46,6 +47,7 @@ class _ContactusPageState extends State<ContactusPage> {
     );
   }
   Widget _form(BuildContext context){
+    final theme = Theme.of(context).colorScheme;
     Widget leftColumn() {
       return SizedBox(
         width: 500,
@@ -59,7 +61,7 @@ class _ContactusPageState extends State<ContactusPage> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: theme.onPrimary,
                 ),
               ),
             ),

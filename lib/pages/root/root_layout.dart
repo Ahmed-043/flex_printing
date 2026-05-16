@@ -47,9 +47,10 @@ class _RootLayoutState extends State<RootLayout> {
       System.isMobile = false;
     }
     final useCompactNav = System.isMobile;
+    final theme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: theme.primary,
       body: Scrollbar(
         thumbVisibility: true,
         controller: scrollController,
@@ -72,7 +73,7 @@ class _RootLayoutState extends State<RootLayout> {
                         )
                       : null,
                   clipBehavior: Clip.antiAlias,
-                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  backgroundColor: theme.secondary,
                   pinned: false,
                   floating: true,
                   snap: true,
@@ -120,7 +121,7 @@ class _RootLayoutState extends State<RootLayout> {
                                   style: TextStyle(
                                     fontSize: useCompactNav ? 22 : 36,
                                     fontWeight: FontWeight.w600,
-                                    color: Theme.of(context).colorScheme.onSecondary,
+                                    color: theme.onSecondary,
                                   ),
                                 ),
                                 Padding(

@@ -12,12 +12,14 @@ class MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
+
     return Material(
-      color: Theme.of(context).colorScheme.secondary,
+      color: theme.secondary,
       child: InkWell(
-        splashColor: Theme.of(context).colorScheme.onSecondary.withAlpha(100),
+        splashColor: theme.onSecondary.withAlpha(100),
         highlightColor: Colors.transparent,
-        hoverColor: Theme.of(context).colorScheme.onSecondary.withAlpha(50),
+        hoverColor: theme.onSecondary.withAlpha(50),
         onTap: () {
           Navigator.pop(context, route);
         },
@@ -376,12 +378,14 @@ class _AdminAuthDialogState extends State<AdminAuthDialog> {
   }
 
   Widget _labeledField({required String label, required Widget child}) {
+    final theme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
             style: TextStyle(
-                color: Theme.of(context).colorScheme.onSecondary,
+                color: theme.onSecondary,
                 fontSize: 15, fontWeight: FontWeight.w500)),
         const SizedBox(height: 8),
         child,

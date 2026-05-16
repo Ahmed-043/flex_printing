@@ -152,6 +152,7 @@ class _ProductsPageState extends State<ProductsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -189,7 +190,7 @@ class _ProductsPageState extends State<ProductsPage> {
             child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: System.isMobile ? 180 : 350,
-                    childAspectRatio: 1,
+                    childAspectRatio: 0.9,
                     crossAxisSpacing: System.isMobile ? 15 : 35,
                     mainAxisSpacing: System.isMobile ? 20 :45
                 ),
@@ -224,6 +225,8 @@ class _ProductsPageState extends State<ProductsPage> {
     VoidCallback? onLongPress,
 
       }) {
+    final theme = Theme.of(context).colorScheme;
+
     return HoverRotate(
       degrees: 6,
       child: Padding(
@@ -234,7 +237,7 @@ class _ProductsPageState extends State<ProductsPage> {
           style: ElevatedButton.styleFrom(
             elevation: 0,
             backgroundColor: selected
-                ? Theme.of(context).colorScheme.secondary
+                ? theme.secondary
                 : Colors.grey.shade200,
             padding:  EdgeInsets.symmetric(horizontal: System.isMobile ? 10 : 30, vertical: System.isMobile ? 10 : 20),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
@@ -244,7 +247,7 @@ class _ProductsPageState extends State<ProductsPage> {
             style: TextStyle(
               fontSize: System.isMobile ? 16 :26,
               color: selected
-                  ? Theme.of(context).colorScheme.onSecondary
+                  ? theme.onSecondary
                   : const Color(0xFF364153),
             ),
           ),

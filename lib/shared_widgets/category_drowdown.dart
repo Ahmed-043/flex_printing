@@ -129,9 +129,9 @@ class _CategoryDropdownTextFieldState extends State<CategoryDropdownTextField> {
                 controller: controller,
                 focusNode: focusNode,
                 textInputAction: TextInputAction.done,
-                cursorColor: Theme.of(context).colorScheme.secondary,
+                cursorColor: theme.colorScheme.secondary,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: theme.colorScheme.onPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
                 ),
@@ -178,12 +178,22 @@ class _CategoryDropdownTextFieldState extends State<CategoryDropdownTextField> {
                 padding: const EdgeInsets.symmetric(vertical: 6),
                 shrinkWrap: true,
                 itemCount: matches.length,
-                separatorBuilder: (_, _) =>  Divider(height: 1,color: Theme.of(context).colorScheme.surfaceContainer,),
+                separatorBuilder: (_, _) => Divider(
+                  height: 1,
+                  color: theme.colorScheme.surfaceContainer,
+                ),
                 itemBuilder: (context, index) {
                   final option = matches[index];
                   return ListTile(
                     dense: true,
-                    title: Text(option, style: TextStyle(fontSize: 14 ,color: Theme.of(context).colorScheme.onPrimary), overflow: TextOverflow.ellipsis),
+                    title: Text(
+                      option,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: theme.colorScheme.onPrimary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     onTap: () => onSelected(option),
                   );
                 },

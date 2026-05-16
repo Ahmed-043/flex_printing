@@ -7,6 +7,7 @@ class AboutEvents extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
     return SizedBox(
       //height: 450,
       child: Column(
@@ -25,7 +26,7 @@ class AboutEvents extends StatelessWidget {
                 style: TextStyle(
                   fontSize: System.isMobile ? 15 : 40,
                   height: 1.15,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: theme.onPrimary,
                 )
               )
           ),

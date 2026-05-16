@@ -12,6 +12,7 @@ class FooterSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
     Future<void> openSocial(String url) async {
       final uri = Uri.parse(url);
       await launchUrl(
@@ -25,7 +26,7 @@ class FooterSection extends StatelessWidget {
         'assets/images/icons/$name.svg',
         width: System.isMobile ? 24 : 32,
         height: System.isMobile ? 24 : 32,
-        //colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSecondary),
+        //colorFilter: ColorFilter.mode(theme.onSecondary),
       );
     }
     Widget socialIconLink({
@@ -55,7 +56,7 @@ class FooterSection extends StatelessWidget {
     return Container(
       height: System.isMobile ? 220 : 410,
       width: double.infinity,
-      color: Theme.of(context).colorScheme.secondary,
+      color: theme.secondary,
       padding: EdgeInsets.only(top: System.isMobile ? 40 : 100,left: System.isMobile ? 0 : 40,right: System.isMobile ? 0 : 40),
       child: Wrap(
         alignment: .spaceEvenly,
@@ -71,7 +72,7 @@ class FooterSection extends StatelessWidget {
                   style: TextStyle(
                     fontSize: System.isMobile ? 20 : 25,
                     fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSecondary,
+                    color: theme.onSecondary,
                   ),
                 ),
                 SizedBox(height: System.isMobile ? 15 : 20),
@@ -125,7 +126,7 @@ class FooterSection extends StatelessWidget {
                     style: TextStyle(
                       fontSize: System.isMobile ? 20 : 25,
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSecondary,
+                      color: theme.onSecondary,
                     ),
                   ),
                   SizedBox(height: System.isMobile ? 15 : 20),
@@ -137,7 +138,7 @@ class FooterSection extends StatelessWidget {
                         letterSpacing: 1,
                         height: 2,
                         fontWeight: FontWeight.w300,
-                        color: Theme.of(context).colorScheme.onSecondary,
+                        color: theme.onSecondary,
                       );
 
                       TextSpan link(String label, VoidCallback onTap) {
@@ -180,7 +181,7 @@ class FooterSection extends StatelessWidget {
             //         style: TextStyle(
             //           fontSize: System.isMobile ? 20 : 25,
             //           fontWeight: FontWeight.w600,
-            //           color: Theme.of(context).colorScheme.onSecondary,
+            //           color: theme.onSecondary,
             //         ),
             //       ),
             //       SizedBox(height: System.isMobile ? 15 : 20),
@@ -211,13 +212,13 @@ class FooterSection extends StatelessWidget {
                   style: TextStyle(
                     fontSize: System.isMobile ? 20 : 25,
                     fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSecondary,
+                    color: theme.onSecondary,
                   ),
                 ),
                 SizedBox(height: System.isMobile ? 15 : 20),
                 Row(
                   children: [
-                    Icon(Icons.location_on_outlined,color: Theme.of(context).colorScheme.onSecondary,size: System.isMobile ? 18 : 24,),
+                    Icon(Icons.location_on_outlined,color: theme.onSecondary,size: System.isMobile ? 18 : 24,),
                     SizedBox(width: 8,),
                     Flexible(
                       child: Text(
@@ -235,7 +236,7 @@ class FooterSection extends StatelessWidget {
                 SizedBox(height: System.isMobile ? 15 : 20),
                 Row(
                   children: [
-                    Icon(Icons.phone_outlined,color: Theme.of(context).colorScheme.onSecondary,size: System.isMobile ? 18 : 24,),
+                    Icon(Icons.phone_outlined,color: theme.onSecondary,size: System.isMobile ? 18 : 24,),
                     SizedBox(width: 8,),
                     Flexible(
                       child: Text(
@@ -253,7 +254,7 @@ class FooterSection extends StatelessWidget {
                 SizedBox(height: System.isMobile ? 15 : 20),
                 Row(
                   children: [
-                    Icon(Icons.mail_outline_rounded,color: Theme.of(context).colorScheme.onSecondary,size: System.isMobile ? 18 : 24,),
+                    Icon(Icons.mail_outline_rounded,color: theme.onSecondary,size: System.isMobile ? 18 : 24,),
                     SizedBox(width: 8,),
                     Flexible(
                       child: Text(

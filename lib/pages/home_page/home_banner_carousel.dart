@@ -141,7 +141,7 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
             ),
             child: Container(
               padding: const EdgeInsets.only(top: 10),
-              decoration: _decoration(context),
+              decoration: _decoration(),
               child: Column(
                 children: [
                   _pages(),
@@ -171,7 +171,7 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
           ),
           child: Container(
             padding: const EdgeInsets.only(top: 10,),
-            decoration: _decoration(context),
+            decoration: _decoration(),
             child: Column(
               children: [
                 _pages(),
@@ -283,7 +283,9 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
     );
   }
 
-  BoxDecoration _decoration(BuildContext context) {
+  BoxDecoration _decoration() {
+    final theme = Theme.of(context).colorScheme;
+
     return BoxDecoration(
       gradient: const RadialGradient(
         center: Alignment.center,
@@ -293,15 +295,15 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
       ),
       border: Border(
         top: BorderSide(
-          color: Theme.of(context).colorScheme.primary,
+          color: theme.primary,
           width: 5,
         ),
         left: BorderSide(
-          color: Theme.of(context).colorScheme.primary,
+          color: theme.primary,
           width: 5,
         ),
         right: BorderSide(
-          color: Theme.of(context).colorScheme.primary,
+          color: theme.primary,
           width: 5,
         ),
         bottom: BorderSide.none,

@@ -410,39 +410,9 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) return _notSignedInView(context);
-    return _buildPage(context);
-  }
-
-  Widget _notSignedInView(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.lock_outline, size: 56, color: Colors.grey),
-            const SizedBox(height: 16),
-            const Text(
-              'You must be signed in to manage media.',
-              style: TextStyle(fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => context.go('/admin'),
-              child: const Text('Go to Admin'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPage(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isCompact = System.isMobile || screenWidth < 900;
+    final theme = Theme.of(context).colorScheme;
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
@@ -460,11 +430,11 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
                   onPressed: () => context.go('/admin'),
-                  icon: Icon(Icons.arrow_back,
-                      color: Theme.of(context).colorScheme.onPrimary),
-                  label: Text('Back to Admin',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary)),
+                  icon: Icon(Icons.arrow_back, color: theme.onPrimary),
+                  label: Text(
+                    'Back to Admin',
+                    style: TextStyle(color: theme.onPrimary),
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -582,7 +552,7 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
                 child: UiHelper.button(
                   callback: _saving ? (){} : _save,
                   filled: true,
-                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  color: theme.secondaryContainer,
                   borderRadius: 14,
                   padding: const EdgeInsets.symmetric(
                       horizontal: 24, vertical: 12),
@@ -593,15 +563,14 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
                           height: 24,
                           child: CircularProgressIndicator(
                             strokeWidth: 2.5,
-                            color: Theme.of(context).colorScheme.primary,
+                            color: theme.primary,
                           ),
                         )
                       : Text(
                           'Save All Changes',
                           style: TextStyle(
                             fontSize: 18,
-                            color:
-                                Theme.of(context).colorScheme.onSecondary,
+                            color: theme.onSecondary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -721,6 +690,7 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
   }
 
   Widget _buildAddLocationRow() {
+    final theme = Theme.of(context).colorScheme;
     return Row(
       crossAxisAlignment: .end,
       children: [
@@ -740,7 +710,7 @@ class _EventsManagerPageState extends State<EventsManagerPage> {
           label: const Text('Add'),
           style: ElevatedButton.styleFrom(
             iconSize: 20,
-            backgroundColor: Theme.of(context).colorScheme.secondary,
+            backgroundColor: theme.secondary,
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -808,6 +778,7 @@ class _LocationTileState extends State<_LocationTile> {
   Widget build(BuildContext context) {
     final loc = widget.location;
     final isDeleted = loc.markedForDelete;
+    final theme = Theme.of(context).colorScheme;
 
     return Opacity(
       opacity: isDeleted ? 0.5 : 1.0,
@@ -816,7 +787,7 @@ class _LocationTileState extends State<_LocationTile> {
         decoration: BoxDecoration(
           color: isDeleted
               ? Colors.red.shade50
-              : Theme.of(context).colorScheme.surface,
+              : theme.surface,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isDeleted
@@ -855,7 +826,7 @@ class _LocationTileState extends State<_LocationTile> {
                           fontSize: 15,
                           color: loc.text.isEmpty
                               ? Colors.grey
-                              : Theme.of(context).colorScheme.onPrimary,
+                              : theme.onPrimary,
                           decoration:
                               isDeleted ? TextDecoration.lineThrough : null,
                         ),

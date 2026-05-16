@@ -116,7 +116,7 @@ class _ProductsSectionState extends State<ProductsSection> {
             return GridView.builder(
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: System.isMobile ? 180 : 350,
-                    childAspectRatio: 1,
+                    childAspectRatio: 0.9,
                     crossAxisSpacing: System.isMobile ? 15 : 35,
                     mainAxisSpacing: System.isMobile ? 20 :45
                 ),
