@@ -98,7 +98,14 @@ class _AppCursorState extends State<AppCursor> {
         _isHovering = false;
         _isOverClickable = false;
       });
+    } else {
+      _updateCursorPosition(event.position);
     }
+  }
+
+  void _handlePointerMove(PointerMoveEvent event) {
+    if (!_supportsCustomCursor || _isTouching) return;
+    _updateCursorPosition(event.position);
   }
 
   void _handlePointerUpOrCancel(PointerEvent event) {
@@ -106,6 +113,8 @@ class _AppCursorState extends State<AppCursor> {
       setState(() {
         _isTouching = false;
       });
+    } else if (event is PointerUpEvent) {
+      _updateCursorPosition(event.position);
     }
   }
 
@@ -117,6 +126,7 @@ class _AppCursorState extends State<AppCursor> {
 
     return Listener(
       onPointerDown: _handlePointerDown,
+      onPointerMove: _handlePointerMove,
       onPointerUp: _handlePointerUpOrCancel,
       onPointerCancel: _handlePointerUpOrCancel,
       child: MouseRegion(

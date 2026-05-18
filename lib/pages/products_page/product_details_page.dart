@@ -166,7 +166,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           focusColor:  Colors.transparent,
           hoverColor:  Colors.transparent,
           splashColor:  Colors.transparent,
-          child: Icon(icon, color: Theme.of(context).colorScheme.onPrimary.withAlpha(100), size: 85),
+          child: Icon(icon, color: Theme.of(context).colorScheme.onPrimary.withAlpha(80), size: 85),
         ),
       );
     }
@@ -270,7 +270,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             ),
                           ),
 
-                          // Animated Left Arrow
+                          if(!System.isMobile)
+                          ...[// Animated Left Arrow
                           AnimatedPositioned(
                             duration: const Duration(milliseconds: 300),
                             curve: Curves.easeOutCubic,
@@ -306,6 +307,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               ),
                             ),
                           ),
+                          ],
 
                           if (_imageUrls.length > 1)
                             Positioned(
