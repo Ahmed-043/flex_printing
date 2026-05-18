@@ -135,7 +135,7 @@ class _AppCursorState extends State<AppCursor> {
                 top: _cursorPosition!.dy - (_cursorSize / 2),
                 child: IgnorePointer(
                   child: AnimatedOpacity(
-                    opacity: _isHovering ? (_isOverClickable ? 0.25 : 1) : 0,
+                    opacity: _isHovering ? (_isOverClickable ? 0.05 : 1) : 0,
                     duration: const Duration(milliseconds: 80),
                     child: SizedBox(
                       width: _cursorSize,

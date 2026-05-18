@@ -73,8 +73,8 @@ class _ClientsEventsState extends State<ClientsEvents> {
 
   @override
   Widget build(BuildContext context) {
-    final double cardWidth = System.isMobile ? 270 : 550;
-    final double cardHeight = System.isMobile ? 270 : 650;
+    final double cardWidth = System.isMobile ? 270 : 540;
+    final double cardHeight = cardWidth * (System.isMobile ? 1.08 : 6/5);
 
     final screenWidth = MediaQuery.of(context).size.width;
     const double desiredGap = 24; // keep card-to-card spacing almost constant
@@ -91,7 +91,7 @@ class _ClientsEventsState extends State<ClientsEvents> {
       child: Column(
         children: [
           UiHelper.title(context: context, title: !widget.isEvents ? "Satisfied Clients" : "Events"),
-          SizedBox(height: System.isMobile ? 58 : 115),
+          SizedBox(height: System.isMobile ? 68 : 115),
           Center(
             child: CarouselSlider.builder(
               itemCount: itemCount,
