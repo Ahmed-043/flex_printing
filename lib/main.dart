@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flex_printing/pages/admin_page/clients_manager_page.dart';
 import 'package:flex_printing/pages/admin_page/create_product_page.dart';
 import 'package:flex_printing/pages/admin_page/events_manager_page.dart';
@@ -60,8 +62,13 @@ ProductRecord? _productFromExtra(Object? extra, {int? expectedId}) {
 
   if (extra is Map) {
     try {
-      
-      final json = Map<String, dynamic>.from(extra);
+      final productValue = extra['product'] ?? extra;
+      if (productValue is ProductRecord) {
+        if (expectedId != null && productValue.id != expectedId) return null;
+        return productValue;
+      }
+
+      final json = Map<String, dynamic>.from(productValue as Map);
       final firstImage = json['first_image'];
       if (firstImage is Map) {
         json['first_image'] = Map<String, dynamic>.from(firstImage);
@@ -75,6 +82,15 @@ ProductRecord? _productFromExtra(Object? extra, {int? expectedId}) {
     }
   }
 
+  return null;
+}
+
+Uint8List? _imageBytesFromExtra(Object? extra) {
+  if (extra is Map) {
+    final bytes = extra['initial_image_bytes'] ?? extra['hero_image_bytes'];
+    if (bytes is Uint8List) return bytes;
+    if (bytes is List<int>) return Uint8List.fromList(bytes);
+  }
   return null;
 }
 
@@ -97,17 +113,34 @@ final GoRouter _router = GoRouter(
           routes: [
             GoRoute(
               path: ':id',
-              builder: (context, state) {
+              pageBuilder: (context, state) {
                 final productId = int.tryParse(state.pathParameters['id'] ?? '');
                 final product = _productFromExtra(
                   state.extra,
                   expectedId: productId,
                 );
-                return RootLayout(
-                  child: ProductDetailsPage(
-                    product: product,
-                    productId: productId,
+                final initialImageBytes = _imageBytesFromExtra(state.extra);
+                return CustomTransitionPage(
+                  key: state.pageKey,
+                  transitionDuration: const Duration(milliseconds: 350),
+                  reverseTransitionDuration: const Duration(milliseconds: 300),
+                  child: RootLayout(
+                    child: ProductDetailsPage(
+                      product: product,
+                      productId: productId,
+                      initialImageBytes: initialImageBytes,
+                    ),
                   ),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    final fade = CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutCubic,
+                    );
+                    return FadeTransition(
+                      opacity: fade,
+                      child: child,
+                    );
+                  },
                 );
               },
             ),

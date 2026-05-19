@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:go_router/go_router.dart';
@@ -16,11 +18,13 @@ class ProductDetailsPage extends StatefulWidget {
   /// URL (i.e. no [extra] was provided by go_router).
   final ProductRecord? product;
   final int? productId;
+  final Uint8List? initialImageBytes;
 
   const ProductDetailsPage({
     super.key,
     required this.product,
     this.productId,
+    this.initialImageBytes,
   });
 
   @override
@@ -32,6 +36,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   bool _loadingSpecs = true;
   List<String> _imageUrls = [];
   ProductRecord? _product;
+  Uint8List? _heroImageBytes;
   final PageController _imagePageController = PageController();
   int _currentImageIndex = 0;
   bool _showLeftArrow = false;
@@ -70,6 +75,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     if (!mounted) return;
     setState(() {
       _product = product;
+      _heroImageBytes = widget.initialImageBytes;
       _loadingSpecs = true;
       _currentImageIndex = 0;
       _showLeftArrow = false;
@@ -86,12 +92,17 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             .getPublicUrl(path))
         .toList(growable: false);
 
+    final displayImageUrls =
+        _heroImageBytes != null && imageUrls.isNotEmpty
+            ? imageUrls.sublist(1)
+            : imageUrls;
+
     // Fetch spec rows.
     final specs = await fetchProductSpecs(product.id);
 
     if (!mounted) return;
     setState(() {
-      _imageUrls = imageUrls;
+      _imageUrls = displayImageUrls;
       _specs = specs;
       _loadingSpecs = false;
     });
@@ -110,14 +121,20 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Product name
-          Text(
-            product.name,
-            style: TextStyle(
-              fontSize: isCompact ? 32 : 56,
-              fontWeight: FontWeight.w800,
-              color: theme.onPrimary,
-              fontFamily: 'RedHatDisplay',
-              height: 1.15,
+          Hero(
+            tag: 'product-name-${widget.product?.id}',
+            child: Material(
+              color: Colors.transparent,
+              child: Text(
+                product.name,
+                style: TextStyle(
+                  fontSize: isCompact ? 32 : 56,
+                  fontWeight: FontWeight.w800,
+                  color: theme.onPrimary,
+                  fontFamily: 'RedHatDisplay',
+                  height: 1.15,
+                ),
+              ),
             ),
           ),
           SizedBox(height: isCompact ? 12 : 20),
@@ -177,8 +194,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     }
 
     Widget productImage({required bool isCompact}) {
+      final hasInlineFirstImage = _heroImageBytes != null;
+      final totalImageCount = _imageUrls.length + (hasInlineFirstImage ? 1 : 0);
       final hasPrevious = _currentImageIndex > 0;
-      final hasNext = _currentImageIndex < _imageUrls.length - 1;
+      final hasNext = _currentImageIndex < totalImageCount - 1;
 
       return AspectRatio(
         aspectRatio: 4 / 3,
@@ -205,7 +224,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     borderRadius: BorderRadius.circular(isCompact ? 20 : 30),
                   ),
                   clipBehavior: Clip.antiAlias,
-                  child: _imageUrls.isNotEmpty
+                  child: totalImageCount > 0
                       ? Stack(
                           fit: StackFit.expand,
                           children: [
@@ -214,18 +233,20 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               behavior: const _MouseDragScrollBehavior(),
                               child: PageView.builder(
                                 controller: _imagePageController,
-                                itemCount: _imageUrls.length,
+                                itemCount: totalImageCount,
                                 onPageChanged: (index) {
                                   if (!mounted) return;
                                   setState(() => _currentImageIndex = index);
                                 },
-                                  itemBuilder: (context, index) {
+                                itemBuilder: (context, index) {
+                                  if (hasInlineFirstImage && index == 0) {
+                                    final bytes = _heroImageBytes!;
                                     return InkWell(
                                       onTap: () {
-                                        showImage(_imageUrls[index]);
+                                        showImageBytes(bytes);
                                       },
-                                      child: Image.network(
-                                        _imageUrls[index],
+                                      child: Image.memory(
+                                        bytes,
                                         fit: BoxFit.cover,
                                         errorBuilder: (_, __, ___) => Center(
                                           child: Icon(
@@ -236,7 +257,28 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                         ),
                                       ),
                                     );
-                                  },
+                                  }
+
+                                  final urlIndex =
+                                      hasInlineFirstImage ? index - 1 : index;
+                                  final imageUrl = _imageUrls[urlIndex];
+                                  return InkWell(
+                                    onTap: () {
+                                      showImageUrl(imageUrl);
+                                    },
+                                    child: Image.network(
+                                      imageUrl,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => Center(
+                                        child: Icon(
+                                          Icons.broken_image_rounded,
+                                          size: isCompact ? 50 : 80,
+                                          color: theme.onPrimary.withAlpha(100),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
 
@@ -279,7 +321,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             ),
                             ],
 
-                            if (_imageUrls.length > 1)
+                            if (totalImageCount > 1)
                               Positioned(
                                 right: 12,
                                 bottom: 12,
@@ -294,7 +336,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                       vertical: 6,
                                     ),
                                     child: Text(
-                                      '${_currentImageIndex + 1}/${_imageUrls.length}',
+                                      '${_currentImageIndex + 1}/$totalImageCount',
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 12,
@@ -540,7 +582,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       ),
     );
   }
-  void showImage(String imageUrl){
+  void _showImageDialog(Widget image) {
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -566,10 +608,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 clipBehavior: Clip.none,
                 minScale: 1.0,
                 maxScale: 5.0,
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.contain,
-                ),
+                child: image,
               ),
             ),
             Positioned(
@@ -582,6 +621,24 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void showImageUrl(String imageUrl) {
+    _showImageDialog(
+      Image.network(
+        imageUrl,
+        fit: BoxFit.contain,
+      ),
+    );
+  }
+
+  void showImageBytes(Uint8List imageBytes) {
+    _showImageDialog(
+      Image.memory(
+        imageBytes,
+        fit: BoxFit.contain,
       ),
     );
   }

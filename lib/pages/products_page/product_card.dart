@@ -135,9 +135,13 @@ class _ProductCardState extends State<ProductCard> {
       child: Material(
         borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
         child: InkWell(
-          onTap: () => context.push(
+          onTap: () => context.go(
+
             '/products/${widget.product.id}',
-            extra: widget.product,
+            extra: {
+              'product': widget.product,
+              'initial_image_bytes': _imageBytes,
+            },
           ),
           splashColor: theme.onPrimary.withAlpha(50),
           onLongPress: _handleLongPress,
@@ -193,15 +197,18 @@ class _ProductCardState extends State<ProductCard> {
                       horizontal: System.isMobile ? 0 : 8.0,
                     ),
                     child: Center(
-                      child: Text(
-                        widget.product.name,
-                        maxLines: 2,
-                        overflow: TextOverflow.clip,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: System.isMobile ? 16 : 26,
-                          fontWeight: FontWeight.w400,
-                          color: theme.onPrimary,
+                      child: Hero(
+                        tag: 'product-name-${widget.product.id}',
+                        child: Text(
+                          widget.product.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.clip,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: System.isMobile ? 16 : 26,
+                            fontWeight: FontWeight.w400,
+                            color: theme.onPrimary,
+                          ),
                         ),
                       ),
                     ),
