@@ -250,7 +250,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                         child: Image.memory(
                                           bytes,
                                           fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) => Center(
+                                          errorBuilder: (_, _, _) => Center(
                                             child: Icon(
                                               Icons.broken_image_rounded,
                                               size: isCompact ? 50 : 80,
@@ -271,7 +271,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                       child: Image.network(
                                         imageUrl,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) => Center(
+                                        errorBuilder: (_, _, _) => Center(
                                           child: Icon(
                                             Icons.broken_image_rounded,
                                             size: isCompact ? 50 : 80,
