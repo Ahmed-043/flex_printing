@@ -163,18 +163,16 @@ class _ProductCardState extends State<ProductCard> {
                               aspectRatio: 4 / 3,
 
                               child: _isLoading
-                                  ? SizedBox(
-                                      width: System.isMobile ? 24 : 36,
-                                      height: System.isMobile ? 24 : 36,
-                                      child: CircularProgressIndicator(
-                                        constraints: BoxConstraints(
-                                          maxWidth: System.isMobile ? 24 : 36,
-                                          maxHeight: System.isMobile ? 24 : 36,
+                                  ? Center(
+                                    child: SizedBox(
+                                        width: System.isMobile ? 34 : 56,
+                                        height: System.isMobile ? 34 : 56,
+                                        child: CircularProgressIndicator(
+                                          color: theme.secondary,
+                                          strokeWidth: 4,
                                         ),
-                                        color: theme.secondary,
-                                        strokeWidth: 2,
                                       ),
-                                    )
+                                  )
                                   : Icon(
                                       Icons.image_not_supported_rounded,
                                       size: System.isMobile ? 35 : 80,
