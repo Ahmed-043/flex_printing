@@ -203,50 +203,73 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         aspectRatio: 4 / 3,
         child: Hero(
           tag: 'product-image-${widget.product?.id}',
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return MouseRegion(
-                onHover: (event) {
-                  final x = event.localPosition.dx;
-                  final half = constraints.maxWidth / 4;
-                  setState(() {
-                    _showLeftArrow = x < half;
-                    _showRightArrow = x >= half*3;
-                  });
-                },
-                onExit: (_) => setState(() {
-                  _showLeftArrow = false;
-                  _showRightArrow = false;
-                }),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: theme.surfaceContainer,
-                    borderRadius: BorderRadius.circular(isCompact ? 20 : 30),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: totalImageCount > 0
-                      ? Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            // Main Image Swiper
-                            ScrollConfiguration(
-                              behavior: const _MouseDragScrollBehavior(),
-                              child: PageView.builder(
-                                controller: _imagePageController,
-                                itemCount: totalImageCount,
-                                onPageChanged: (index) {
-                                  if (!mounted) return;
-                                  setState(() => _currentImageIndex = index);
-                                },
-                                itemBuilder: (context, index) {
-                                  if (hasInlineFirstImage && index == 0) {
-                                    final bytes = _heroImageBytes!;
+          child: Material(
+            color: Colors.transparent,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return MouseRegion(
+                  onHover: (event) {
+                    final x = event.localPosition.dx;
+                    final half = constraints.maxWidth / 4;
+                    setState(() {
+                      _showLeftArrow = x < half;
+                      _showRightArrow = x >= half*3;
+                    });
+                  },
+                  onExit: (_) => setState(() {
+                    _showLeftArrow = false;
+                    _showRightArrow = false;
+                  }),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: theme.surfaceContainer,
+                      borderRadius: BorderRadius.circular(isCompact ? 20 : 30),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: totalImageCount > 0
+                        ? Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              // Main Image Swiper
+                              ScrollConfiguration(
+                                behavior: const _MouseDragScrollBehavior(),
+                                child: PageView.builder(
+                                  controller: _imagePageController,
+                                  itemCount: totalImageCount,
+                                  onPageChanged: (index) {
+                                    if (!mounted) return;
+                                    setState(() => _currentImageIndex = index);
+                                  },
+                                  itemBuilder: (context, index) {
+                                    if (hasInlineFirstImage && index == 0) {
+                                      final bytes = _heroImageBytes!;
+                                      return InkWell(
+                                        onTap: () {
+                                          showImageBytes(bytes);
+                                        },
+                                        child: Image.memory(
+                                          bytes,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (_, __, ___) => Center(
+                                            child: Icon(
+                                              Icons.broken_image_rounded,
+                                              size: isCompact ? 50 : 80,
+                                              color: theme.onPrimary.withAlpha(100),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }
+
+                                    final urlIndex =
+                                        hasInlineFirstImage ? index - 1 : index;
+                                    final imageUrl = _imageUrls[urlIndex];
                                     return InkWell(
                                       onTap: () {
-                                        showImageBytes(bytes);
+                                        showImageUrl(imageUrl);
                                       },
-                                      child: Image.memory(
-                                        bytes,
+                                      child: Image.network(
+                                        imageUrl,
                                         fit: BoxFit.cover,
                                         errorBuilder: (_, __, ___) => Center(
                                           child: Icon(
@@ -257,107 +280,87 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                         ),
                                       ),
                                     );
-                                  }
+                                  },
+                                ),
+                              ),
 
-                                  final urlIndex =
-                                      hasInlineFirstImage ? index - 1 : index;
-                                  final imageUrl = _imageUrls[urlIndex];
-                                  return InkWell(
-                                    onTap: () {
-                                      showImageUrl(imageUrl);
-                                    },
-                                    child: Image.network(
-                                      imageUrl,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => Center(
-                                        child: Icon(
-                                          Icons.broken_image_rounded,
-                                          size: isCompact ? 50 : 80,
-                                          color: theme.onPrimary.withAlpha(100),
+                              if(!System.isMobile)
+                              ...[// Animated Left Arrow
+                              AnimatedPositioned(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeOutCubic,
+                                left: (_showLeftArrow && hasPrevious) ? 16 : -60,
+                                top: 0,
+                                bottom: 0,
+                                child: Center(
+                                  child: navButton(
+                                    icon: Icons.chevron_left_rounded,
+                                    onPressed: () =>
+                                        _imagePageController.previousPage(
+                                      duration: const Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              // Animated Right Arrow
+                              AnimatedPositioned(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeOutCubic,
+                                right: (_showRightArrow && hasNext) ? 16 : -60,
+                                top: 0,
+                                bottom: 0,
+                                child: Center(
+                                  child: navButton(
+                                    icon: Icons.chevron_right_rounded,
+                                    onPressed: () => _imagePageController.nextPage(
+                                      duration: const Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              ],
+
+                              if (totalImageCount > 1)
+                                Positioned(
+                                  right: 12,
+                                  bottom: 12,
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withAlpha(110),
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
+                                      child: Text(
+                                        '${_currentImageIndex + 1}/$totalImageCount',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
                                         ),
                                       ),
                                     ),
-                                  );
-                                },
-                              ),
-                            ),
-
-                            if(!System.isMobile)
-                            ...[// Animated Left Arrow
-                            AnimatedPositioned(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeOutCubic,
-                              left: (_showLeftArrow && hasPrevious) ? 16 : -60,
-                              top: 0,
-                              bottom: 0,
-                              child: Center(
-                                child: navButton(
-                                  icon: Icons.chevron_left_rounded,
-                                  onPressed: () =>
-                                      _imagePageController.previousPage(
-                                    duration: const Duration(milliseconds: 300),
-                                    curve: Curves.easeInOut,
                                   ),
                                 ),
-                              ),
-                            ),
-
-                            // Animated Right Arrow
-                            AnimatedPositioned(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeOutCubic,
-                              right: (_showRightArrow && hasNext) ? 16 : -60,
-                              top: 0,
-                              bottom: 0,
-                              child: Center(
-                                child: navButton(
-                                  icon: Icons.chevron_right_rounded,
-                                  onPressed: () => _imagePageController.nextPage(
-                                    duration: const Duration(milliseconds: 300),
-                                    curve: Curves.easeInOut,
-                                  ),
-                                ),
-                              ),
-                            ),
                             ],
-
-                            if (totalImageCount > 1)
-                              Positioned(
-                                right: 12,
-                                bottom: 12,
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withAlpha(110),
-                                    borderRadius: BorderRadius.circular(999),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
-                                    ),
-                                    child: Text(
-                                      '${_currentImageIndex + 1}/$totalImageCount',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        )
-                      : Center(
-                          child: Icon(
-                            Icons.image_not_supported_rounded,
-                            size: isCompact ? 50 : 80,
-                            color: theme.onPrimary.withAlpha(100),
+                          )
+                        : Center(
+                            child: Icon(
+                              Icons.image_not_supported_rounded,
+                              size: isCompact ? 50 : 80,
+                              color: theme.onPrimary.withAlpha(100),
+                            ),
                           ),
-                        ),
-                ),
-              );
-            },
+                  ),
+                );
+              },
+            ),
           ),
         ),
       );
