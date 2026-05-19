@@ -122,7 +122,7 @@ final GoRouter _router = GoRouter(
                 final initialImageBytes = _imageBytesFromExtra(state.extra);
                 return CustomTransitionPage(
                   key: state.pageKey,
-                  transitionDuration: const Duration(milliseconds: 350),
+                  transitionDuration: const Duration(milliseconds: 550),
                   reverseTransitionDuration: const Duration(milliseconds: 300),
                   child: RootLayout(
                     child: ProductDetailsPage(
@@ -132,13 +132,19 @@ final GoRouter _router = GoRouter(
                     ),
                   ),
                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    final fade = CurvedAnimation(
+                    final delayedAnimation = CurvedAnimation(
                       parent: animation,
-                      curve: Curves.easeOutCubic,
+                      curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
                     );
+                    final scaleAnimation = Tween<double>(begin: 0.92, end: 1.0).animate(delayedAnimation);
+                    final opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(delayedAnimation);
+
                     return FadeTransition(
-                      opacity: fade,
-                      child: child,
+                      opacity: opacityAnimation,
+                      child: ScaleTransition(
+                        scale: scaleAnimation,
+                        child: child,
+                      ),
                     );
                   },
                 );
