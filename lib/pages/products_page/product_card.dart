@@ -204,6 +204,7 @@ class _ProductCardState extends State<ProductCard> {
                       child: Hero(
                         tag: 'product-name-${widget.product.id}',
                         child: Material(
+                          color: Colors.transparent,
                           child: Text(
                             widget.product.name,
                             maxLines: 2,
