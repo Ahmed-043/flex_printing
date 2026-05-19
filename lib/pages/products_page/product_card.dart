@@ -167,6 +167,10 @@ class _ProductCardState extends State<ProductCard> {
                                       width: System.isMobile ? 24 : 36,
                                       height: System.isMobile ? 24 : 36,
                                       child: CircularProgressIndicator(
+                                        constraints: BoxConstraints(
+                                          maxWidth: System.isMobile ? 24 : 36,
+                                          maxHeight: System.isMobile ? 24 : 36,
+                                        ),
                                         color: theme.secondary,
                                         strokeWidth: 2,
                                       ),
@@ -199,15 +203,17 @@ class _ProductCardState extends State<ProductCard> {
                     child: Center(
                       child: Hero(
                         tag: 'product-name-${widget.product.id}',
-                        child: Text(
-                          widget.product.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.clip,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: System.isMobile ? 16 : 26,
-                            fontWeight: FontWeight.w400,
-                            color: theme.onPrimary,
+                        child: Material(
+                          child: Text(
+                            widget.product.name,
+                            maxLines: 2,
+                            overflow: TextOverflow.clip,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: System.isMobile ? 16 : 26,
+                              fontWeight: FontWeight.w400,
+                              color: theme.onPrimary,
+                            ),
                           ),
                         ),
                       ),
