@@ -135,7 +135,7 @@ class _ProductCardState extends State<ProductCard> {
       child: Material(
         borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
         child: InkWell(
-          onTap: () => context.go(
+          onTap: () => context.push(
             '/products/${widget.product.id}',
             extra: widget.product,
           ),
@@ -147,56 +147,51 @@ class _ProductCardState extends State<ProductCard> {
             button: true,
             child: Column(
               children: [
-                Expanded(
-                  flex: 3,
+                Hero(
+                  tag: 'product-image-${widget.product.id}',
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
-                    child: Container(
-                      width: double.infinity,
-                      height: double.infinity,
-                      decoration: BoxDecoration(
-                        // color: Theme.of(context)
-                        //     .colorScheme
-                        //     .surfaceContainer
-                        //     .withAlpha(150),
-                      ),
-                      child: (_imageBytes == null || _imageBytes!.isEmpty)
-                          ? Center(
+                    borderRadius: BorderRadius.circular(
+                      System.isMobile ? 16 : 25,
+                    ),
+                    child: (_imageBytes == null || _imageBytes!.isEmpty)
+                        ? Center(
+                            child: AspectRatio(
+                              aspectRatio: 4 / 3,
+
                               child: _isLoading
                                   ? SizedBox(
                                       width: System.isMobile ? 24 : 36,
                                       height: System.isMobile ? 24 : 36,
                                       child: CircularProgressIndicator(
                                         color: theme.secondary,
-                                          strokeWidth: 2),
+                                        strokeWidth: 2,
+                                      ),
                                     )
                                   : Icon(
                                       Icons.image_not_supported_rounded,
                                       size: System.isMobile ? 35 : 80,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary
-                                          .withAlpha(100),
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimary.withAlpha(100),
                                     ),
-                            )
-                          : SizedBox(
-                        // width: MediaQuery.of(context).size.width,
-                        // height: MediaQuery.of(context).size.height,
-                        child: Image.memory(
-                          _imageBytes!,
-                         // isAntiAlias: true,
-                          fit: BoxFit.cover,
-                          filterQuality: FilterQuality.low,
-                          cacheWidth: 350, //(MediaQuery.of(context).size.width * dpr).toInt(),
-                          cacheHeight: 350 //(MediaQuery.of(context).size.height * dpr).toInt(),
-                        ),
-                      ),
-                    ),
+                            ),
+                          )
+                        : AspectRatio(
+                            aspectRatio: 4 / 3,
+                            child: Image.memory(
+                              _imageBytes!,
+                              // isAntiAlias: true,
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.low,
+                            ),
+                          ),
                   ),
                 ),
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal:System.isMobile ? 0 : 8.0),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: System.isMobile ? 0 : 8.0,
+                    ),
                     child: Center(
                       child: Text(
                         widget.product.name,
