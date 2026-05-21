@@ -135,14 +135,15 @@ class _ProductCardState extends State<ProductCard> {
       child: Material(
         borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
         child: InkWell(
-          onTap: () => context.go(
-
-            '/products/${widget.product.id}',
-            extra: {
-              'product': widget.product,
-              'initial_image_bytes': _imageBytes,
-            },
-          ),
+          onTap: () {
+            context.go(
+              '/products/${widget.product.id}',
+              extra: {
+                'product': widget.product,
+                'initial_image_bytes': _imageBytes,
+              },
+            );
+          },
           splashColor: theme.onPrimary.withAlpha(50),
           onLongPress: _handleLongPress,
           borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
@@ -153,44 +154,45 @@ class _ProductCardState extends State<ProductCard> {
               children: [
                 Hero(
                   tag: 'product-image-${widget.product.id}',
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(
-                      System.isMobile ? 16 : 25,
-                    ),
-                    child: (_imageBytes == null || _imageBytes!.isEmpty)
-                        ? Center(
-                            child: AspectRatio(
-                              aspectRatio: 4 / 3,
-
-                              child: _isLoading
-                                  ? Center(
+                  // flightShuttleBuilder ensures we don't try to build the destination widget
+                  // until the animation is actually finished.
+                  flightShuttleBuilder: (context, animation, direction, fromHero, toHero) {
+                    return fromHero.widget;
+                  },
+                  child: Material(
+                    color: Colors.transparent,
+                    child: AspectRatio(
+                      aspectRatio: 4 / 3,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                          System.isMobile ? 16 : 25,
+                        ),
+                        child: (_imageBytes == null || _imageBytes!.isEmpty)
+                            ? (_isLoading
+                                ? Center(
                                     child: SizedBox(
-                                        width: System.isMobile ? 34 : 56,
-                                        height: System.isMobile ? 34 : 56,
-                                        child: CircularProgressIndicator(
-                                          color: theme.secondary,
-                                          strokeWidth: 4,
-                                        ),
+                                      width: System.isMobile ? 34 : 56,
+                                      height: System.isMobile ? 34 : 56,
+                                      child: CircularProgressIndicator(
+                                        color: theme.secondary,
+                                        strokeWidth: 4,
                                       ),
-                                  )
-                                  : Icon(
-                                      Icons.image_not_supported_rounded,
-                                      size: System.isMobile ? 35 : 80,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onPrimary.withAlpha(100),
                                     ),
-                            ),
-                          )
-                        : AspectRatio(
-                            aspectRatio: 4 / 3,
-                            child: Image.memory(
-                              _imageBytes!,
-                              // isAntiAlias: true,
-                              fit: BoxFit.cover,
-                              filterQuality: FilterQuality.low,
-                            ),
-                          ),
+                                  )
+                                : Icon(
+                                    Icons.image_not_supported_rounded,
+                                    size: System.isMobile ? 35 : 80,
+                                    color: Theme.of(context).colorScheme.onPrimary.withAlpha(100),
+                                  ))
+                            : Image.memory(
+                                _imageBytes!,
+                                fit: BoxFit.cover,
+                                filterQuality: FilterQuality.low,
+                                cacheWidth: (System.isMobile ? 600 : 1000) *
+                                    (MediaQuery.of(context).devicePixelRatio).round(),
+                              ),
+                      ),
+                    ),
                   ),
                 ),
                 Expanded(

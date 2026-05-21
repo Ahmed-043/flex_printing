@@ -120,10 +120,11 @@ final GoRouter _router = GoRouter(
                   expectedId: productId,
                 );
                 final initialImageBytes = _imageBytesFromExtra(state.extra);
+                
                 return CustomTransitionPage(
                   key: state.pageKey,
-                  transitionDuration: const Duration(milliseconds: 550),
-                  reverseTransitionDuration: const Duration(milliseconds: 300),
+                  transitionDuration: const Duration(milliseconds: 850),
+                  reverseTransitionDuration: const Duration(milliseconds: 550),
                   child: RootLayout(
                     child: ProductDetailsPage(
                       product: product,
@@ -132,19 +133,11 @@ final GoRouter _router = GoRouter(
                     ),
                   ),
                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    final delayedAnimation = CurvedAnimation(
-                      parent: animation,
-                      curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
-                    );
-                    final scaleAnimation = Tween<double>(begin: 0.92, end: 1.0).animate(delayedAnimation);
-                    final opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(delayedAnimation);
-
+                    // Simple fade is the smoothest partner for Hero animations
+                    //Future.delayed(Duration(milliseconds: 500));
                     return FadeTransition(
-                      opacity: opacityAnimation,
-                      child: ScaleTransition(
-                        scale: scaleAnimation,
-                        child: child,
-                      ),
+                      opacity: animation,
+                      child: child,
                     );
                   },
                 );

@@ -45,6 +45,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   @override
   void initState() {
     super.initState();
+    _product = widget.product;
+    _heroImageBytes = widget.initialImageBytes;
+    _loadingSpecs = true;
     _loadData();
   }
 
@@ -61,8 +64,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       product = await fetchProductById(widget.productId!);
     }
 
+    if (!mounted) return;
+
     if (product == null) {
-      if (!mounted) return;
       setState(() {
         _product = null;
         _specs = const <ProductSpecRecord>[];
@@ -72,15 +76,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       return;
     }
 
-    if (!mounted) return;
-    setState(() {
-      _product = product;
-      _heroImageBytes = widget.initialImageBytes;
-      _loadingSpecs = true;
-      _currentImageIndex = 0;
-      _showLeftArrow = false;
-      _showRightArrow = false;
-    });
+    // Only update product state if it changed or wasn't set in initState
+    if (_product == null || _product!.id != product.id) {
+      setState(() {
+        _product = product;
+        _heroImageBytes = widget.initialImageBytes;
+        _currentImageIndex = 0;
+      });
+    }
 
     final imageRecords = await fetchProductImages(product.id);
     final imageUrls = imageRecords
@@ -199,10 +202,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       final hasPrevious = _currentImageIndex > 0;
       final hasNext = _currentImageIndex < totalImageCount - 1;
 
-      return AspectRatio(
-        aspectRatio: 4 / 3,
-        child: Hero(
-          tag: 'product-image-${widget.product?.id}',
+      return Hero(
+        tag: 'product-image-${widget.product?.id}',
+        child: AspectRatio(
+          aspectRatio: 4 / 3,
           child: Material(
             color: Colors.transparent,
             child: LayoutBuilder(
@@ -250,6 +253,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                         child: Image.memory(
                                           bytes,
                                           fit: BoxFit.cover,
+                                          gaplessPlayback: true,
+                                          filterQuality: FilterQuality.low, // Match low quality during flight/initial load
+                                          // EXACT MATCH of cacheWidth from ProductCard to ensure zero-decode cache hit
+                                          cacheWidth: (System.isMobile ? 600 : 1000) *
+                                              (MediaQuery.of(context).devicePixelRatio).round(),
                                           errorBuilder: (_, _, _) => Center(
                                             child: Icon(
                                               Icons.broken_image_rounded,
