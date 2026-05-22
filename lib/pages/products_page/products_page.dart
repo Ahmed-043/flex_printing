@@ -1,7 +1,7 @@
 import 'package:flex_printing/methods/products/fetch_categories.dart';
-import 'package:flex_printing/pages/home_page/other_info.dart';
 import 'package:flex_printing/pages/products_page/product_card.dart';
 import 'package:flex_printing/services/product_service.dart';
+import 'package:flex_printing/shared_widgets/scaled_container.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -152,7 +152,6 @@ class _ProductsPageState extends State<ProductsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).colorScheme;
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -227,8 +226,7 @@ class _ProductsPageState extends State<ProductsPage> {
       }) {
     final theme = Theme.of(context).colorScheme;
 
-    return HoverRotate(
-      degrees: 6,
+    return ScaledContainer(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: System.isMobile ? 6 : 12),
         child: ElevatedButton(

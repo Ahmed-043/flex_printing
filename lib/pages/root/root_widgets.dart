@@ -1,5 +1,5 @@
 
-import 'package:flex_printing/shared_widgets/ui_helper.dart';
+import 'package:flex_printing/shared_widgets/scaled_container.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -69,9 +69,7 @@ class NavButton extends StatelessWidget {
     final isSelected = section == null &&
         (currentRoute == route || currentRoute.startsWith('$route/'));
 
-    return HoverRotate(
-      degrees: 10,
-      uniDirectional: true,
+    return ScaledContainer(
       child: Padding(
         padding: const EdgeInsets.only(left: 16),
         child: InkWell(

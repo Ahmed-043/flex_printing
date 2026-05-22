@@ -1,3 +1,4 @@
+import 'package:flex_printing/shared_widgets/scaled_container.dart';
 import 'package:flutter/material.dart';
 
 import '../models/System/system.dart';
@@ -20,10 +21,7 @@ class UiHelper {
     // it slightly rotates by +12 degrees when hovered.
     return Material(
       color: Colors.transparent,
-      child: HoverRotate(
-        enabled: !System.isMobile,
-        degrees: rotation,
-        duration: const Duration(milliseconds: 120),
+      child: ScaledContainer(
         child: ElevatedButton(
           onPressed: callback,
           style: ElevatedButton.styleFrom(
@@ -228,8 +226,8 @@ class HoverRotate extends StatefulWidget {
     this.duration = const Duration(milliseconds: 120),
     this.enabled = true,
     this.uniDirectional = false,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<HoverRotate> createState() => HoverRotateState();
