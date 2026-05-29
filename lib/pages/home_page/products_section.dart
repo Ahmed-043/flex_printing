@@ -7,6 +7,7 @@ import '../../methods/products/fetch_categories.dart';
 import '../../methods/products/fetch_products.dart';
 import '../../models/product/product_record.dart';
 import '../products_page/product_card.dart';
+List<ProductRecord> products = [];
 
 class ProductsSection extends StatefulWidget {
   const ProductsSection({super.key});
@@ -18,7 +19,6 @@ class ProductsSection extends StatefulWidget {
 class _ProductsSectionState extends State<ProductsSection> {
   List<String> categories = ["All"];
   final int _selectedCategoryIndex = 0;
-  List<ProductRecord> products = [];
   static const int _baseHomeCount = 6;
   int? _appliedLimit;
   bool _loadingProducts = false;
@@ -27,7 +27,9 @@ class _ProductsSectionState extends State<ProductsSection> {
   @override
   void initState() {
     super.initState();
-    _loadProducts(limit: _baseHomeCount);
+    print(products.length);
+      _loadProducts(limit: _baseHomeCount);
+
   }
 
   int _computeColumnCount(double width) {
@@ -55,6 +57,8 @@ class _ProductsSectionState extends State<ProductsSection> {
   }
 
   Future<void> _loadProducts({required int limit}) async {
+    print("Loading products");
+
     final requestId = ++_loadRequestId;
     _loadingProducts = true;
     try {

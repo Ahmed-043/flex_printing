@@ -43,9 +43,12 @@ class _RootLayoutState extends State<RootLayout> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+
     if (screenWidth > 850){
       System.isMobile = false;
     }
+
+
     final useCompactNav = System.isMobile;
     final theme = Theme.of(context).colorScheme;
 
@@ -53,6 +56,7 @@ class _RootLayoutState extends State<RootLayout> {
       backgroundColor: theme.primary,
       body: NestedScrollView(
         controller: scrollController,
+        floatHeaderSlivers: true,
         headerSliverBuilder: (context, _) {
           return [
             SliverLayoutBuilder(
@@ -175,7 +179,7 @@ class _RootLayoutState extends State<RootLayout> {
         },
         body: Scrollbar(
           thumbVisibility: true,
-          controller: scrollController,
+         controller: scrollController,
           child: widget.child,
         ),
       ),
@@ -246,8 +250,8 @@ Future<void> showTopMenu(
                       children: [
                         MenuItem(title: 'Home', route: '/'),
                         MenuItem(title: 'Products', route: '/products'),
-                        MenuItem(title: 'About', route: '/?section=about'),
-                        MenuItem(title: 'Events', route: '/?section=events'),
+                         MenuItem(title: 'About', route: '/?section=about'),
+                         MenuItem(title: 'Events', route: '/?section=events'),
                         MenuItem(title: 'Contact', route: '/contact'),
                         if(!kIsWeb)
                         MenuItem(title: 'Admin', route: '/admin'),

@@ -15,12 +15,9 @@ import 'materials_section.dart';
 import 'other_info.dart';
 
 class HomeContentView extends StatefulWidget {
-  const HomeContentView({super.key, this.initialSection});
+  final String section;
+  const HomeContentView({super.key,this.section = ""});
 
-  final String? initialSection;
-
-  static const String sectionAbout = 'about';
-  static const String sectionEvents = 'events';
 
   @override
   State<HomeContentView> createState() => _HomeContentState();
@@ -28,129 +25,94 @@ class HomeContentView extends StatefulWidget {
 
 class _HomeContentState extends State<HomeContentView> {
   late double screenHeight, screenWidth;
-  final Map<String, GlobalKey> _sectionKeys = {
-    'banner': GlobalKey(),
-    'products': GlobalKey(),
-    'materials': GlobalKey(),
-    'clients': GlobalKey(),
-    'about': GlobalKey(),
-    'events': GlobalKey(),
-    'upcoming': GlobalKey(),
-    'other': GlobalKey(),
-    'equipment': GlobalKey(),
-    'footer': GlobalKey(),
-  };
-  final GlobalKey _aboutKey = GlobalKey();
-  final GlobalKey _eventsKey = GlobalKey();
-
+  ScrollController scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
-    _scheduleInitialScroll(widget.initialSection);
+    if (widget.section.isNotEmpty) {
+      _scheduleScroll();
+    }
   }
 
   @override
   void didUpdateWidget(covariant HomeContentView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.initialSection != oldWidget.initialSection) {
-      _scheduleInitialScroll(widget.initialSection);
+    if (widget.section != oldWidget.section && widget.section.isNotEmpty) {
+      _scheduleScroll();
     }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void _scheduleScroll() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _scrollToSection(widget.section);
+    });
   }
+
+  void _scrollToSection(String section) {
+    final normalized = section.trim().toLowerCase();
+    double offset = 0;
+
+    if (normalized == 'clients') {
+      offset = System.isMobile ? 1345.6 : 2720.6 + screenHeight;
+    } else if (normalized == 'about') {
+      // Offset for About section (Clients + Spacer)
+      offset = System.isMobile ? 1865.2 : 3900.6 + screenHeight;
+    } else if (normalized == 'events') {
+      // Offset for Events section (About + Spacer)
+      offset = System.isMobile ? 2136.2 : 4850.6 + screenHeight;
+    }
+
+    if (offset > 0) {
+      scrollController.animateTo(
+        offset,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
 
   @override
   void dispose() {
     super.dispose();
   }
 
-  void _scheduleInitialScroll(String? section) {
-    if (section == null || section.isEmpty) {
-      return;
-    }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
-      _scrollToSection(section);
-    });
-  }
-
-  void _scrollToSection(String section) {
-
-    final targetContext = switch (section) {
-      HomeContentView.sectionAbout => _aboutKey.currentContext,
-      HomeContentView.sectionEvents => _eventsKey.currentContext,
-      _ => null,
-    };
-    if (targetContext == null) {
-      return;
-    }
-    Scrollable.ensureVisible(
-      targetContext,
-      duration: const Duration(milliseconds: 450),
-      curve: Curves.easeInOut,
-      alignment: 0.05,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
 
+
+
     final theme = Theme.of(context).colorScheme;
     final items = <Widget>[
-      Container(
-        key: _sectionKeys['banner'],
-        child: RepaintBoundary(child: _banner()),
-      ),
+      _banner(),
       SizedBox(height: System.isMobile ? 80 : 200),
-      Container(
-        key: _sectionKeys['products'],
-        alignment: Alignment.topCenter,
-        child: ProductsSection(),
-      ),
+      ProductsSection(),
       SizedBox(height: System.isMobile ? 125 : 240),
-      Container(
-        key: _sectionKeys['materials'],
-        alignment: Alignment.topCenter,
-        child: MaterialsSection(),
-      ),
+      MaterialsSection(),
       SizedBox(height: System.isMobile ? 125 : 450),
-      Container(
-        key: _sectionKeys['clients'],
-        alignment: Alignment.topCenter,
-        child: ClientsEvents(isActive: true),
-      ),
+      ClientsEvents(isActive: true),
       SizedBox(height: System.isMobile ? 125 : 450),
-      Container(
-        key: _sectionKeys['about'],
-        child: Container(key: _aboutKey, child: AboutEvents()),
-      ),
+      AboutEvents(),
       SizedBox(height: System.isMobile ? 85 : 450),
-      Container(
-        key: _sectionKeys['events'],
-        child: Container(
-          key: _eventsKey,
-          child: ClientsEvents(isEvents: true, isActive: true),
-        ),
-      ),
+      ClientsEvents(isEvents: true, isActive: true),
       SizedBox(height: System.isMobile ? 164 : 290),
-      Container(key: _sectionKeys['upcoming'], child: UpcomingEvents()),
+      UpcomingEvents(),
       SizedBox(height: System.isMobile ? 164 : 290),
-      Container(key: _sectionKeys['other'], child: OtherInfo()),
+      OtherInfo(),
       SizedBox(height: System.isMobile ? 150 : 270),
-      Container(key: _sectionKeys['equipment'], child: OurEquipmentsSection()),
+      OurEquipmentsSection(),
       SizedBox(height: System.isMobile ? 150 : 250),
-      Container(key: _sectionKeys['footer'], child: FooterSection()),
+      FooterSection(),
     ];
 
     return ListView.builder(
-      primary: true,
+      //primary: true,
+      cacheExtent: 1000000,
+      controller: scrollController,
       padding: EdgeInsets.zero,
       itemCount: items.length,
       itemBuilder: (ctx, i) {

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flex_printing/pages/admin_page/clients_manager_page.dart';
@@ -38,6 +39,7 @@ Future<void> main() async {
     debugPrintStack(stackTrace: st);
     startupError = _friendlyStartupError(e);
   }
+
   runApp(MyApp(startupError: startupError));
 }
 
@@ -100,7 +102,9 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) => RootLayout(
-        child: HomeContentView(),
+        child: HomeContentView(
+          section: state.uri.queryParameters['section'] ?? '',
+        ),
       ),
 
       routes: [
@@ -272,7 +276,7 @@ class _StartupErrorScreen extends StatelessWidget {
 
 bool _shouldUseCursor(BuildContext context) {
   final media = MediaQuery.maybeOf(context);
-  final isSmallScreen = media != null && media.size.shortestSide < 700;
+  final isSmallScreen = media != null && media.size.width < 400;
   if (isSmallScreen) return false;
   if (kIsWeb) return true;
   switch (defaultTargetPlatform) {
