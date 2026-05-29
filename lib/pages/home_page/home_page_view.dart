@@ -57,10 +57,10 @@ class _HomeContentState extends State<HomeContentView> {
       offset = System.isMobile ? 1345.6 : 2720.6 + screenHeight;
     } else if (normalized == 'about') {
       // Offset for About section (Clients + Spacer)
-      offset = System.isMobile ? 1865.2 : 3900.6 + screenHeight;
+      offset = System.isMobile ? 2400.2 : 3900.6 + screenHeight;
     } else if (normalized == 'events') {
       // Offset for Events section (About + Spacer)
-      offset = System.isMobile ? 2136.2 : 4850.6 + screenHeight;
+      offset = System.isMobile ? 2770.2 : 4850.6 + screenHeight;
     }
 
     if (offset > 0) {
@@ -111,7 +111,7 @@ class _HomeContentState extends State<HomeContentView> {
 
     return ListView.builder(
       //primary: true,
-      cacheExtent: 1000000,
+      //cacheExtent: 1000000,
       controller: scrollController,
       padding: EdgeInsets.zero,
       itemCount: items.length,
