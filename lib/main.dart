@@ -8,6 +8,7 @@ import 'package:flex_printing/pages/contactus_page/contactus_page.dart';
 import 'package:flex_printing/config/supabase_config.dart';
 import 'package:flex_printing/pages/admin_page/admin_page.dart';
 import 'package:flex_printing/pages/home_page/home_page.dart';
+import 'package:flex_printing/pages/home_page/home_page_view.dart';
 import 'package:flex_printing/pages/products_page/product_details_page.dart';
 import 'package:flex_printing/pages/products_page/products_page.dart';
 import 'package:flex_printing/pages/root/root_layout.dart';
@@ -99,9 +100,7 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) => RootLayout(
-        child: HomeContent(
-          initialSection: state.uri.queryParameters['section'],
-        ),
+        child: HomeContentView(),
       ),
 
       routes: [

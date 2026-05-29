@@ -51,13 +51,10 @@ class _RootLayoutState extends State<RootLayout> {
 
     return Scaffold(
       backgroundColor: theme.primary,
-      body: Scrollbar(
-        thumbVisibility: true,
+      body: NestedScrollView(
         controller: scrollController,
-
-        child: CustomScrollView(
-          controller: scrollController,
-          slivers: [
+        headerSliverBuilder: (context, _) {
+          return [
             SliverLayoutBuilder(
               builder: (context, constraints) {
                 final isHome = GoRouterState.of(context).uri.path == '/';
@@ -65,7 +62,7 @@ class _RootLayoutState extends State<RootLayout> {
                 final shouldRound = !isHome || !isAtTop;
                 return SliverAppBar(
                   shape: shouldRound
-                      ?  RoundedRectangleBorder(
+                      ? RoundedRectangleBorder(
                           borderRadius: BorderRadius.only(
                             bottomLeft: Radius.circular(System.isMobile ? 30 : 45),
                             bottomRight: Radius.circular(System.isMobile ? 30 : 45),
@@ -94,14 +91,12 @@ class _RootLayoutState extends State<RootLayout> {
                       mainAxisAlignment: .end,
                       children: [
                         Container(
-                          //margin: EdgeInsets.only(top: 10),
                           width: useCompactNav ? 48 : 65,
                           height: useCompactNav ? 48 : 65,
                           decoration: BoxDecoration(
                             color: Colors.transparent,
                             shape: .circle,
                           ),
-                          // logo.svg
                           child: SvgPicture.asset(
                             'assets/images/logo.svg',
                             width: System.isMobile ? 48 : 65,
@@ -125,7 +120,7 @@ class _RootLayoutState extends State<RootLayout> {
                                   ),
                                 ),
                                 Padding(
-                                  padding:  EdgeInsets.only(top: useCompactNav ? 4 :8,left: useCompactNav ? 2 : 4),
+                                  padding: EdgeInsets.only(top: useCompactNav ? 4 : 8, left: useCompactNav ? 2 : 4),
                                   child: SvgPicture.asset(
                                     'assets/images/icons/registered.svg',
                                     width: useCompactNav ? 8 : 12,
@@ -142,43 +137,46 @@ class _RootLayoutState extends State<RootLayout> {
                   actions: [
                     useCompactNav
                         ? Builder(
-                      builder: (context) {
-                        return SizedBox(
-                          height: 60,
-                          width: 60,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(18),
-                            onTap: () async {
-                              final box =
-                              context.findRenderObject() as RenderBox;
-                              final pos = box.localToGlobal(Offset.zero);
-                              showTopMenu(
-                                context,
-                                buttonPos: pos,
-                                buttonSize: box.size,
-                                currentRoute: GoRouterState.of(context).uri.path,
-                                onHomeTapWhileSelected: _scrollToTop,
+                            builder: (context) {
+                              return SizedBox(
+                                height: 60,
+                                width: 60,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(18),
+                                  onTap: () async {
+                                    final box =
+                                        context.findRenderObject() as RenderBox;
+                                    final pos = box.localToGlobal(Offset.zero);
+                                    showTopMenu(
+                                      context,
+                                      buttonPos: pos,
+                                      buttonSize: box.size,
+                                      currentRoute: GoRouterState.of(context).uri.path,
+                                      onHomeTapWhileSelected: _scrollToTop,
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: const Icon(Icons.menu_rounded, size: 30),
+                                  ),
+                                ),
                               );
                             },
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: const Icon(Icons.menu_rounded, size: 30),
-                            ),
-                          ),
-                        );
-                      },
-                    )
+                          )
                         : Navbar(
                             currentRoute: GoRouterState.of(context).uri.path,
                             onHomeTapWhileSelected: _scrollToTop,
                           ),
                   ],
-
                 );
               },
             ),
-            SliverToBoxAdapter(child: widget.child),
-          ],
+          ];
+        },
+        body: Scrollbar(
+          thumbVisibility: true,
+          controller: scrollController,
+          child: widget.child,
         ),
       ),
     );
@@ -333,4 +331,3 @@ class Navbar extends StatelessWidget {
     );
   }
 }
-
