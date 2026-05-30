@@ -65,9 +65,24 @@ class NavButton extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
-    // Match exact route or route prefix (e.g., /admin/create-product matches /admin)
-    final isSelected = section == null &&
-        (currentRoute == route || currentRoute.startsWith('$route/'));
+    final uri = Uri.parse(currentRoute);
+    final currentPath = uri.path;
+    final queryParams = uri.queryParameters;
+
+    // Is the base path matching? (e.g. /products matches /products/1)
+    final isPathMatched = currentPath == route || (route != '/' && currentPath.startsWith('$route/'));
+    
+    // Is the specific section matching?
+    final isSectionMatched = section != null && queryParams['section'] == section;
+
+    // For underlining: highlight if path matches (and no section active) OR if section matches
+    final isSelected = section == null 
+        ? (isPathMatched && queryParams['section'] == null) 
+        : isSectionMatched;
+    
+    // For tapping: should we scroll to top instead of navigating?
+    // Only scroll if we are exactly on the target route/section.
+    final isExactlySelected = (section == null && currentRoute == route) || isSectionMatched;
 
     return ScaledContainer(
       child: Padding(
@@ -80,7 +95,7 @@ class NavButton extends StatelessWidget {
               onTapOverride!();
               return;
             }
-            if (isSelected && onTapWhileSelected != null) {
+            if (isExactlySelected && onTapWhileSelected != null) {
               onTapWhileSelected!();
               return;
             }
@@ -88,9 +103,8 @@ class NavButton extends StatelessWidget {
               context.go('/?section=$section');
               return;
             }
-            if (!isSelected) {
-              context.go(route);
-            }
+            
+            context.go(route);
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8),

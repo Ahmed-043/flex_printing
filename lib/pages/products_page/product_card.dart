@@ -190,8 +190,8 @@ class _ProductCardState extends State<ProductCard> {
                                   _imageBytes!,
                                   fit: BoxFit.cover,
                                   filterQuality: FilterQuality.low,
-                                  cacheWidth: (System.isMobile ? 600 : 1000) *
-                                      (MediaQuery.of(context).devicePixelRatio).round(),
+                                  // cacheWidth: (System.isMobile ? 600 : 1000) *
+                                  //     (MediaQuery.of(context).devicePixelRatio).round(),
                                 ),
                         ),
                       ),

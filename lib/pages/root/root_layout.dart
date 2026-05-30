@@ -155,7 +155,7 @@ class _RootLayoutState extends State<RootLayout> {
                                       context,
                                       buttonPos: pos,
                                       buttonSize: box.size,
-                                      currentRoute: GoRouterState.of(context).uri.path,
+                                      currentRoute: GoRouterState.of(context).uri.toString(),
                                       onHomeTapWhileSelected: _scrollToTop,
                                     );
                                   },
@@ -168,7 +168,7 @@ class _RootLayoutState extends State<RootLayout> {
                             },
                           )
                         : Navbar(
-                            currentRoute: GoRouterState.of(context).uri.path,
+                            currentRoute: GoRouterState.of(context).uri.toString(),
                             onHomeTapWhileSelected: _scrollToTop,
                           ),
                   ],

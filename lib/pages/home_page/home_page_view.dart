@@ -37,7 +37,7 @@ class _HomeContentState extends State<HomeContentView> {
   @override
   void didUpdateWidget(covariant HomeContentView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.section != oldWidget.section && widget.section.isNotEmpty) {
+    if (widget.section != oldWidget.section) {
       _scheduleScroll();
     }
   }
@@ -51,10 +51,10 @@ class _HomeContentState extends State<HomeContentView> {
 
   void _scrollToSection(String section) {
     final normalized = section.trim().toLowerCase();
-    double offset = 0;
+    double? offset;
 
-    if (normalized == 'clients') {
-      offset = System.isMobile ? 1345.6 : 2720.6 + screenHeight;
+    if (normalized == '') {
+      offset = 0;
     } else if (normalized == 'about') {
       // Offset for About section (Clients + Spacer)
       offset = System.isMobile ? 2400.2 : 3900.6 + screenHeight;
@@ -63,7 +63,7 @@ class _HomeContentState extends State<HomeContentView> {
       offset = System.isMobile ? 2770.2 : 4850.6 + screenHeight;
     }
 
-    if (offset > 0) {
+    if (offset != null) {
       scrollController.animateTo(
         offset,
         duration: const Duration(milliseconds: 500),
@@ -118,7 +118,7 @@ class _HomeContentState extends State<HomeContentView> {
       itemBuilder: (ctx, i) {
         return Center(
           child: Container(
-            width: 1500,
+            width: 2500,
             color: theme.primary,
             child: items[i],
           ),
