@@ -91,7 +91,6 @@ class _HomeContentState extends State<HomeContentView> {
       _banner(),
       SizedBox(height: System.isMobile ? 80 : 200),
       ProductsSection(),
-      SizedBox(height: System.isMobile ? 125 : 240),
       MaterialsSection(),
       SizedBox(height: System.isMobile ? 125 : 450),
       ClientsEvents(isActive: true),
@@ -258,7 +257,7 @@ class _HomeContentState extends State<HomeContentView> {
                       ),
                     ),
                     TextSpan(
-                      text: 'PRINTING MACHINERY SUPPLER.',
+                      text: 'PRINTING MACHINERY SUPPLIER.',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 18,

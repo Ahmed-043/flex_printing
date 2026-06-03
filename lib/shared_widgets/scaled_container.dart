@@ -22,7 +22,7 @@ class _ScaledContainerState extends State<ScaledContainer> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOutCubic,
-        transform: Matrix4.identity()..scale(_isHovered ? 1.05 : 1.0),
+        transform: Matrix4.identity()..scale(_isHovered ? 1.1 : 1.0),
         transformAlignment: Alignment.center,
         child: Material(
           color: Colors.transparent,

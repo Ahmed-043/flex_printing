@@ -1,3 +1,4 @@
+import 'package:flex_printing/shared_widgets/scaled_container.dart';
 import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,15 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/System/system.dart';
 
-class FooterSection extends StatelessWidget {
+class FooterSection extends StatefulWidget {
   const FooterSection({super.key});
+
+  @override
+  State<FooterSection> createState() => _FooterSectionState();
+}
+
+class _FooterSectionState extends State<FooterSection> {
+  bool hoveredContact = false;
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +28,11 @@ class FooterSection extends StatelessWidget {
         mode: LaunchMode.externalApplication,
         webOnlyWindowName: '_blank',
       );
+    }
+    Future<void> openWhatsApp(String phoneNumber) async {
+      final normalized = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+      if (normalized.isEmpty) return;
+      await openSocial('https://wa.me/$normalized');
     }
     Widget svgIcon(String name) {
       return SvgPicture.asset(
@@ -34,8 +47,7 @@ class FooterSection extends StatelessWidget {
       required String url,
       required String label,
     }) {
-      return HoverRotate(
-        degrees: 45,
+      return ScaledContainer(
         child: MouseRegion(
           cursor: SystemMouseCursors.click,
           child: GestureDetector(
@@ -52,7 +64,6 @@ class FooterSection extends StatelessWidget {
         ),
       );
     }
-
     return Container(
       height: System.isMobile ? 220 : 410,
       width: double.infinity,
@@ -222,7 +233,7 @@ class FooterSection extends StatelessWidget {
                     SizedBox(width: 8,),
                     Flexible(
                       child: Text(
-                        "123 Print Street, Design City,\nDC 12345",
+                        "Defence Road Sialkot, Pakistan",
                         style: TextStyle(
                           fontSize:System.isMobile ? 12 : 17,
                           letterSpacing: 0.2,
@@ -234,22 +245,48 @@ class FooterSection extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: System.isMobile ? 15 : 20),
-                Row(
-                  children: [
-                    Icon(Icons.phone_outlined,color: theme.onSecondary,size: System.isMobile ? 18 : 24,),
-                    SizedBox(width: 8,),
-                    Flexible(
-                      child: Text(
-                        "+1 (555) 123-4567",
-                        style: TextStyle(
-                          fontSize: System.isMobile ? 12 : 17,
-                          letterSpacing: 0.2,
-                          height: 1.25,
-                          fontWeight: FontWeight.w300,
+                ScaledContainer(
+                  child: InkWell(
+                    onTap: () => openWhatsApp('+92 312 7665130'),
+                    onHover: (e){
+                      if (System.isMobile) return;
+                      setState(() => hoveredContact = e);
+                    },
+                    hoverColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    child: Row(
+                      children: [
+                        Icon(Icons.phone_outlined,color: theme.onSecondary,size: System.isMobile ? 18 : 24,),
+                        SizedBox(width: 8,),
+                        Flexible(
+                          child: Text(
+                            "+92 312 7665130",
+                            style: TextStyle(
+                              fontSize: System.isMobile ? 12 : 17,
+                              letterSpacing: 0.2,
+                              height: 1.25,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
                         ),
-                      ),
+                        if(hoveredContact)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(
+                              "Chat on WhatsApp",
+                              style: TextStyle(
+                                fontSize: System.isMobile ? 10 : 14,
+                                letterSpacing: 0.2,
+                                height: 1.25,
+                                fontWeight: FontWeight.w300,
+                                color: theme.primary,
+                              ),
+                            ),
+                          )
+                      ],
                     ),
-                  ],
+                  ),
                 ),
                 SizedBox(height: System.isMobile ? 15 : 20),
                 Row(

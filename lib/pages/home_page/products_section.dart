@@ -94,7 +94,10 @@ class _ProductsSectionState extends State<ProductsSection> {
   }
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+
+    return Container(
+      padding: EdgeInsets.only(bottom: 20),
+      margin: EdgeInsets.only(bottom:  System.isMobile ? 125 : 240),
       width: double.infinity,
       child: Column(
         mainAxisAlignment: .start,
