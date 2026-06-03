@@ -288,24 +288,24 @@ class _FooterSectionState extends State<FooterSection> {
                     ),
                   ),
                 ),
-                SizedBox(height: System.isMobile ? 15 : 20),
-                Row(
-                  children: [
-                    Icon(Icons.mail_outline_rounded,color: theme.onSecondary,size: System.isMobile ? 18 : 24,),
-                    SizedBox(width: 8,),
-                    Flexible(
-                      child: Text(
-                        "info@texprint.com",
-                        style: TextStyle(
-                          fontSize: System.isMobile ? 12 : 17,
-                          letterSpacing: 0.2,
-                          height: 1.25,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                // SizedBox(height: System.isMobile ? 15 : 20),
+                // Row(
+                //   children: [
+                //     Icon(Icons.mail_outline_rounded,color: theme.onSecondary,size: System.isMobile ? 18 : 24,),
+                //     SizedBox(width: 8,),
+                //     Flexible(
+                //       child: Text(
+                //         "info@texprint.com",
+                //         style: TextStyle(
+                //           fontSize: System.isMobile ? 12 : 17,
+                //           letterSpacing: 0.2,
+                //           height: 1.25,
+                //           fontWeight: FontWeight.w300,
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
               ],
             ),
           ),
