@@ -8,6 +8,7 @@ import 'package:flex_printing/shared_widgets/scaled_container.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flex_printing/services/image_cache.dart';
 
 import 'delete_dialog.dart';
 
@@ -97,15 +98,8 @@ class _ProductCardState extends State<ProductCard> {
       _isLoading = true;
     });
 
-    Uint8List? bytes;
-    try {
-      bytes = await Supabase.instance.client.storage
-          .from('flex-printing')
-          .download(path);
+    final bytes = await ImageCacheService().getImage(path);
 
-    } catch (_) {
-      bytes = null;
-    }
 
     if (!mounted || requestId != _requestId) return;
     setState(() {

@@ -1,6 +1,3 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flex_printing/pages/admin_page/clients_manager_page.dart';
 import 'package:flex_printing/pages/admin_page/create_product_page.dart';
 import 'package:flex_printing/pages/admin_page/events_manager_page.dart';
@@ -8,7 +5,6 @@ import 'package:flex_printing/pages/admin_page/materials_manager_page.dart';
 import 'package:flex_printing/pages/contactus_page/contactus_page.dart';
 import 'package:flex_printing/config/supabase_config.dart';
 import 'package:flex_printing/pages/admin_page/admin_page.dart';
-import 'package:flex_printing/pages/home_page/home_page.dart';
 import 'package:flex_printing/pages/home_page/home_page_view.dart';
 import 'package:flex_printing/pages/products_page/product_details_page.dart';
 import 'package:flex_printing/pages/products_page/products_page.dart';
@@ -21,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-//import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 Future<void> main() async {
   //usePathUrlStrategy();

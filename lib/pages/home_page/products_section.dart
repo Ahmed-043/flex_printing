@@ -27,7 +27,7 @@ class _ProductsSectionState extends State<ProductsSection> {
   @override
   void initState() {
     super.initState();
-    print(products.length);
+    debugPrint("${products.length}");
       _loadProducts(limit: _baseHomeCount);
 
   }
@@ -57,7 +57,7 @@ class _ProductsSectionState extends State<ProductsSection> {
   }
 
   Future<void> _loadProducts({required int limit}) async {
-    print("Loading products");
+    debugPrint("Loading products");
 
     final requestId = ++_loadRequestId;
     _loadingProducts = true;
