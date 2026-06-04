@@ -157,7 +157,12 @@ class _ProductsPageState extends State<ProductsPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(height: System.isMobile ? 40 : 100),
-          UiHelper.title(context: context, title: "Our Products"),
+          Hero(
+              tag: "product_title",
+            child: Material(
+                color: Colors.transparent,
+                child: UiHelper.title(context: context, title: "Our Products")),
+          ),
           SizedBox(height: System.isMobile ? 40 : 90),
           SizedBox(
             height: 70,

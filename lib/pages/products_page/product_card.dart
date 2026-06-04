@@ -102,6 +102,7 @@ class _ProductCardState extends State<ProductCard> {
       bytes = await Supabase.instance.client.storage
           .from('flex-printing')
           .download(path);
+
     } catch (_) {
       bytes = null;
     }

@@ -156,6 +156,9 @@ class UiHelper {
     required String hint,
     required BuildContext context,
     Color color = const Color(0xFFA1A3A8),
+    FocusNode? focusNode,
+    void Function(String)? onSubmitted,
+    TextInputAction? textInputAction,
   }) {
     final theme = Theme.of(context);
     final selectionColor = theme.colorScheme.secondary.withAlpha(70);
@@ -167,8 +170,11 @@ class UiHelper {
       ),
       child: TextField(
         controller: controller,
+        focusNode: focusNode,
+        onSubmitted: onSubmitted,
+        textInputAction: textInputAction,
         style: TextStyle(
-          fontSize: 14,
+          fontSize: 16,
           color: theme.colorScheme.onPrimary,
         ),
         cursorColor: theme.colorScheme.secondary,

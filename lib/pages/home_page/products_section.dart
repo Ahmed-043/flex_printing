@@ -111,7 +111,11 @@ class _ProductsSectionState extends State<ProductsSection> {
 
   List<Widget> ourProducts(BuildContext context) {
     return [
-      UiHelper.title(context: context, title: "OUR PRODUCTS"),
+      Hero(
+          tag: "product_title",
+          child: Material(
+              color: Colors.transparent,
+              child: UiHelper.title(context: context, title: "OUR PRODUCTS"))),
       SizedBox(height: System.isMobile ? 40 : 130),
       Container(
        // height: System.isMobile ? 600 : 750,

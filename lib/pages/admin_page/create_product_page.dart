@@ -36,6 +36,8 @@ class _CreateProductPageState extends State<CreateProductPage> {
   /// Spec rows – each entry holds three controllers: key, value, unit.
   final List<_SpecRow> _specRows = [];
 
+  int? _pendingFocusSpecRowIndex;
+
   /// Accumulated product images (original + compressed bytes).
   final List<ProductImage> _images = [];
 
@@ -104,10 +106,69 @@ class _CreateProductPageState extends State<CreateProductPage> {
     super.dispose();
   }
 
+  void _requestFocusSpecKey(int index) {
+    if (!mounted) return;
+    if (index < 0 || index >= _specRows.length) return;
+    FocusScope.of(context).requestFocus(_specRows[index].keyFocus);
+  }
+
+  void _requestFocusSpecValue(int index) {
+    if (!mounted) return;
+    if (index < 0 || index >= _specRows.length) return;
+    FocusScope.of(context).requestFocus(_specRows[index].valueFocus);
+  }
+
+  void _requestFocusSpecUnit(int index) {
+    if (!mounted) return;
+    if (index < 0 || index >= _specRows.length) return;
+    FocusScope.of(context).requestFocus(_specRows[index].unitFocus);
+  }
+
   // ── spec helpers ──────────────────────────────────────────────────────────
 
   void _addSpec() {
     setState(() => _specRows.add(_SpecRow()));
+  }
+
+  void _ensureSpecRow(int index) {
+    if (index < 0) return;
+    if (index < _specRows.length) return;
+
+    setState(() {
+      while (_specRows.length <= index) {
+        _specRows.add(_SpecRow());
+      }
+    });
+  }
+
+  void _focusSpecKeyAfterBuild(int index) {
+    _pendingFocusSpecRowIndex = index;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final i = _pendingFocusSpecRowIndex;
+      _pendingFocusSpecRowIndex = null;
+      if (i == null) return;
+      _requestFocusSpecKey(i);
+    });
+  }
+
+  void _onSpecKeySubmitted(int index) {
+    _requestFocusSpecValue(index);
+  }
+
+  void _onSpecValueSubmitted(int index) {
+    _requestFocusSpecUnit(index);
+  }
+
+  void _onSpecUnitSubmitted(int index) {
+    final nextIndex = index + 1;
+    final needsNewRow = nextIndex >= _specRows.length;
+    if (needsNewRow) {
+      _ensureSpecRow(nextIndex);
+      _focusSpecKeyAfterBuild(nextIndex);
+    } else {
+      _requestFocusSpecKey(nextIndex);
+    }
   }
 
   void _removeSpec(int index) {
@@ -452,49 +513,65 @@ class _CreateProductPageState extends State<CreateProductPage> {
   }
 
   Widget _specRowWidget(BuildContext context, int index, _SpecRow row) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        children: [
-          // Key
-          Expanded(
-            flex: 3,
+    return Row(
+      children: [
+        // Key
+        Expanded(
+          flex: 3,
+          child: SizedBox(
+            height: 50,
             child: UiHelper.compactTextField(
               controller: row.keyCtrl,
+              focusNode: row.keyFocus,
               hint: 'Spec Name',
               context: context,
+              textInputAction: TextInputAction.next,
+              onSubmitted: (_) => _onSpecKeySubmitted(index),
             ),
           ),
-          const SizedBox(width: 8),
-          // Value
-          Expanded(
-            flex: 3,
+        ),
+        const SizedBox(width: 8),
+        // Value
+        Expanded(
+          flex: 3,
+          child: SizedBox(
+            height: 50,
+
             child: UiHelper.compactTextField(
               controller: row.valueCtrl,
+              focusNode: row.valueFocus,
               hint: 'Value',
               context: context,
+              textInputAction: TextInputAction.next,
+              onSubmitted: (_) => _onSpecValueSubmitted(index),
             ),
           ),
-          const SizedBox(width: 8),
-          // Unit (optional)
-          Expanded(
-            flex: 2,
+        ),
+        const SizedBox(width: 8),
+        // Unit (optional)
+        Expanded(
+          flex: 2,
+          child: SizedBox(
+            height: 50,
             child: UiHelper.compactTextField(
               controller: row.unitCtrl,
+              focusNode: row.unitFocus,
               hint: 'Unit (opt.)',
               context: context,
+              textInputAction: TextInputAction.next,
+              onSubmitted: (_) => _onSpecUnitSubmitted(index),
             ),
           ),
-          const SizedBox(width: 6),
-          // Delete
-          IconButton(
-            onPressed: () => _removeSpec(index),
-            icon: const Icon(Icons.delete_outline),
-            color: Colors.redAccent,
-            tooltip: 'Remove spec',
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(width: 6),
+        // Delete
+        IconButton(
+          onPressed: () => _removeSpec(index),
+          icon: const Icon(Icons.delete_outline),
+          color: Colors.redAccent,
+          tooltip: 'Remove spec',
+        ),
+      ],
     );
   }
 
@@ -745,9 +822,17 @@ class _SpecRow {
   final valueCtrl = TextEditingController();
   final unitCtrl = TextEditingController();
 
+  final keyFocus = FocusNode();
+  final valueFocus = FocusNode();
+  final unitFocus = FocusNode();
+
   void dispose() {
     keyCtrl.dispose();
     valueCtrl.dispose();
     unitCtrl.dispose();
+
+    keyFocus.dispose();
+    valueFocus.dispose();
+    unitFocus.dispose();
   }
 }

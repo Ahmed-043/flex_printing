@@ -4,8 +4,8 @@ self.onmessage = async (event) => {
 
   const maxWidth = 1920;
   const maxHeight = 1080;
-  const highQuality = 0.92;
-  const lowQuality = 0.82;
+  const highQuality = 0.9;
+  const lowQuality = 0.6;
 
   try {
     const input = data.bytes;
@@ -13,7 +13,7 @@ self.onmessage = async (event) => {
       input instanceof Uint8Array ? input : new Uint8Array(input);
     const originalLength = inputBytes.byteLength;
 
-    if (originalLength <= 500 * 1024) {
+    if (originalLength <= 250 * 1024) {
       const passthrough = inputBytes.slice().buffer;
       self.postMessage([id, passthrough, null], [passthrough]);
       return;
@@ -75,7 +75,7 @@ self.onmessage = async (event) => {
     }
     bitmap.close();
 
-    const quality = originalLength > 1200 * 1024 ? lowQuality : highQuality;
+    const quality = originalLength > 800 * 1024 ? lowQuality : highQuality;
     const compressedBlob = await canvas.convertToBlob({
       type: 'image/jpeg',
       quality,

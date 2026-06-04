@@ -1,4 +1,3 @@
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
@@ -36,9 +35,9 @@ Future<PickedFile?> pickImageFile() async {
 /// Images larger than 1080p bounds are downscaled to fit within 1920x1080
 /// while preserving aspect ratio before compression.
 ///
-/// - > 1 200 KB  → quality 40
-/// - > 500 KB    → quality 70
-/// - ≤ 500 KB    → returned as-is
+/// - > 800 KB  → quality 60
+/// - > 250 KB    → quality 90
+/// - ≤ 250 KB    → returned as-is
 ///
 /// On web, compression is attempted in a dedicated Web Worker.
 /// On non-web platforms, heavy decode/encode runs in a separate isolate via
@@ -73,7 +72,7 @@ Future<Uint8List?> compressImageBytes(Uint8List imageBytes) async {
 // Top-level function required by compute().
 Uint8List? _compressOnIsolate(Uint8List bytes) {
   final length = bytes.lengthInBytes;
-  if (length <= 500 * 1024) return bytes;
+  if (length <= 250 * 1024) return bytes;
 
   final decoded = img.decodeImage(bytes);
   if (decoded == null) return null;
@@ -97,6 +96,6 @@ Uint8List? _compressOnIsolate(Uint8List bytes) {
     );
   }
 
-  final quality = length > 1200 * 1024 ? 40 : 70;
+  final quality = length > 800 * 1024 ? 60 : 90;
   return Uint8List.fromList(img.encodeJpg(outputImage, quality: quality));
 }

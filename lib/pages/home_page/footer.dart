@@ -1,5 +1,4 @@
 import 'package:flex_printing/shared_widgets/scaled_container.dart';
-import 'package:flex_printing/shared_widgets/ui_helper.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';

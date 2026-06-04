@@ -564,7 +564,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           SizedBox(height: isCompact ? 30 : 60),
 
           // ── "PRODUCT DETAILS" label ───────────────────────────────────────
-          UiHelper.title(context: context, title: 'PRODUCT DETAILS'),
+          Hero(
+              tag: "product_title",
+              child: Material(
+                  color: Colors.transparent,
+                  child: UiHelper.title(context: context, title: 'PRODUCT DETAILS'))),
 
           SizedBox(height: isCompact ? 30 : 60),
 
