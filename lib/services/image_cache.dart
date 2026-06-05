@@ -19,10 +19,8 @@ class ImageCacheService {
       final bytes = await Supabase.instance.client.storage
           .from('flex-printing')
           .download(path);
-      if (bytes != null) {
-        debugPrint(
-            'Image loaded, bytes length: ${bytes.length}');
-      }
+      debugPrint(
+          'Image loaded, bytes length: ${bytes.length}');
       _cache[path] = bytes;
       return bytes;
     } catch (_) {

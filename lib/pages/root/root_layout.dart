@@ -56,14 +56,12 @@ class _RootLayoutState extends State<RootLayout> {
       backgroundColor: theme.primary,
       body: NestedScrollView(
         controller: scrollController,
-        floatHeaderSlivers: true,
-        headerSliverBuilder: (context, _) {
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverLayoutBuilder(
               builder: (context, constraints) {
                 final isHome = GoRouterState.of(context).uri.path == '/';
-                final isAtTop = constraints.scrollOffset <= 100;
-                final shouldRound = !isHome || !isAtTop;
+                final shouldRound = !isHome || innerBoxIsScrolled;
                 return SliverAppBar(
                   shape: shouldRound
                       ? RoundedRectangleBorder(
@@ -91,29 +89,28 @@ class _RootLayoutState extends State<RootLayout> {
                     highlightColor: Colors.transparent,
                     onTap: () => _handleHomeTap(isHome),
                     child: Row(
-                      crossAxisAlignment: .center,
-                      mainAxisAlignment: .end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Container(
-                          width: useCompactNav ? 48 : 65,
-                          height: useCompactNav ? 48 : 65,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            shape: .circle,
-                          ),
-                          child: SvgPicture.asset(
-                            'assets/images/logo.svg',
-                            width: System.isMobile ? 48 : 65,
-                            height: System.isMobile ? 48 : 65,
-                          )
-                        ),
-                        SizedBox(width: 10),
+                            width: useCompactNav ? 48 : 65,
+                            height: useCompactNav ? 48 : 65,
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent,
+                              shape: BoxShape.circle,
+                            ),
+                            child: SvgPicture.asset(
+                              'assets/images/logo.svg',
+                              width: System.isMobile ? 48 : 65,
+                              height: System.isMobile ? 48 : 65,
+                            )),
+                        const SizedBox(width: 10),
                         Flexible(
                           child: FittedBox(
                             alignment: Alignment.centerLeft,
                             fit: BoxFit.scaleDown,
                             child: Row(
-                              crossAxisAlignment: .start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'TEX PRINT',
@@ -124,7 +121,9 @@ class _RootLayoutState extends State<RootLayout> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.only(top: useCompactNav ? 4 : 8, left: useCompactNav ? 2 : 4),
+                                  padding: EdgeInsets.only(
+                                      top: useCompactNav ? 4 : 8,
+                                      left: useCompactNav ? 2 : 4),
                                   child: SvgPicture.asset(
                                     'assets/images/icons/registered.svg',
                                     width: useCompactNav ? 8 : 12,
@@ -155,20 +154,23 @@ class _RootLayoutState extends State<RootLayout> {
                                       context,
                                       buttonPos: pos,
                                       buttonSize: box.size,
-                                      currentRoute: GoRouterState.of(context).uri.toString(),
+                                      currentRoute: GoRouterState.of(context)
+                                          .uri
+                                          .toString(),
                                       onHomeTapWhileSelected: _scrollToTop,
                                     );
                                   },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: const Icon(Icons.menu_rounded, size: 30),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Icon(Icons.menu_rounded, size: 30),
                                   ),
                                 ),
                               );
                             },
                           )
                         : Navbar(
-                            currentRoute: GoRouterState.of(context).uri.toString(),
+                            currentRoute:
+                                GoRouterState.of(context).uri.toString(),
                             onHomeTapWhileSelected: _scrollToTop,
                           ),
                   ],
@@ -177,11 +179,7 @@ class _RootLayoutState extends State<RootLayout> {
             ),
           ];
         },
-        body: Scrollbar(
-          thumbVisibility: true,
-         controller: scrollController,
-          child: widget.child,
-        ),
+        body: widget.child,
       ),
     );
   }

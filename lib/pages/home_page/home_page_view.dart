@@ -25,7 +25,7 @@ class HomeContentView extends StatefulWidget {
 
 class _HomeContentState extends State<HomeContentView> {
   late double screenHeight, screenWidth;
-  ScrollController scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -64,11 +64,14 @@ class _HomeContentState extends State<HomeContentView> {
     }
 
     if (offset != null) {
-      scrollController.animateTo(
-        offset,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
+      final controller = PrimaryScrollController.of(context);
+      if (controller.hasClients) {
+        controller.animateTo(
+          offset,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
     }
   }
 
@@ -83,9 +86,6 @@ class _HomeContentState extends State<HomeContentView> {
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
-
-
-
     final theme = Theme.of(context).colorScheme;
     final items = <Widget>[
       _banner(),
@@ -108,21 +108,22 @@ class _HomeContentState extends State<HomeContentView> {
       FooterSection(),
     ];
 
-    return ListView.builder(
-      //primary: true,
-      //cacheExtent: 1000000,
-      controller: scrollController,
-      padding: EdgeInsets.zero,
-      itemCount: items.length,
-      itemBuilder: (ctx, i) {
-        return Center(
-          child: Container(
-            width: 2500,
-            color: theme.primary,
-            child: items[i],
-          ),
-        );
-      },
+    return Center(
+      child: ListView.builder(
+        shrinkWrap: true,
+       // physics: const BouncingScrollPhysics(),
+        padding: EdgeInsets.zero,
+        itemCount: items.length,
+        itemBuilder: (ctx, i) {
+          return Center(
+            child: Container(
+              width: 2500,
+              color: theme.primary,
+              child: items[i],
+            ),
+          );
+        },
+      ),
     );
   }
 
