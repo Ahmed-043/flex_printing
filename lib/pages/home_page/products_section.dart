@@ -135,12 +135,15 @@ class _ProductsSectionState extends State<ProductsSection> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index){
-                  return ProductCard(
+                  if(index < (_appliedLimit ?? 8)) {
+                    return ProductCard(
                     product: products[index],
                     onDeleted: () => _loadProducts(
                       limit: _appliedLimit ?? _baseHomeCount,
                     ),
                   );
+                  }
+                  return null;
                 }
             );
           },

@@ -17,6 +17,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'methods/products/fetch_categories.dart';
+
 
 Future<void> main() async {
   //usePathUrlStrategy();
@@ -29,6 +31,9 @@ Future<void> main() async {
       url: SupabaseConfig.url,
       anonKey: SupabaseConfig.anonKey,
     );
+    final names = await fetchCategoryNames();
+    categories = ["All", ...names];
+
   } catch (e, st) {
     debugPrint('Supabase init FAILED: $e');
     debugPrintStack(stackTrace: st);

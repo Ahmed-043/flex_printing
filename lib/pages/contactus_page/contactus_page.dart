@@ -1,5 +1,6 @@
 import 'package:flex_printing/models/System/system.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../shared_widgets/ui_helper.dart';
 
@@ -12,6 +13,38 @@ class ContactusPage extends StatefulWidget {
 
 class _ContactusPageState extends State<ContactusPage> {
   bool compact = false;
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController serviceController = TextEditingController();
+  final TextEditingController messageController = TextEditingController();
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    serviceController.dispose();
+    messageController.dispose();
+    super.dispose();
+  }
+  
+  Future<void> openWhatsApp(String phoneNumber, {String? message}) async {
+    final normalized = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+    if (normalized.isEmpty) return;
+    String url = 'https://wa.me/$normalized';
+    if (message != null) {
+      url += '?text=${Uri.encodeComponent(message)}';
+    }
+    await openSocial(url);
+  }
+  Future<void> openSocial(String url) async {
+    final uri = Uri.parse(url);
+    await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+      webOnlyWindowName: '_blank',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     compact = MediaQuery.of(context).size.width < 1200 ;
@@ -53,6 +86,7 @@ class _ContactusPageState extends State<ContactusPage> {
         width: 500,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: .start,
           children: [
             SizedBox(
               width: compact ? 500 : 1050,
@@ -71,29 +105,32 @@ class _ContactusPageState extends State<ContactusPage> {
               label: 'Full Name',
               requiredField: true,
               hint: 'John Doe',
+              controller: nameController,
               keyboardType: TextInputType.name,
-            ),
-            const SizedBox(height: 35),
-            UiHelper.inputField(
-              context: context,
-              label: 'Email Address',
-              requiredField: true,
-              hint: 'john@example.com',
-              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 22),
             UiHelper.inputField(
               context: context,
-              label: 'Phone Number',
-              hint: '+1 (555) 123-4567',
-              keyboardType: TextInputType.phone,
+              label: 'Email Address',
+              requiredField: false,
+              hint: 'john@example.com',
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
             ),
+            // const SizedBox(height: 22),
+            // UiHelper.inputField(
+            //   context: context,
+            //   label: 'Phone Number',
+            //   hint: '+1 (555) 123-4567',
+            //   keyboardType: TextInputType.phone,
+            // ),
             const SizedBox(height: 22),
             UiHelper.inputField(
               context: context,
               label: 'Service Interested In',
-              requiredField: true,
+              requiredField: false,
               hint: 'Ex: Digital Printing',
+              controller: serviceController,
             ),
           ],
         ),
@@ -110,9 +147,10 @@ class _ContactusPageState extends State<ContactusPage> {
             UiHelper.inputField(
               context: context,
               label: 'Message',
-              requiredField: true,
+              requiredField: false,
               hint: 'Tell us about your project...',
               maxLines: 8,
+              controller: messageController,
               keyboardType: TextInputType.multiline,
             ),
             SizedBox(height: compact ? 35 : 50),
@@ -120,7 +158,30 @@ class _ContactusPageState extends State<ContactusPage> {
               width: double.infinity,
               height: 60,
               child: UiHelper.button(
-                callback: () {},
+                callback: () {
+                  final String name = nameController.text.trim();
+                  final String email = emailController.text.trim();
+                  final String service = serviceController.text.trim();
+                  final String message = messageController.text.trim();
+
+                  if (name.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Please fill in the required field (Name)'),
+                        backgroundColor: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                    );
+                    return;
+                  }
+
+                  String whatsappMessage = "Hello, I'm reaching out from the contact form on your website texprinttp.com.\n\n";
+                  whatsappMessage += "*Name:* $name\n";
+                  if (email.isNotEmpty) whatsappMessage += "*Email:* $email\n";
+                  if (service.isNotEmpty) whatsappMessage += "*Inquiry:* I'm interested in your services for *$service*.\n";
+                  whatsappMessage += "\n*Message:*\n$message";
+
+                  openWhatsApp('+92 312 7665130', message: whatsappMessage);
+                },
                 filled: true,
                 color: Colors.black,
                 borderRadius: 14,
@@ -152,7 +213,7 @@ class _ContactusPageState extends State<ContactusPage> {
       width: double.infinity,
       child: Wrap(
         spacing: 50,
-        crossAxisAlignment: .center,
+        crossAxisAlignment: .start,
         runAlignment: .center,
         alignment: .center,
         children: [

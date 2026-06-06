@@ -33,6 +33,7 @@ class _FooterSectionState extends State<FooterSection> {
       if (normalized.isEmpty) return;
       await openSocial('https://wa.me/$normalized');
     }
+
     Widget svgIcon(String name) {
       return SvgPicture.asset(
         'assets/images/icons/$name.svg',

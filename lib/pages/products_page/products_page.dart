@@ -1,4 +1,3 @@
-import 'package:flex_printing/methods/products/fetch_categories.dart';
 import 'package:flex_printing/pages/products_page/product_card.dart';
 import 'package:flex_printing/services/product_service.dart';
 import 'package:flex_printing/shared_widgets/scaled_container.dart';
@@ -8,9 +7,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../methods/products/fetch_products.dart';
 import '../../models/System/system.dart';
-import '../../models/product/product_record.dart';
 import '../home_page/footer.dart';
+import '../home_page/products_section.dart';
 import 'delete_dialog.dart';
+List<String> categories = ["All"];
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -20,9 +20,7 @@ class ProductsPage extends StatefulWidget {
 }
 
 class _ProductsPageState extends State<ProductsPage> {
-  List<String> categories = ["All"];
   int _selectedCategoryIndex = 0;
-  List<ProductRecord> products = [];
   int _loadRequestId = 0;
 
   @override
@@ -30,6 +28,53 @@ class _ProductsPageState extends State<ProductsPage> {
     // TODO: implement initState
     super.initState();
     _loadProducts();
+  }
+
+  // Future<void> _loadCategories(int requestId) async {
+  //   final names = await fetchCategoryNames();
+  //   if (!mounted || requestId != _loadRequestId) return;
+  //
+  //   final nextCategories = ["All", ...names];
+  //   var selectedIndex = _selectedCategoryIndex;
+  //   if (selectedIndex >= nextCategories.length) {
+  //     selectedIndex = 0;
+  //   }
+  //
+  //   setState(() {
+  //     categories = nextCategories;
+  //     _selectedCategoryIndex = selectedIndex;
+  //   });
+  // }
+
+  Future<void> _loadProductsForCategory(String category, int requestId) async {
+    // Get product IDs already loaded in products
+    if(_selectedCategoryIndex != 0){
+      products = [];
+    }
+    final cachedProductIds =
+        products.map((p) => p.id).toSet();
+
+    // Fetch all products for the category
+    final fetchedProducts = await fetchProducts(
+      category: category,
+    );
+    if (!mounted || requestId != _loadRequestId) return;
+
+    // Filter to only include products not already cached
+    final newProducts = fetchedProducts
+        .where((p) => !cachedProductIds.contains(p.id))
+        .toList();
+
+    // Merge: cached products first, then new products
+    final mergedProducts = [
+      if(_selectedCategoryIndex == 0)
+        ...products,
+      ...newProducts,
+    ];
+    mergedProducts.sort((a, b) => b.id.compareTo(a.id));
+    setState(() {
+      products = mergedProducts;
+    });
   }
 
   Future<void> _loadProducts({int? nextCategoryIndex}) async {
@@ -42,28 +87,11 @@ class _ProductsPageState extends State<ProductsPage> {
       });
     }
 
-    final names = await fetchCategoryNames();
+    //await _loadCategories(requestId);
     if (!mounted || requestId != _loadRequestId) return;
 
-    final nextCategories = ["All", ...names];
-    var selectedIndex = _selectedCategoryIndex;
-    if (selectedIndex >= nextCategories.length) {
-      selectedIndex = 0;
-    }
+    await _loadProductsForCategory(categories[_selectedCategoryIndex], requestId);
 
-    setState(() {
-      categories = nextCategories;
-      _selectedCategoryIndex = selectedIndex;
-    });
-
-    final fetchedProducts = await fetchProducts(
-      category: nextCategories[selectedIndex],
-    );
-    if (!mounted || requestId != _loadRequestId) return;
-
-    setState(() {
-      products = fetchedProducts;
-    });
   }
 
   Future<void> _handleCategoryLongPress(int index) async {
@@ -177,7 +205,8 @@ class _ProductsPageState extends State<ProductsPage> {
                     context,
                     categories[index],
                     selected: index == _selectedCategoryIndex,
-                    onPress: () {
+                    onPress: () async {
+                     // await _loadCategories(index);
                       _loadProducts(nextCategoryIndex: index);
                     },
                     onLongPress: index == 0
