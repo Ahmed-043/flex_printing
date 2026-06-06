@@ -176,9 +176,9 @@ class _ContactusPageState extends State<ContactusPage> {
 
                   String whatsappMessage = "Hello, I'm reaching out from the contact form on your website texprinttp.com.\n\n";
                   whatsappMessage += "*Name:* $name\n";
-                  if (email.isNotEmpty) whatsappMessage += "*Email:* $email\n";
+                  if (email.isNotEmpty) whatsappMessage += "*Email:* $email\n\n";
                   if (service.isNotEmpty) whatsappMessage += "*Inquiry:* I'm interested in your services for *$service*.\n";
-                  whatsappMessage += "\n*Message:*\n$message";
+                  whatsappMessage += "*Message:*\n$message";
 
                   openWhatsApp('+92 312 7665130', message: whatsappMessage);
                 },
