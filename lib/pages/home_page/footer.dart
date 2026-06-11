@@ -1,5 +1,4 @@
 import 'package:flex_printing/shared_widgets/scaled_container.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
@@ -152,28 +151,31 @@ class _FooterSectionState extends State<FooterSection> {
                         color: theme.onSecondary,
                       );
 
-                      TextSpan link(String label, VoidCallback onTap) {
-                        return TextSpan(
-                          text: label,
-                          style: linkStyle,
-                          recognizer: TapGestureRecognizer()..onTap = onTap,
+                      Widget link(String label, VoidCallback onTap) {
+                        return ScaledContainer(
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: onTap,
+                              behavior: HitTestBehavior.opaque,
+                              child: Text(
+                                label,
+                                style: linkStyle,
+                              ),
+                            ),
+                          ),
                         );
                       }
 
-                      return RichText(
-                        text: TextSpan(
-                          children: [
-                            link('Home', () => context.go('/')),
-                            const TextSpan(text: '\n'),
-                            link('About Us', () => context.go(Uri(path: '/', queryParameters: {'section': 'about'}).toString())),
-                            const TextSpan(text: '\n'),
-                            link('Products', () => context.go('/products')),
-                            const TextSpan(text: '\n'),
-                            link('Services', () => context.go(Uri(path: '/', queryParameters: {'section': 'services'}).toString())),
-                            const TextSpan(text: '\n'),
-                            link('Contact Us', () => context.go('/contact')),
-                          ],
-                        ),
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          link('Home', () => context.go('/')),
+                          link('Products', () => context.go('/products')),
+                          link('About Us', () => context.go(Uri(path: '/', queryParameters: {'section': 'about'}).toString())),
+                          link('Services', () => context.go(Uri(path: '/', queryParameters: {'section': 'services'}).toString())),
+                          link('Contact Us', () => context.go('/contact')),
+                        ],
                       );
                     }),
                   ),

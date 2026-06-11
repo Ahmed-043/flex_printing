@@ -57,10 +57,10 @@ class _HomeContentState extends State<HomeContentView> {
       offset = 0;
     } else if (normalized == 'about') {
       // Offset for About section (Clients + Spacer)
-      offset = System.isMobile ? 2400.2 : 3900.6 + screenHeight;
+      offset = System.isMobile ? 2400.2 : 3800 + screenHeight;
     } else if (normalized == 'events') {
       // Offset for Events section (About + Spacer)
-      offset = System.isMobile ? 2770.2 : 4850.6 + screenHeight;
+      offset = System.isMobile ? 2770.2 : 4850 + screenHeight;
     }
 
     if (offset != null) {
