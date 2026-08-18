@@ -5,6 +5,7 @@ import 'package:flex_printing/models/banner_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../methods/images/fetch_images.dart';
+import '../../shared_widgets/left_slopped_edge.dart';
 
 class HomeBannerCarousel extends StatefulWidget {
   const HomeBannerCarousel({super.key, this.isActive = true});
@@ -160,85 +161,89 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
         ),
       );
     }
+    final theme = Theme.of(context).colorScheme;
 
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.only(right: 10, top: 60),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(1000),
-            topRight: Radius.circular(1000),
-          ),
-          child: Container(
-            padding: const EdgeInsets.only(top: 10,),
-            decoration: _decoration(),
-            child: Column(
-              children: [
-                _pages(),
-                SizedBox(
-                 // height: 55,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 25,right: 20,left: 20),
-                    child: Row(
-                      mainAxisAlignment: .center,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: IconButton(
-                              padding: const EdgeInsets.all(0),
-                              onPressed: () {
-                                /// reset the timer
-                                _startAutoPlay();
-                                scrollController.previousPage(
-                                  duration: const Duration(seconds: 1),
-                                  curve: Curves.easeInOut,
-                                );
-                              },
-                              iconSize: 25,
-                              style: IconButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: Colors.black,
-                                shape: const CircleBorder(),
-                              ),
-                              icon: const Icon(Icons.arrow_back_ios_rounded),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 8,
-                            child: _nameBar()),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: IconButton(
-                              padding: const EdgeInsets.all(0),
+      flex: 5,
+      child: ClipPath(
+        clipper: LeftSlopeClipper(),
+        child: Container(
+          padding: const EdgeInsets.only(top: 10,),
+          decoration:BoxDecoration(
+            gradient: const RadialGradient(
+              center: Alignment.center,
+              radius: 0.8,
+              colors: [Colors.white, Color(0xFFBDBDBD)],
+              stops: [0.0, 1.0],
+            ),
 
-                              onPressed: () {
-                                /// reset the timer
-                                _startAutoPlay();
-                                scrollController.nextPage(
-                                  duration: const Duration(seconds: 1),
-                                  curve: Curves.easeInOut,
-                                );
-                              },
-                              iconSize: 25,
-                              style: IconButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: Colors.black,
-                                shape: const CircleBorder(),
-                              ),
-                              icon: const Icon(Icons.arrow_forward_ios_rounded),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+          ),
+          child: Column(
+            children: [
+              _pages(),
+              SizedBox(
+               // height: 55,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 25,right: 30,left: 150),
+                  child: Row(
+                    mainAxisAlignment: .center,
+                    children: [
+                      // Expanded(
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.all(8.0),
+                      //     child: IconButton(
+                      //       padding: const EdgeInsets.all(0),
+                      //       onPressed: () {
+                      //         /// reset the timer
+                      //         _startAutoPlay();
+                      //         scrollController.previousPage(
+                      //           duration: const Duration(seconds: 1),
+                      //           curve: Curves.easeInOut,
+                      //         );
+                      //       },
+                      //       iconSize: 25,
+                      //       style: IconButton.styleFrom(
+                      //         backgroundColor: Colors.white,
+                      //         foregroundColor: Colors.black,
+                      //         shape: const CircleBorder(),
+                      //       ),
+                      //       icon: const Icon(Icons.arrow_back_ios_rounded),
+                      //     ),
+                      //   ),
+                      // ),
+                      Expanded(
+                        flex: 8,
+                          child: _nameBar()),
+                      // Expanded(
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.all(8.0),
+                      //     child: IconButton(
+                      //       padding: const EdgeInsets.all(0),
+                      //
+                      //       onPressed: () {
+                      //         /// reset the timer
+                      //         _startAutoPlay();
+                      //         scrollController.nextPage(
+                      //           duration: const Duration(seconds: 1),
+                      //           curve: Curves.easeInOut,
+                      //         );
+                      //       },
+                      //       iconSize: 25,
+                      //       style: IconButton.styleFrom(
+                      //         backgroundColor: Colors.white,
+                      //         foregroundColor: Colors.black,
+                      //         shape: const CircleBorder(),
+                      //       ),
+                      //       icon: const Icon(Icons.arrow_forward_ios_rounded),
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 30),
-              ],
-            ),
+              ),
+              const SizedBox(height: 30),
+            ],
           ),
         ),
       ),
@@ -258,7 +263,7 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
       margin: EdgeInsets.symmetric(horizontal: System.isMobile || small ? 15 : 20),
       decoration: BoxDecoration(
         color: Colors.black,
-        borderRadius: BorderRadius.circular(100),
+        borderRadius: BorderRadius.circular(System.isMobile ? 100 : 0),
       ),
       child: Center(
         child: Padding(
@@ -323,7 +328,12 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
         itemBuilder: (context, index) {
           final banner = bannerImages[index];
           return Padding(
-            padding: EdgeInsets.symmetric(vertical: System.isMobile ? 50 : 80.0,horizontal: System.isMobile ? 40 : 20.0 ),
+            padding: EdgeInsets.only(
+                top: System.isMobile ? 50 : 80.0,
+                bottom: System.isMobile ? 50 : 80.0,
+                right: System.isMobile ? 40 : 10,
+                left: System.isMobile ? 40 : 150,
+          ),
             child: Image.asset(
               banner.path,
               fit: BoxFit.contain,

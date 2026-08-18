@@ -72,7 +72,7 @@ class _RootLayoutState extends State<RootLayout> {
                         )
                       : null,
                   clipBehavior: Clip.antiAlias,
-                  backgroundColor: theme.secondary,
+                  backgroundColor: theme.secondaryContainer,
                   pinned: false,
                   floating: true,
                   snap: true,
@@ -100,7 +100,7 @@ class _RootLayoutState extends State<RootLayout> {
                               shape: BoxShape.circle,
                             ),
                             child: SvgPicture.asset(
-                              'assets/images/logo.svg',
+                              'assets/images/logo_sharp.svg',
                               width: System.isMobile ? 48 : 65,
                               height: System.isMobile ? 48 : 65,
                             )),
