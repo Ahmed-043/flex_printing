@@ -74,6 +74,21 @@ class ProductService {
     }
   }
 
+  /// Fetches a category name by its [id].
+  static Future<String?> fetchCategoryNameById(int id) async {
+    try {
+      final res = await _client
+          .from('categories')
+          .select('name')
+          .eq('id', id)
+          .maybeSingle();
+      return res?['name'] as String?;
+    } catch (e) {
+      debugPrint('ProductService.fetchCategoryNameById failed: $e');
+      return null;
+    }
+  }
+
   /// Returns the id of an existing category with [name] (case-insensitive),
   /// or inserts a new row and returns the new id.
   static Future<int> upsertCategory(String name) async {
@@ -130,6 +145,87 @@ class ProductService {
       }
     }
     throw lastError ?? Exception('Unknown product save error');
+  }
+
+  /// Updates an existing product and its related images/specs.
+  static Future<void> updateProduct(int productId, Product product) async {
+    try {
+      // 1. Category
+      int? categoryId;
+      if (product.category.trim().isNotEmpty) {
+        categoryId = await upsertCategory(product.category.trim());
+      }
+
+      // 2. Update product row
+      await _client.from('products').update({
+        'name': product.name,
+        'description': product.description,
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
+        'category': categoryId,
+      }).eq('id', productId);
+
+      // 3. Handle Images
+      final existingImages = await _client
+          .from('product_images')
+          .select('path')
+          .eq('product_id', productId);
+      final existingPaths =
+          (existingImages as List).map((e) => e['path'] as String).toSet();
+
+      final currentPaths =
+          product.images.map((e) => e.path).whereType<String>().toSet();
+      final pathsToRemove =
+          existingPaths.difference(currentPaths).toList();
+
+      if (pathsToRemove.isNotEmpty) {
+        await _client.storage.from(_bucket).remove(pathsToRemove);
+      }
+
+      // Delete old rows to re-insert with correct sort_order
+      await _client.from('product_images').delete().eq('product_id', productId);
+      await _client.from('product_specs').delete().eq('product_id', productId);
+
+      // Re-insert images
+      for (int i = 0; i < product.images.length; i++) {
+        final img = product.images[i];
+        String? path = img.path;
+
+        if (path == null) {
+          final bytes = img.displayBytes;
+          if (bytes != null) {
+            final timestamp = DateTime.now().millisecondsSinceEpoch;
+            final safeName =
+                img.fileName.replaceAll(RegExp(r'[^\w.\-]'), '_');
+            path = 'products/$productId/${timestamp}_$safeName';
+            await _client.storage.from(_bucket).uploadBinary(path, bytes);
+          }
+        }
+
+        if (path != null) {
+          await _client.from('product_images').insert({
+            'product_id': productId,
+            'path': path,
+            'alt': img.fileName,
+            'sort_order': i,
+          });
+        }
+      }
+
+      // 4. Re-insert specs
+      for (int i = 0; i < product.specs.length; i++) {
+        final spec = product.specs[i];
+        await _client.from('product_specs').insert({
+          'product_id': productId,
+          'key': spec.key,
+          'value': spec.value,
+          'unit': spec.unit,
+          'sort_order': i,
+        });
+      }
+    } catch (e) {
+      debugPrint('ProductService.updateProduct failed: $e');
+      rethrow;
+    }
   }
 
   /// Returns true when Supabase responds within a short timeout.
@@ -214,7 +310,7 @@ class ProductService {
 
         await _client.storage.from(_bucket).uploadBinary(
               path,
-              img.displayBytes,
+              img.displayBytes!,
             );
 
         uploadedPaths.add(path);

@@ -1,4 +1,8 @@
-import 'package:flex_printing/shared_widgets/category_drowdown.dart';
+import '../../methods/products/fetch_product_images.dart';
+import '../../methods/products/fetch_product_specs.dart';
+import '../../models/product/product_record.dart';
+import '../../services/image_cache.dart';
+import '../../shared_widgets/category_drowdown.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -19,7 +23,8 @@ import '../../shared_widgets/ui_helper.dart';
 /// Layout is responsive: two-column on desktop/tablet, single-column on
 /// mobile (controlled by [System.isMobile] and screen-width breakpoint).
 class CreateProductPage extends StatefulWidget {
-  const CreateProductPage({super.key});
+  final ProductRecord? product;
+  const CreateProductPage({super.key, this.product});
 
   @override
   State<CreateProductPage> createState() => _CreateProductPageState();
@@ -50,10 +55,61 @@ class _CreateProductPageState extends State<CreateProductPage> {
   /// True while [_onSave] is running (prevents double-submit).
   bool _isSaving = false;
 
+  bool _isInitialLoading = false;
+
   @override
   void initState() {
     super.initState();
     _loadCategories();
+    if (widget.product != null) {
+      _loadProductData();
+    }
+  }
+
+  Future<void> _loadProductData() async {
+    setState(() => _isInitialLoading = true);
+    try {
+      final p = widget.product!;
+      _nameController.text = p.name;
+      _descController.text = p.description;
+
+      if (p.category != null) {
+        final catName = await ProductService.fetchCategoryNameById(p.category!);
+        if (catName != null) {
+          _categoryController.text = catName;
+        }
+      }
+
+      // Fetch specs
+      final specs = await fetchProductSpecs(p.id);
+      for (final s in specs) {
+        final row = _SpecRow();
+        row.keyCtrl.text = s.key ?? '';
+        row.valueCtrl.text = s.value;
+        row.unitCtrl.text = s.unit;
+        _specRows.add(row);
+      }
+
+      // Fetch images
+      final images = await fetchProductImages(p.id);
+      for (final img in images) {
+        final path = img.path;
+        if (path == null) continue;
+        final bytes = await ImageCacheService().getImage(path);
+        if (bytes != null) {
+          _images.add(ProductImage(
+            fileName: img.alt,
+            originalBytes: bytes,
+            path: path,
+          ));
+        }
+      }
+      if (mounted) setState(() {});
+    } catch (e) {
+      debugPrint('Error loading product data: $e');
+    } finally {
+      if (mounted) setState(() => _isInitialLoading = false);
+    }
   }
 
   void _showAdminLandingPage() {
@@ -230,18 +286,24 @@ class _CreateProductPageState extends State<CreateProductPage> {
     final product = _collectProduct();
 
     try {
-      final productId = await ProductService.createProduct(product);
-      if (!mounted) return;
-      _clearForm();
-      _showSuccess(
-        'Product Saved, ID $productId',
-      );
+      if (widget.product != null) {
+        await ProductService.updateProduct(widget.product!.id, product);
+        if (!mounted) return;
+        _showSuccess('Product Updated Successfully');
+      } else {
+        final productId = await ProductService.createProduct(product);
+        if (!mounted) return;
+        _clearForm();
+        _showSuccess(
+          'Product Saved, ID $productId',
+        );
+      }
       // Refresh category list so a newly added category shows up next time
       await _loadCategories();
     } catch (e) {
       if (!mounted) return;
       _showError(
-        '${ProductService.toUserMessage(e, action: 'save product')}\n\nDetails: ${e.toString()}',
+        '${ProductService.toUserMessage(e, action: widget.product != null ? 'update product' : 'save product')}\n\nDetails: ${e.toString()}',
       );
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -341,49 +403,58 @@ class _CreateProductPageState extends State<CreateProductPage> {
               Center(
                 child: UiHelper.title(
                   context: context,
-                  title: 'Create Product',
+                  title: widget.product != null ? 'Edit Product' : 'Create Product',
                 ),
               ),
               SizedBox(height: isCompact ? 32 : 48),
 
-              // ── main body ───────────────────────────────────────────────
-              isCompact ? _singleColumn(context) : _twoColumns(context),
-
-              SizedBox(height: isCompact ? 32 : 48),
-
-              // ── save button ─────────────────────────────────────────────
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: UiHelper.button(
-                  callback: _isSaving ? (){} : _onSave,
-                  filled: true,
-                  color: theme.secondaryContainer,
-                  borderRadius: 14,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
+              if (_isInitialLoading)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 40),
+                    child: CircularProgressIndicator(),
                   ),
-                  elevation: 2,
-                  child: _isSaving
-                      ? SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      color: theme.primary,
+                )
+              else ...[
+                // ── main body ───────────────────────────────────────────────
+                isCompact ? _singleColumn(context) : _twoColumns(context),
+
+                SizedBox(height: isCompact ? 32 : 48),
+
+                // ── save button ─────────────────────────────────────────────
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: UiHelper.button(
+                    callback: _isSaving ? () {} : _onSave,
+                    filled: true,
+                    color: theme.secondaryContainer,
+                    borderRadius: 14,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
                     ),
-                  )
-                      :  Text(
-                    'Save Product',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: theme.onSecondary,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    elevation: 2,
+                    child: _isSaving
+                        ? SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: theme.primary,
+                            ),
+                          )
+                        : Text(
+                            widget.product != null ? 'Update Product' : 'Save Product',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: theme.onSecondary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                   ),
                 ),
-              ),
+              ],
 
               const SizedBox(height: 60),
             ],
@@ -681,9 +752,9 @@ class _CreateProductPageState extends State<CreateProductPage> {
       ProductImage img,
       double size,) {
     final theme = Theme.of(context);
-    final preview = img.isImage
+    final preview = img.isImage && img.displayBytes != null
         ? Image.memory(
-      img.displayBytes,
+      img.displayBytes!,
       width: size,
       height: size,
       fit: BoxFit.cover,

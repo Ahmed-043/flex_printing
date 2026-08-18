@@ -34,12 +34,17 @@ class _ProductCardState extends State<ProductCard> {
     final connected = await ProductService.isConnected();
     if (!connected || !mounted) return;
 
-    final confirmed = await showDialog<bool>(
+    final action = await showDialog<dynamic>(
       context: context,
       builder: (ctx) => DeleteProductDialog(productName: widget.product.name),
     );
 
-    if (confirmed != true || !mounted) return;
+    if (action == 'edit' && mounted) {
+      context.go('/admin/create-product', extra: widget.product);
+      return;
+    }
+
+    if (action != true || !mounted) return;
 
     try {
       await ProductService.deleteProduct(widget.product.id);

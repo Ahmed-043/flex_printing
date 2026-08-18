@@ -162,8 +162,10 @@ final GoRouter _router = GoRouter(
         ),
         GoRoute(
           path: 'admin/create-product',
-          builder: (context, state) => const RootLayout(
-            child: CreateProductPage(),
+          builder: (context, state) => RootLayout(
+            child: CreateProductPage(
+              product: _productFromExtra(state.extra),
+            ),
           ),
         ),
         GoRoute(

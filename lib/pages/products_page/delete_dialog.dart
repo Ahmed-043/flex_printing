@@ -44,14 +44,14 @@ class _DeleteProductDialogState extends State<DeleteProductDialog> {
     final canDelete = _secondsRemaining == 0;
 
     return AlertDialog(
-      backgroundColor: theme.colorScheme.onPrimary.withAlpha(150),
+      backgroundColor: theme.colorScheme.onPrimary.withAlpha(200),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Row(
         children: [
           Icon(Icons.delete_outline, color: theme.colorScheme.error),
           const SizedBox(width: 8),
           Text(
-            'Delete Product',
+            'Update Product',
             style: TextStyle(color: theme.colorScheme.onSecondary),
           ),
         ],
@@ -60,17 +60,31 @@ class _DeleteProductDialogState extends State<DeleteProductDialog> {
         constraints: const BoxConstraints(maxWidth: 360),
         child: SingleChildScrollView(
           child: Text(
-            'Delete "${widget.productName}" and all of its product images and specs?\n'
-                '\nThis will remove the product row, related rows, and uploaded images from the storage.',
+            'Edit or Delete "${widget.productName}" and all of its product images and specs?\n',
             style: TextStyle(color: theme.colorScheme.onSecondary),
           ),
         ),
       ),
+      actionsAlignment: .spaceEvenly,
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
           child: const Text('Cancel'),
         ),
+        ElevatedButton(
+          onPressed: () => Navigator.of(context).pop('edit'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.orangeAccent,
+            foregroundColor: Colors.white,
+            disabledBackgroundColor: Colors.orangeAccent.withAlpha(120),
+            disabledForegroundColor: Colors.white70,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          child: Text("Edit"),
+        ),
+
         ElevatedButton(
           onPressed: canDelete ? () => Navigator.of(context).pop(true) : null,
           style: ElevatedButton.styleFrom(
@@ -158,6 +172,10 @@ class _DeleteCategoryDialogState extends State<DeleteCategoryDialog> {
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
           child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop('edit'),
+          child: const Text('Edit'),
         ),
         ElevatedButton(
           onPressed: canDelete ? () => Navigator.of(context).pop(true) : null,
