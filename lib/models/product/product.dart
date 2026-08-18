@@ -14,10 +14,13 @@ class Product {
   List<ProductSpec> specs;
   List<ProductImage> images;
 
+  int sortOrder;
+
   Product({
     this.name = '',
     this.description = '',
     this.category = '',
+    this.sortOrder = 0,
     List<ProductSpec>? specs,
     List<ProductImage>? images,
   })  : specs = specs ?? [],

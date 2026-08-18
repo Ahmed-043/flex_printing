@@ -40,13 +40,13 @@ Future<List<ProductRecord>> fetchProducts({
 
   PostgrestFilterBuilder<dynamic> query = client
       .from('products')
-      .select('id, name, description, updated_at, category');
+      .select('id, name, description, updated_at, category, sort_order');
 
   if (categoryId != null) {
     query = query.eq('category', categoryId);
   }
 
-  var orderedQuery = query.order('updated_at', ascending: ascending);
+  var orderedQuery = query.order('id', ascending: false);
 
   final response = limit != null && limit > 0
       ? await orderedQuery.limit(limit)
@@ -76,7 +76,7 @@ Future<List<ProductRecord>> fetchProducts({
     firstImageByProductId.putIfAbsent(image.productId, () => image);
   }
   try {
-    return productRows.map((row) {
+    final products = productRows.map((row) {
       final productId = row['id'] as int;
       final firstImage = firstImageByProductId[productId];
 
@@ -84,7 +84,27 @@ Future<List<ProductRecord>> fetchProducts({
         ...row,
         if (firstImage != null) 'first_image': firstImage.toJson(),
       });
-    }).toList(growable: false);
+    }).toList();
+
+    // Custom sorting: 1, 2, 3... then 0/null
+    products.sort((a, b) {
+      final sA = a.sortOrder;
+      final sB = b.sortOrder;
+
+      if (sA > 0 && sB > 0) {
+        return sA.compareTo(sB);
+      }
+      if (sA > 0 && sB <= 0) {
+        return -1; // A comes first
+      }
+      if (sA <= 0 && sB > 0) {
+        return 1; // B comes first
+      }
+      // Both are 0 or less, sort by ID descending (newest first)
+      return b.id.compareTo(a.id);
+    });
+
+    return products;
   } catch (e) {
     debugPrint('fetchProducts mapping failed: $e');
     rethrow;

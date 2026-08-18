@@ -162,6 +162,7 @@ class ProductService {
         'description': product.description,
         'updated_at': DateTime.now().toUtc().toIso8601String(),
         'category': categoryId,
+        'sort_order': product.sortOrder,
       }).eq('id', productId);
 
       // 3. Handle Images
@@ -235,12 +236,29 @@ class ProductService {
   static Future<bool> isConnected() async {
     try {
       await _client.from('products').select('id').limit(1).timeout(
-            const Duration(seconds: 4),
-          );
+        const Duration(seconds: 4),
+      );
       return true;
     } catch (e) {
       debugPrint('ProductService.isConnected failed: $e');
       return false;
+    }
+  }
+
+  /// Updates the `sort_order` for multiple products in a single operation.
+  static Future<void> updateProductSortOrders(Map<int, int> idToOrder) async {
+    try {
+      final now = DateTime.now().toUtc().toIso8601String();
+      final updates = idToOrder.entries.map((e) => {
+        'id': e.key,
+        'sort_order': e.value,
+        'updated_at': now,
+      }).toList();
+
+      await _client.from('products').upsert(updates);
+    } catch (e) {
+      debugPrint('ProductService.updateProductSortOrders failed: $e');
+      rethrow;
     }
   }
 
@@ -290,6 +308,7 @@ class ProductService {
           'name': product.name,
           'description': product.description,
           'updated_at': DateTime.now().toUtc().toIso8601String(),
+          'sort_order': product.sortOrder,
           if (categoryId != null) 'category': categoryId,
         })
         .select('id')

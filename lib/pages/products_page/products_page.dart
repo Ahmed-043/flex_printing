@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../methods/products/fetch_products.dart';
 import '../../models/System/system.dart';
+import '../../models/product/product_record.dart';
 import '../home_page/footer.dart';
 import '../home_page/products_section.dart';
 import 'delete_dialog.dart';
@@ -71,7 +72,22 @@ class _ProductsPageState extends State<ProductsPage> {
         ...products,
       ...newProducts,
     ];
-    mergedProducts.sort((a, b) => b.id.compareTo(a.id));
+    // Custom sorting: 1, 2, 3... then 0/null
+    mergedProducts.sort((a, b) {
+      final sA = a.sortOrder;
+      final sB = b.sortOrder;
+
+      if (sA > 0 && sB > 0) {
+        return sA.compareTo(sB);
+      }
+      if (sA > 0 && sB <= 0) {
+        return -1;
+      }
+      if (sA <= 0 && sB > 0) {
+        return 1;
+      }
+      return b.id.compareTo(a.id);
+    });
     setState(() {
       products = mergedProducts;
     });
@@ -178,15 +194,47 @@ class _ProductsPageState extends State<ProductsPage> {
     super.dispose();
   }
 
+  Future<void> _handleReorder(int oldIndex, int newIndex) async {
+    if (newIndex > oldIndex) {
+      newIndex -= 1;
+    }
+    final items = List<ProductRecord>.from(products);
+    final item = items.removeAt(oldIndex);
+    items.insert(newIndex, item);
+
+    setState(() {
+      products = items;
+    });
+
+    // Update sort_order for all products in current list
+    final Map<int, int> updates = {};
+    for (int i = 0; i < items.length; i++) {
+      updates[items[i].id] = i + 1; // Start from 1
+    }
+
+    try {
+      await ProductService.updateProductSortOrders(updates);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update sort order')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final user = Supabase.instance.client.auth.currentUser;
+    final canReorder = user != null;
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(height: System.isMobile ? 40 : 100),
           Hero(
-              tag: "product_title",
+            tag: "product_title",
             child: Material(
                 color: Colors.transparent,
                 child: UiHelper.title(context: context, title: "Our Products")),
@@ -206,7 +254,7 @@ class _ProductsPageState extends State<ProductsPage> {
                     categories[index],
                     selected: index == _selectedCategoryIndex,
                     onPress: () async {
-                     // await _loadCategories(index);
+                      // await _loadCategories(index);
                       _loadProducts(nextCategoryIndex: index);
                     },
                     onLongPress: index == 0
@@ -219,28 +267,44 @@ class _ProductsPageState extends State<ProductsPage> {
           ),
           SizedBox(height: System.isMobile ? 40 : 90),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: System.isMobile ? 20 :90),
+            padding: EdgeInsets.symmetric(horizontal: System.isMobile ? 20 : 90),
             child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: System.isMobile ? 180 : 350,
-                    childAspectRatio: 0.9,
-                    crossAxisSpacing: System.isMobile ? 15 : 35,
-                    mainAxisSpacing: System.isMobile ? 20 :45
-                ),
-                itemCount: products.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index){
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: System.isMobile ? 180 : 350,
+                childAspectRatio: 0.9,
+                crossAxisSpacing: System.isMobile ? 15 : 35,
+                mainAxisSpacing: System.isMobile ? 20 : 45,
+              ),
+              itemCount: products.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                final product = products[index];
+                final card = ProductCard(
+                  key: ValueKey(product.id),
+                  product: product,
+                  onDeleted: () => _loadProducts(
+                    nextCategoryIndex: _selectedCategoryIndex,
+                  ),
+                );
 
-                  //final image = fetchProductImageBytes(products[index].firstImage?.path);
+                if (!canReorder) return card;
 
-                  return ProductCard(
-                    product: products[index],
-                    onDeleted: () => _loadProducts(
-                      nextCategoryIndex: _selectedCategoryIndex,
-                    ),
-                  );
-                }
+                return LongPressDraggable<int>(
+                  data: index,
+                  feedback: SizedBox(
+                    width: System.isMobile ? 180 : 350,
+                    height: (System.isMobile ? 180 : 350) * 0.9,
+                    child: Opacity(opacity: 0.8, child: card),
+                  ),
+                  childWhenDragging: Opacity(opacity: 0.3, child: card),
+                  child: DragTarget<int>(
+                    onAcceptWithDetails: (details) =>
+                        _handleReorder(details.data, index+1),
+                    builder: (context, candidateData, rejectedData) => card,
+                  ),
+                );
+              },
             ),
           ),
           SizedBox(height: System.isMobile ? 75 : 150),

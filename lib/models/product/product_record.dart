@@ -7,6 +7,7 @@ class ProductRecord {
   final String description;
   final DateTime updatedAt;
   final int? category;
+  final int sortOrder;
   final ProductImageRecord? firstImage;
 
   const ProductRecord({
@@ -14,6 +15,7 @@ class ProductRecord {
     required this.name,
     required this.description,
     required this.updatedAt,
+    this.sortOrder = 0,
     this.category,
     this.firstImage,
   });
@@ -26,6 +28,7 @@ class ProductRecord {
       name: json['name'] as String,
       description: json['description'] as String,
       updatedAt: DateTime.parse(json['updated_at'] as String),
+      sortOrder: json['sort_order'] as int? ?? 0,
       category: json['category'] as int?,
       firstImage: firstImageJson is Map<String, dynamic>
           ? ProductImageRecord.fromJson(firstImageJson)
@@ -38,6 +41,7 @@ class ProductRecord {
         'name': name,
         'description': description,
         'updated_at': updatedAt.toIso8601String(),
+        'sort_order': sortOrder,
         if (category != null) 'category': category,
         if (firstImage != null) 'first_image': firstImage!.toJson(),
       };

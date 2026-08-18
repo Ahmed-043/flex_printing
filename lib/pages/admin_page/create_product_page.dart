@@ -259,6 +259,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
       name: _nameController.text.trim(),
       description: _descController.text.trim(),
       category: _categoryController.text.trim(),
+      sortOrder: widget.product?.sortOrder ?? 0,
       specs: _specRows
           .map(
             (r) => ProductSpec(
