@@ -5,7 +5,7 @@ class LeftSlopeClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final path = Path();
 
-    path.moveTo(size.width * 0.15, 0); // top-left shifted right
+    path.moveTo(size.width * 0.12, 0); // top-left shifted right
     path.lineTo(size.width, 0);        // top-right
     path.lineTo(size.width, size.height); // bottom-right
     path.lineTo(0, size.height);       // bottom-left
