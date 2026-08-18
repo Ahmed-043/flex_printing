@@ -147,7 +147,7 @@ class _ProductCardState extends State<ProductCard> {
               );
             },
             splashColor: theme.onPrimary.withAlpha(50),
-            onSecondaryTap: _handleLongPress,
+            onDoubleTap: _handleLongPress,
             borderRadius: BorderRadius.circular(System.isMobile ? 16 : 25),
             child: Semantics(
               label: 'View ${widget.product.name} details',
