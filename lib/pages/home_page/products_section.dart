@@ -76,6 +76,24 @@ class _ProductsSectionState extends State<ProductsSection> {
       );
 
       if (!mounted || requestId != _loadRequestId) return;
+
+      // Custom sorting: 1, 2, 3... then 0/null
+      fetchedProducts.sort((a, b) {
+        final sA = a.sortOrder;
+        final sB = b.sortOrder;
+
+        if (sA > 0 && sB > 0) {
+          return sA.compareTo(sB);
+        }
+        if (sA > 0 && sB <= 0) {
+          return -1;
+        }
+        if (sA <= 0 && sB > 0) {
+          return 1;
+        }
+        return b.id.compareTo(a.id);
+      });
+
       setState(() {
         _appliedLimit = limit;
         products = fetchedProducts;

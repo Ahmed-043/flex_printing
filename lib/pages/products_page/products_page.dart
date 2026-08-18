@@ -293,7 +293,7 @@ class _ProductsPageState extends State<ProductsPage> {
                 return LongPressDraggable<int>(
                   data: index,
                   feedback: SizedBox(
-                    width: System.isMobile ? 180 : 350,
+                    width: System.isMobile ? 180 : 300,
                     height: (System.isMobile ? 180 : 350) * 0.9,
                     child: Opacity(opacity: 0.8, child: card),
                   ),

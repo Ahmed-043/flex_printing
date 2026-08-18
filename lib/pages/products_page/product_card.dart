@@ -215,7 +215,8 @@ class _ProductCardState extends State<ProductCard> {
                               style: TextStyle(
                                 fontSize: System.isMobile ? 16 : 26,
                                 fontWeight: FontWeight.w400,
-                                color: theme.onPrimary,
+                                color: theme.onPrimary.withAlpha(200),
+                                height: 1.2
                               ),
                             ),
                           ),

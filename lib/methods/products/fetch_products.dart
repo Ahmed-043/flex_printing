@@ -46,11 +46,10 @@ Future<List<ProductRecord>> fetchProducts({
     query = query.eq('category', categoryId);
   }
 
-  var orderedQuery = query.order('id', ascending: false);
-
-  final response = limit != null && limit > 0
-      ? await orderedQuery.limit(limit)
-      : await orderedQuery;
+  // We fetch ALL products for the category so we can sort them in Dart
+  // based on our custom logic (1,2,3... then 0/null).
+  // If we applied a limit in SQL, we might miss highly-ranked older products.
+  final response = await query.order('id', ascending: false);
 
   final productRows = (response as List)
       .map((row) => row as Map<String, dynamic>)
@@ -103,6 +102,11 @@ Future<List<ProductRecord>> fetchProducts({
       // Both are 0 or less, sort by ID descending (newest first)
       return b.id.compareTo(a.id);
     });
+
+    // Apply limit in memory AFTER sorting
+    if (limit != null && limit > 0) {
+      return products.take(limit).toList();
+    }
 
     return products;
   } catch (e) {
