@@ -142,7 +142,7 @@ class _HomeContentState extends State<HomeContentView> {
       color: Theme.of(context).colorScheme.primary,
       child: System.isMobile
           ? Padding(
-        padding: const EdgeInsets.only(right: 10, top: 10),
+        padding: const EdgeInsets.only( top: 10),
         child: Column(
             children: _mobileBanner()),
       )
