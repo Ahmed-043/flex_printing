@@ -163,89 +163,83 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
     }
     final theme = Theme.of(context).colorScheme;
 
-    return Expanded(
-      flex: 5,
-      child: ClipPath(
-        clipper: LeftSlopeClipper(),
-        child: Container(
-          padding: const EdgeInsets.only(top: 10,),
-          decoration:BoxDecoration(
-            gradient: const RadialGradient(
-              center: Alignment.center,
-              radius: 0.8,
-              colors: [Colors.white, Color(0xFFBDBDBD)],
-              stops: [0.0, 1.0],
-            ),
-
-          ),
-          child: Column(
-            children: [
-              _pages(),
-              SizedBox(
-               // height: 55,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 25,right: 30,left: 150),
-                  child: Row(
-                    mainAxisAlignment: .center,
-                    children: [
-                      // Expanded(
-                      //   child: Padding(
-                      //     padding: const EdgeInsets.all(8.0),
-                      //     child: IconButton(
-                      //       padding: const EdgeInsets.all(0),
-                      //       onPressed: () {
-                      //         /// reset the timer
-                      //         _startAutoPlay();
-                      //         scrollController.previousPage(
-                      //           duration: const Duration(seconds: 1),
-                      //           curve: Curves.easeInOut,
-                      //         );
-                      //       },
-                      //       iconSize: 25,
-                      //       style: IconButton.styleFrom(
-                      //         backgroundColor: Colors.white,
-                      //         foregroundColor: Colors.black,
-                      //         shape: const CircleBorder(),
-                      //       ),
-                      //       icon: const Icon(Icons.arrow_back_ios_rounded),
-                      //     ),
-                      //   ),
-                      // ),
-                      Expanded(
-                        flex: 8,
-                          child: _nameBar()),
-                      // Expanded(
-                      //   child: Padding(
-                      //     padding: const EdgeInsets.all(8.0),
-                      //     child: IconButton(
-                      //       padding: const EdgeInsets.all(0),
-                      //
-                      //       onPressed: () {
-                      //         /// reset the timer
-                      //         _startAutoPlay();
-                      //         scrollController.nextPage(
-                      //           duration: const Duration(seconds: 1),
-                      //           curve: Curves.easeInOut,
-                      //         );
-                      //       },
-                      //       iconSize: 25,
-                      //       style: IconButton.styleFrom(
-                      //         backgroundColor: Colors.white,
-                      //         foregroundColor: Colors.black,
-                      //         shape: const CircleBorder(),
-                      //       ),
-                      //       icon: const Icon(Icons.arrow_forward_ios_rounded),
-                      //     ),
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 30),
-            ],
-          ),
-        ),
+    return Container(
+      padding: const EdgeInsets.only(top: 10,),
+      // decoration:BoxDecoration(
+      //   gradient: const RadialGradient(
+      //     center: Alignment.center,
+      //     radius: 0.8,
+      //     colors: [Colors.white, Color(0xFFBDBDBD)],
+      //     stops: [0.0, 1.0],
+      //   ),
+      //
+      // ),
+      child: Column(
+        children: [
+          _pages(opacity: 0.1),
+          // SizedBox(
+          //  // height: 55,
+          //   child: Padding(
+          //     padding: const EdgeInsets.only(bottom: 25,right: 30,left: 150),
+          //     child: Row(
+          //       mainAxisAlignment: .center,
+          //       children: [
+          //         // Expanded(
+          //         //   child: Padding(
+          //         //     padding: const EdgeInsets.all(8.0),
+          //         //     child: IconButton(
+          //         //       padding: const EdgeInsets.all(0),
+          //         //       onPressed: () {
+          //         //         /// reset the timer
+          //         //         _startAutoPlay();
+          //         //         scrollController.previousPage(
+          //         //           duration: const Duration(seconds: 1),
+          //         //           curve: Curves.easeInOut,
+          //         //         );
+          //         //       },
+          //         //       iconSize: 25,
+          //         //       style: IconButton.styleFrom(
+          //         //         backgroundColor: Colors.white,
+          //         //         foregroundColor: Colors.black,
+          //         //         shape: const CircleBorder(),
+          //         //       ),
+          //         //       icon: const Icon(Icons.arrow_back_ios_rounded),
+          //         //     ),
+          //         //   ),
+          //         // ),
+          //         // Expanded(
+          //         //   flex: 8,
+          //         //     child: _nameBar()),
+          //         // Expanded(
+          //         //   child: Padding(
+          //         //     padding: const EdgeInsets.all(8.0),
+          //         //     child: IconButton(
+          //         //       padding: const EdgeInsets.all(0),
+          //         //
+          //         //       onPressed: () {
+          //         //         /// reset the timer
+          //         //         _startAutoPlay();
+          //         //         scrollController.nextPage(
+          //         //           duration: const Duration(seconds: 1),
+          //         //           curve: Curves.easeInOut,
+          //         //         );
+          //         //       },
+          //         //       iconSize: 25,
+          //         //       style: IconButton.styleFrom(
+          //         //         backgroundColor: Colors.white,
+          //         //         foregroundColor: Colors.black,
+          //         //         shape: const CircleBorder(),
+          //         //       ),
+          //         //       icon: const Icon(Icons.arrow_forward_ios_rounded),
+          //         //     ),
+          //         //   ),
+          //         // ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          // const SizedBox(height: 30),
+        ],
       ),
     );
   }
@@ -320,7 +314,7 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
     );
   }
 
-  Widget _pages() {
+  Widget _pages({double opacity = 1}) {
     return Expanded(
       child: PageView.builder(
         controller: scrollController,
@@ -329,14 +323,17 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
           final banner = bannerImages[index];
           return Padding(
             padding: EdgeInsets.only(
-                top: System.isMobile ? 50 : 80.0,
-                bottom: System.isMobile ? 50 : 80.0,
-                right: System.isMobile ? 40 : 10,
-                left: System.isMobile ? 40 : 150,
+                top: System.isMobile ? 50 : 0,
+                bottom: System.isMobile ? 50 : 0,
+                right: System.isMobile ? 40 : 0,
+                left: System.isMobile ? 40 : 0,
           ),
-            child: Image.asset(
-              banner.path,
-              fit: BoxFit.contain,
+            child: Opacity(
+              opacity: opacity,
+              child: Image.asset(
+                banner.path,
+                fit: BoxFit.contain,
+              ),
             ),
           );
         },

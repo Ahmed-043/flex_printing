@@ -147,9 +147,8 @@ class _HomeContentState extends State<HomeContentView> {
             children: _mobileBanner()),
       )
           : Padding(
-        padding: EdgeInsets.only(left: useCompactNav ? 50 : 50.0),
-        child: Row(
-            children: _desktopBanner()),
+        padding: EdgeInsets.only(left: useCompactNav ? 0 : 0),
+        child: _desktopBannerNew(),
       ),
     );
   }
@@ -243,6 +242,76 @@ class _HomeContentState extends State<HomeContentView> {
       ),
       HomeBannerCarousel(isActive: true)
     ];
+  }
+
+  Widget _desktopBannerNew() {
+    return Stack(
+      children: [
+        HomeBannerCarousel(isActive: true),
+
+        Positioned.fill(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Container(
+                  width:  System.isMobile ? 200 : 300,
+                  height:  System.isMobile ? 200 : 300,
+                  decoration: const BoxDecoration(
+                    color: Colors.transparent,
+                    shape: BoxShape.circle,
+                  ),
+                  child: SvgPicture.asset(
+                    'assets/images/logo_sharp.svg',
+                    width: System.isMobile ? 48 : 65,
+                    height: System.isMobile ? 48 : 65,
+                  )),
+          
+              // 2) subtitle (can wrap normally)
+              Text(
+                'DIGITAL PRINTING\nMACHINERY SUPPLIER.',
+                maxLines: 3,
+                overflow: TextOverflow.clip,
+                textAlign: .center,
+                style: TextStyle(
+                  height: 1,
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: 'RedHatDisplay',
+                  fontSize: screenWidth < 1210 ? 65 : 77,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+              ),
+          
+              SizedBox(
+                width: 225,
+                height: 60,
+                child: UiHelper.button(
+                  callback: () {
+                    context.go('/products');
+                    return;
+                  },
+                  color: Colors.blue,
+                  filled: true,
+                  borderRadius: 0,
+                  rotation: 8,
+                  padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 20),
+                  child: Text(
+                    "Learn More",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                      fontSize: screenWidth<1210 ? 27 : 34,
+                    ),
+                  ),
+                ),
+              ),
+          
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   List<Widget> _mobileBanner() {
