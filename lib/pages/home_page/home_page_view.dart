@@ -153,102 +153,111 @@ class _HomeContentState extends State<HomeContentView> {
     );
   }
 
-  List<Widget> _desktopBanner() {
-    return [
-      Expanded(
-        flex: 4,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            // 1) DIGITAL (won’t overflow)
-            // ClipRect(
-            //   child: Text(
-            //     'DIGITAL',
-            //     maxLines: 1,
-            //     overflow: TextOverflow.clip, // or TextOverflow.clip to hide without "..."
-            //     softWrap: false,
-            //     style: TextStyle(
-            //       fontWeight: FontWeight.w900,
-            //       fontFamily: 'PaytoneOne',
-            //       letterSpacing: 5,
-            //       height: 1.2,
-            //       fontSize: screenWidth < 1210 ? 100 : 135,
-            //       color: Theme.of(context).colorScheme.onPrimary,
-            //     ),
-            //   ),
-            // ),
-
-            Container(
-                width:  System.isMobile ? 200 : 300,
-                height:  System.isMobile ? 200 : 300,
-                decoration: const BoxDecoration(
-                  color: Colors.transparent,
-                  shape: BoxShape.circle,
-                ),
-                child: SvgPicture.asset(
-                  'assets/images/logo_sharp.svg',
-                  width: System.isMobile ? 48 : 65,
-                  height: System.isMobile ? 48 : 65,
-                )),
-
-            // 2) subtitle (can wrap normally)
-            Text(
-              'DIGITAL PRINTING\nMACHINERY SUPPLIER.',
-              maxLines: 3,
-              overflow: TextOverflow.clip,
-              style: TextStyle(
-                height: 1,
-                letterSpacing: 0,
-                fontWeight: FontWeight.w600,
-                fontSize: screenWidth < 1210 ? 40 : 55,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-            ),
-
-            UiHelper.button(
-              callback: () {
-                context.go('/products');
-                return;
-              },
-              color: Colors.black,
-              filled: true,
-              borderRadius: 50,
-              rotation: 8,
-              padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 20),
-              child: Text(
-                "Learn More",
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: screenWidth<1210 ? 27 : 34,
-                ),
-              ),
-            ),
-            // Padding(
-            //   padding: const EdgeInsets.only(bottom: 25.0),
-            //   child: Text(
-            //     "ONE DOOR SOLUTION",
-            //     style: TextStyle(
-            //       fontWeight: FontWeight.w200,
-            //       fontFamily: 'RedHatDisplay',
-            //       fontSize: screenWidth<1210 ? 35 : 43,
-            //       color: Theme.of(context).colorScheme.onPrimary,
-            //     ),
-            //   ),
-            // ),
-          ],
-        ),
-      ),
-      HomeBannerCarousel(isActive: true)
-    ];
-  }
+  // List<Widget> _desktopBanner() {
+  //   return [
+  //     Expanded(
+  //       flex: 4,
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //         children: [
+  //           // 1) DIGITAL (won’t overflow)
+  //           // ClipRect(
+  //           //   child: Text(
+  //           //     'DIGITAL',
+  //           //     maxLines: 1,
+  //           //     overflow: TextOverflow.clip, // or TextOverflow.clip to hide without "..."
+  //           //     softWrap: false,
+  //           //     style: TextStyle(
+  //           //       fontWeight: FontWeight.w900,
+  //           //       fontFamily: 'PaytoneOne',
+  //           //       letterSpacing: 5,
+  //           //       height: 1.2,
+  //           //       fontSize: screenWidth < 1210 ? 100 : 135,
+  //           //       color: Theme.of(context).colorScheme.onPrimary,
+  //           //     ),
+  //           //   ),
+  //           // ),
+  //
+  //           Container(
+  //               width:  System.isMobile ? 200 : 300,
+  //               height:  System.isMobile ? 200 : 300,
+  //               decoration: const BoxDecoration(
+  //                 color: Colors.transparent,
+  //                 shape: BoxShape.circle,
+  //               ),
+  //               child: SvgPicture.asset(
+  //                 'assets/images/logo_sharp.svg',
+  //                 width: System.isMobile ? 48 : 65,
+  //                 height: System.isMobile ? 48 : 65,
+  //               )),
+  //
+  //           // 2) subtitle (can wrap normally)
+  //           Text(
+  //             'DIGITAL PRINTING\nMACHINERY SUPPLIER.',
+  //             maxLines: 3,
+  //             overflow: TextOverflow.clip,
+  //             style: TextStyle(
+  //               height: 1,
+  //               letterSpacing: 0,
+  //               fontWeight: FontWeight.w600,
+  //               fontSize: screenWidth < 1210 ? 40 : 55,
+  //               color: Theme.of(context).colorScheme.onPrimary,
+  //             ),
+  //           ),
+  //
+  //           UiHelper.button(
+  //             callback: () {
+  //               context.go('/products');
+  //               return;
+  //             },
+  //             color: Colors.black,
+  //             filled: true,
+  //             borderRadius: 50,
+  //             rotation: 8,
+  //             padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 20),
+  //             child: Text(
+  //               "Learn More",
+  //               style: TextStyle(
+  //                 fontWeight: FontWeight.w400,
+  //                 color: Theme.of(context).colorScheme.onSecondary,
+  //                 fontSize: screenWidth<1210 ? 27 : 34,
+  //               ),
+  //             ),
+  //           ),
+  //           // Padding(
+  //           //   padding: const EdgeInsets.only(bottom: 25.0),
+  //           //   child: Text(
+  //           //     "ONE DOOR SOLUTION",
+  //           //     style: TextStyle(
+  //           //       fontWeight: FontWeight.w200,
+  //           //       fontFamily: 'RedHatDisplay',
+  //           //       fontSize: screenWidth<1210 ? 35 : 43,
+  //           //       color: Theme.of(context).colorScheme.onPrimary,
+  //           //     ),
+  //           //   ),
+  //           // ),
+  //         ],
+  //       ),
+  //     ),
+  //     HomeBannerCarousel(isActive: true)
+  //   ];
+  // }
 
   Widget _desktopBannerNew() {
     return Stack(
       children: [
-        HomeBannerCarousel(isActive: true),
-
+        Positioned.fill(child: Column(
+          children: [
+            Expanded(
+              flex: 2,
+              child: SizedBox(),
+            ),
+            Expanded(
+              flex: 10,
+                child: HomeBannerCarousel(isActive: true)),
+          ],
+        )),
         Positioned.fill(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -275,7 +284,7 @@ class _HomeContentState extends State<HomeContentView> {
                 textAlign: .center,
                 style: TextStyle(
                   height: 1,
-                  letterSpacing: 2,
+                  letterSpacing: 0,
                   fontWeight: FontWeight.w400,
                   fontFamily: 'RedHatDisplay',
                   fontSize: screenWidth < 1210 ? 65 : 77,
@@ -310,6 +319,24 @@ class _HomeContentState extends State<HomeContentView> {
             ],
           ),
         ),
+        Positioned(
+            top: 0,
+            right: 0,
+            child: Container(
+              width: 30,
+              height: 150,
+              color: Theme.of(context).colorScheme.secondary,
+            )
+        ),
+        Positioned(
+            bottom: 0,
+            left: 0,
+            child: Container(
+              width: 30,
+              height: 150,
+              color: Theme.of(context).colorScheme.onPrimary,
+            )
+        )
       ],
     );
   }
@@ -369,7 +396,10 @@ class _HomeContentState extends State<HomeContentView> {
           ],
         ),
       ),
-      HomeBannerCarousel(isActive: true),
+      Expanded(
+        flex: 2,
+        child: HomeBannerCarousel(isActive: true),
+      ),
     ];
   }
 }

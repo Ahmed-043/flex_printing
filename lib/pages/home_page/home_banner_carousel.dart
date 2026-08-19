@@ -126,16 +126,12 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
   @override
   Widget build(BuildContext context) {
     if (_bannerCount == 0) {
-      return const Expanded(
-        child: Center(child: CircularProgressIndicator()),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
     if (System.isMobile) {
-      return Expanded(
-        flex: 2,
-        child: OverflowBox(
-          maxWidth: MediaQuery.of(context).size.width + 60,
-          child: ClipRRect(
+      return OverflowBox(
+        maxWidth: MediaQuery.of(context).size.width + 60,
+        child: ClipRRect(
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(1000),
               topRight: Radius.circular(1000),
@@ -158,89 +154,76 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
               ),
             ),
           ),
-        ),
-      );
+        );
     }
     final theme = Theme.of(context).colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.only(top: 10,),
-      // decoration:BoxDecoration(
-      //   gradient: const RadialGradient(
-      //     center: Alignment.center,
-      //     radius: 0.8,
-      //     colors: [Colors.white, Color(0xFFBDBDBD)],
-      //     stops: [0.0, 1.0],
-      //   ),
-      //
-      // ),
-      child: Column(
-        children: [
-          _pages(opacity: 0.1),
-          // SizedBox(
-          //  // height: 55,
-          //   child: Padding(
-          //     padding: const EdgeInsets.only(bottom: 25,right: 30,left: 150),
-          //     child: Row(
-          //       mainAxisAlignment: .center,
-          //       children: [
-          //         // Expanded(
-          //         //   child: Padding(
-          //         //     padding: const EdgeInsets.all(8.0),
-          //         //     child: IconButton(
-          //         //       padding: const EdgeInsets.all(0),
-          //         //       onPressed: () {
-          //         //         /// reset the timer
-          //         //         _startAutoPlay();
-          //         //         scrollController.previousPage(
-          //         //           duration: const Duration(seconds: 1),
-          //         //           curve: Curves.easeInOut,
-          //         //         );
-          //         //       },
-          //         //       iconSize: 25,
-          //         //       style: IconButton.styleFrom(
-          //         //         backgroundColor: Colors.white,
-          //         //         foregroundColor: Colors.black,
-          //         //         shape: const CircleBorder(),
-          //         //       ),
-          //         //       icon: const Icon(Icons.arrow_back_ios_rounded),
-          //         //     ),
-          //         //   ),
-          //         // ),
-          //         // Expanded(
-          //         //   flex: 8,
-          //         //     child: _nameBar()),
-          //         // Expanded(
-          //         //   child: Padding(
-          //         //     padding: const EdgeInsets.all(8.0),
-          //         //     child: IconButton(
-          //         //       padding: const EdgeInsets.all(0),
-          //         //
-          //         //       onPressed: () {
-          //         //         /// reset the timer
-          //         //         _startAutoPlay();
-          //         //         scrollController.nextPage(
-          //         //           duration: const Duration(seconds: 1),
-          //         //           curve: Curves.easeInOut,
-          //         //         );
-          //         //       },
-          //         //       iconSize: 25,
-          //         //       style: IconButton.styleFrom(
-          //         //         backgroundColor: Colors.white,
-          //         //         foregroundColor: Colors.black,
-          //         //         shape: const CircleBorder(),
-          //         //       ),
-          //         //       icon: const Icon(Icons.arrow_forward_ios_rounded),
-          //         //     ),
-          //         //   ),
-          //         // ),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-          // const SizedBox(height: 30),
-        ],
-      ),
+    return Column(
+      children: [
+        _pages(opacity: 0.1),
+        // SizedBox(
+        //  // height: 55,
+        //   child: Padding(
+        //     padding: const EdgeInsets.only(bottom: 25,right: 30,left: 150),
+        //     child: Row(
+        //       mainAxisAlignment: .center,
+        //       children: [
+        //         // Expanded(
+        //         //   child: Padding(
+        //         //     padding: const EdgeInsets.all(8.0),
+        //         //     child: IconButton(
+        //         //       padding: const EdgeInsets.all(0),
+        //         //       onPressed: () {
+        //         //         /// reset the timer
+        //         //         _startAutoPlay();
+        //         //         scrollController.previousPage(
+        //         //           duration: const Duration(seconds: 1),
+        //         //           curve: Curves.easeInOut,
+        //         //         );
+        //         //       },
+        //         //       iconSize: 25,
+        //         //       style: IconButton.styleFrom(
+        //         //         backgroundColor: Colors.white,
+        //         //         foregroundColor: Colors.black,
+        //         //         shape: const CircleBorder(),
+        //         //       ),
+        //         //       icon: const Icon(Icons.arrow_back_ios_rounded),
+        //         //     ),
+        //         //   ),
+        //         // ),
+        //         // Expanded(
+        //         //   flex: 8,
+        //         //     child: _nameBar()),
+        //         // Expanded(
+        //         //   child: Padding(
+        //         //     padding: const EdgeInsets.all(8.0),
+        //         //     child: IconButton(
+        //         //       padding: const EdgeInsets.all(0),
+        //         //
+        //         //       onPressed: () {
+        //         //         /// reset the timer
+        //         //         _startAutoPlay();
+        //         //         scrollController.nextPage(
+        //         //           duration: const Duration(seconds: 1),
+        //         //           curve: Curves.easeInOut,
+        //         //         );
+        //         //       },
+        //         //       iconSize: 25,
+        //         //       style: IconButton.styleFrom(
+        //         //         backgroundColor: Colors.white,
+        //         //         foregroundColor: Colors.black,
+        //         //         shape: const CircleBorder(),
+        //         //       ),
+        //         //       icon: const Icon(Icons.arrow_forward_ios_rounded),
+        //         //     ),
+        //         //   ),
+        //         // ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+        // const SizedBox(height: 30),
+      ],
     );
   }
 
