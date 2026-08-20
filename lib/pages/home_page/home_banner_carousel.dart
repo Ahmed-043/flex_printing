@@ -128,35 +128,35 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
     if (_bannerCount == 0) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (System.isMobile) {
-      return OverflowBox(
-        maxWidth: MediaQuery.of(context).size.width + 60,
-        child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(1000),
-              topRight: Radius.circular(1000),
-            ),
-            child: Container(
-              padding: const EdgeInsets.only(top: 10),
-              decoration: _decoration(),
-              child: Column(
-                children: [
-                  _pages(),
-                  SizedBox(
-                    height: 50,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: _nameBar(),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                ],
-              ),
-            ),
-          ),
-        );
-    }
-    final theme = Theme.of(context).colorScheme;
+    // if (System.isMobile) {
+    //   return OverflowBox(
+    //     maxWidth: MediaQuery.of(context).size.width + 60,
+    //     child: ClipRRect(
+    //         borderRadius: const BorderRadius.only(
+    //           topLeft: Radius.circular(1000),
+    //           topRight: Radius.circular(1000),
+    //         ),
+    //         child: Container(
+    //           padding: const EdgeInsets.only(top: 10),
+    //           decoration: _decoration(),
+    //           child: Column(
+    //             children: [
+    //               _pages(),
+    //               SizedBox(
+    //                 height: 50,
+    //                 child: Padding(
+    //                   padding: const EdgeInsets.symmetric(horizontal: 20),
+    //                   child: _nameBar(),
+    //                 ),
+    //               ),
+    //               const SizedBox(height: 30),
+    //             ],
+    //           ),
+    //         ),
+    //       ),
+    //     );
+    // }
+    // final theme = Theme.of(context).colorScheme;
 
     return Column(
       children: [

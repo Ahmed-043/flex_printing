@@ -179,6 +179,7 @@ class _ProductsSectionState extends State<ProductsSection> {
           filled: true,
           borderRadius: 75,
           rotation: 8,
+          elevation: 8,
           child: Text(
             "Load More",
             style: TextStyle(

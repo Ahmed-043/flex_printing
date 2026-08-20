@@ -65,9 +65,19 @@ class _RootLayoutState extends State<RootLayout> {
                 return SliverAppBar(
                   shape: shouldRound
                       ? RoundedRectangleBorder(
+                    side: BorderSide(
+                      strokeAlign: 0,
+                      color: theme.primary,
+                      width: 7,
+                      style: BorderStyle.solid,
+
+                    ),
                           borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(System.isMobile ? 30 : 45),
-                            bottomRight: Radius.circular(System.isMobile ? 30 : 45),
+                            bottomLeft: Radius.circular(System.isMobile ? 20 : 25),
+                            bottomRight: Radius.circular(System.isMobile ? 20 : 25),
+                            topLeft: Radius.circular(System.isMobile ? 20 : 25),
+                            topRight: Radius.circular(System.isMobile ? 20 : 25),
+
                           ),
                         )
                       : null,
@@ -92,18 +102,22 @@ class _RootLayoutState extends State<RootLayout> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Container(
-                            width: useCompactNav ? 48 : 65,
-                            height: useCompactNav ? 48 : 65,
-                            decoration: const BoxDecoration(
-                              color: Colors.transparent,
-                              shape: BoxShape.circle,
-                            ),
-                            child: SvgPicture.asset(
-                              'assets/images/logo_sharp.svg',
-                              width: System.isMobile ? 48 : 65,
-                              height: System.isMobile ? 48 : 65,
-                            )),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(shouldRound ? 15 : 0),
+                          child: Container(
+                           // margin: EdgeInsets.only(left: System.isMobile ? 20 : 0),
+                              width: useCompactNav ? 48 : 65,
+                              height: useCompactNav ? 48 : 65,
+                              decoration: const BoxDecoration(
+                                color: Colors.transparent,
+                                shape: BoxShape.circle,
+                              ),
+                              child: SvgPicture.asset(
+                                'assets/images/logo_sharp.svg',
+                                width: System.isMobile ? 48 : 65,
+                                height: System.isMobile ? 48 : 65,
+                              )),
+                        ),
                         const SizedBox(width: 10),
                         Flexible(
                           child: FittedBox(
@@ -198,15 +212,15 @@ Future<void> showTopMenu(
     barrierLabel: 'menu',
     barrierColor: Colors.transparent, // no dim, only shadow
     pageBuilder: (_, _, _) => const SizedBox.shrink(),
-    transitionDuration: const Duration(milliseconds: 140),
+    transitionDuration: const Duration(milliseconds: 250),
     transitionBuilder: (ctx, anim, _, child) {
       final theme = Theme.of(ctx);
-      final bg = theme.colorScheme.secondary;
+      final bg = theme.colorScheme.onPrimary;
 
       // Menu position: directly under the button
       final top = buttonPos.dy + buttonSize.height + 25;
       final left = buttonPos.dx - 60;
-      const width = 150.0;
+      const width = 135.0;
 
       return Stack(
         children: [
@@ -232,14 +246,14 @@ Future<void> showTopMenu(
                   decoration: BoxDecoration(
                     color: bg,
                     borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withAlpha(90),
-                        blurRadius: 5,
-                        spreadRadius: 1,
-                        offset: const Offset(-1, 2),
-                      ),
-                    ],
+                    // boxShadow: [
+                    //   BoxShadow(
+                    //     color: Colors.black.withAlpha(90),
+                    //     blurRadius: 5,
+                    //     spreadRadius: 1,
+                    //     offset: const Offset(-1, 2),
+                    //   ),
+                    // ],
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(14),
@@ -248,8 +262,8 @@ Future<void> showTopMenu(
                       children: [
                         MenuItem(title: 'Home', route: '/'),
                         MenuItem(title: 'Products', route: '/products'),
-                         MenuItem(title: 'About', route: '/?section=about'),
-                         MenuItem(title: 'Events', route: '/?section=events'),
+                        MenuItem(title: 'About', route: '/?section=about'),
+                        MenuItem(title: 'Events', route: '/?section=events'),
                         MenuItem(title: 'Contact', route: '/contact'),
                         if(!kIsWeb)
                         MenuItem(title: 'Admin', route: '/admin'),

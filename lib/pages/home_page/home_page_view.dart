@@ -133,7 +133,7 @@ class _HomeContentState extends State<HomeContentView> {
     if(!System.isMobile){
       containerHeight = min(containerHeight,1200);
     }else{
-      containerHeight = min(containerHeight,1200);
+      containerHeight = min(containerHeight,500);
     }
     final useCompactNav = screenWidth < 1050;
 
@@ -143,8 +143,7 @@ class _HomeContentState extends State<HomeContentView> {
       child: System.isMobile
           ? Padding(
         padding: const EdgeInsets.only( top: 10),
-        child: Column(
-            children: _mobileBanner()),
+        child: _mobileBanner()
       )
           : Padding(
         padding: EdgeInsets.only(left: useCompactNav ? 0 : 0),
@@ -247,7 +246,8 @@ class _HomeContentState extends State<HomeContentView> {
   Widget _desktopBannerNew() {
     return Stack(
       children: [
-        Positioned.fill(child: Column(
+        Positioned.fill(
+            child: Column(
           children: [
             Expanded(
               flex: 2,
@@ -272,8 +272,6 @@ class _HomeContentState extends State<HomeContentView> {
                   ),
                   child: SvgPicture.asset(
                     'assets/images/logo_sharp.svg',
-                    width: System.isMobile ? 48 : 65,
-                    height: System.isMobile ? 48 : 65,
                   )),
           
               // 2) subtitle (can wrap normally)
@@ -341,65 +339,85 @@ class _HomeContentState extends State<HomeContentView> {
     );
   }
 
-  List<Widget> _mobileBanner() {
-    return [
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Center(
-              child: RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'DIGITAL\n',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontFamily: 'PaytoneOne',
-                        letterSpacing: 5,
-                        fontSize: 80,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
+  Widget _mobileBanner() {
+    return Stack(
+        children: [
+          Positioned.fill(
+              child: Column(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: SizedBox(),
+                  ),
+                  Expanded(
+                      flex: 10,
+                      child: HomeBannerCarousel(isActive: true)),
+                ],
+              )),
+          Positioned.fill(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                    width:  System.isMobile ? 200 : 300,
+                    height:  System.isMobile ? 200 : 300,
+                    decoration: const BoxDecoration(
+                      color: Colors.transparent,
+                      shape: BoxShape.circle,
                     ),
-                    TextSpan(
-                      text: 'PRINTING MACHINERY SUPPLIER.',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                        height: 1,
-                        letterSpacing: 2,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
+                    child: SvgPicture.asset(
+                      'assets/images/logo_sharp.svg',
+                    )),
+                Center(
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        // TextSpan(
+                        //   text: 'DIGITAL\n',
+                        //   style: TextStyle(
+                        //     fontWeight: FontWeight.w900,
+                        //     fontFamily: 'PaytoneOne',
+                        //     letterSpacing: 5,
+                        //     fontSize: 80,
+                        //     color: Theme.of(context).colorScheme.onPrimary,
+                        //   ),
+                        // ),
+                        TextSpan(
+                          text: ' DIGITAL PRINTING\nMACHINERY SUPPLIER.',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 30,
+                            height: 0,
+                            letterSpacing: 1.5,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            UiHelper.button(
-              callback: () {
-                context.go('/products');
-                return;
-              },
-              color: Colors.black,
-              filled: true,
-              borderRadius: 50,
-              child: Text(
-                "Learn More",
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: 20,
+                UiHelper.button(
+                  callback: () {
+                    context.go('/products');
+                    return;
+                  },
+                  color: Colors.black,
+                  filled: true,
+                  borderRadius: 0,
+                  child: Text(
+                    "Learn More",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSecondary,
+                      fontSize: 20,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
-      Expanded(
-        flex: 2,
-        child: HomeBannerCarousel(isActive: true),
-      ),
-    ];
+          ),
+        ],
+      );
   }
 }

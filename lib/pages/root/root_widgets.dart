@@ -15,7 +15,7 @@ class MenuItem extends StatelessWidget {
     final theme = Theme.of(context).colorScheme;
 
     return Material(
-      color: theme.secondary,
+      color: Colors.transparent,
       child: InkWell(
         splashColor: theme.onSecondary.withAlpha(100),
         highlightColor: Colors.transparent,
